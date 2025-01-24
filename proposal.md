@@ -18,7 +18,12 @@
 Our project's main goal is to provide end users a way to freely build using a 3D plane in which they can add and remove given blocks on. On the side of the plane window, the page will offer a materials list that will contain the available blocks to use. In addition to the building aspect of the project, users will also have a forum/feed which allows them to share their builds as well as save other's. Each build will allow users to have access to a blueprint that will provide the layout and materials used to faciliate their Minecraft building experience.
 
 #### Data sets 
-We will be using a JSON file with all of the Minecraft blocks as well as their in-game names. We will also have the textures in an assets folder and link the block with the corresponding textures so that we can render it.
+We will be using a JSON file with all of the Minecraft blocks as well as their in-game names. We will also have the textures in an assets folder and link the block with the corresponding textures so that we can render it. For the dataset, we are using version 1.21.4, which is the latest Minecraft version.
+
+**URL:** https://mcasset.cloud/
+- List of all blocks and their textures can be found at: /assets/minecraft/models/block/_all.json
+- All texture PNGs can be found at: /assets/minecraft/textures/block/
+- Need to fix paths in the block json file 
 
 #### Uniqueness 
 So far, we have yet to find a web application that provides what our project will offer. There exists sites that give users a way to find others in the community, as well as another that is just a general wikipedia type website. As Minecraft players ourselves, we find that if this project ends up to be a success, then it will also be something that we look forward to using.
@@ -158,7 +163,8 @@ Broad goal: To replicate a build they've found in Minecraft
 3. The builds displayed in cards format, with the options to like and/or save. Can also scroll through images to view the build in deeper.
 
 ## Inbox, Nofitications
-To be implemented...
+Insipiration from Moodle..
+![Moodle inbox popup example](./images/inbox_notifications.png)
 
 ### List of features presented
 1. Messages about others liking and/or saving the creator's build
