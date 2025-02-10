@@ -1,0 +1,42 @@
+#!/usr/bin/env node
+import app from '../api.mjs';
+import dotenv from 'dotenv';
+import mongoose from 'mongoose';
+
+dotenv.config();
+
+const dbUrl = process.env.ATLAS_URI;
+const port = process.env.PORT || 3000;
+
+let server;
+
+(async () => {
+  try {
+    await mongoose.connect(dbUrl);
+    console.log('Database connection established');
+    server = app.listen(port, () => {
+      console.log(`Server listening on http://localhost:${port}`);
+    });
+  } catch (e) {
+    console.error('could not connect');
+    console.dir(e);
+    process.exit();
+  }
+})();
+
+process.on('SIGINT', async () => {
+  console.debug('SIGINT signal received: closing HTTP server');
+  try {
+    await mongoose.connection.close();
+    console.debug('Database connection closed on SIGINT');
+    if (server) {
+      server.close(() => {
+        console.debug('HTTP server closed');
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    console.dir(error);
+    process.exit();
+  }
+});
