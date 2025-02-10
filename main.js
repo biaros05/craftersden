@@ -4,6 +4,7 @@ import mcBackground from './flat_land.jpg';
 import wood from './wood_plank.jpg';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { ThreeMFLoader } from 'three/examples/jsm/Addons.js';
+import * as BufferGeometryUtils from "three/examples/jsm/utils/BufferGeometryUtils.js";
 
 
 //To display anything with three.js, need the following:
@@ -53,6 +54,24 @@ var texture = new THREE.TextureLoader().load('./wood_plank.jpg');
 
 
 // ----------------------   STEP OF CREATING CUBE WITH GEOMETRY, MATERIAL, AND ADDING TO SCENE
+
+// Create the bottom step (full width, half height)
+const bottomStep = new THREE.BoxGeometry(1, 0.5, 1);
+// bottomStep.translate(-0.5,-0.25,-0.5);
+
+// Create the top step (half width, full height)
+const topStep = new THREE.BoxGeometry(0.5, 0.5, 1);
+topStep.translate(0.25,0.5,0); // Shift it to the correct position
+
+// Merge both geometries into one
+const stairGeometry = BufferGeometryUtils.mergeGeometries([bottomStep, topStep]);
+
+// Create a material
+const stairMaterial = new THREE.MeshStandardMaterial({ color: 0x8B5A2B, wireframe: false });
+
+// Create the mesh
+const stairMesh = new THREE.Mesh(stairGeometry, stairMaterial);
+
 
 //Object that contains all points(vertices) and fill(Faces) of cube.
 const geometry = new THREE.BoxGeometry(1, 1, 1);
@@ -176,8 +195,9 @@ window.addEventListener('mousedown', () => {
   });
 
   // Create a new cube and place it one unit above the highest cube found
-  const cubeClone = cube.clone();
-  cubeClone.position.set(highlightMesh.position.x, highestY + 1, highlightMesh.position.z);
+  const cubeClone = stairMesh.clone();
+  // cubeClone.position.set(highlightMesh.position.x, highestY + 1, highlightMesh.position.z);
+  cubeClone.position.set(0,0.25,0);
   scene.add(cubeClone);
   objects.push(cubeClone);
 });
