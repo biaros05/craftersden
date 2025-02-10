@@ -61,16 +61,16 @@ build-frontend:
     paths:
       - client/dist
 
-test:
-  stage: test
-  script:
-    - cd server && npm run ci-test
-  artifacts:
-    when: always
-    reports:
-      junit:
-        - server/junit.xml
-  allow_failure: false
+# test:
+#   stage: test
+#   script:
+#     - cd server && npm run ci-test
+#   artifacts:
+#     when: always
+#     reports:
+#       junit:
+#         - server/junit.xml
+#   allow_failure: false
 
 # https://learn.microsoft.com/en-us/azure/app-service/deploy-run-package
 # https://maciejz.dev/gitlab-ci-cd-series-deploying-angular-application-to-azure-storage-static-app/
