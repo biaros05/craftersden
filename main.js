@@ -10,6 +10,8 @@ import * as BufferGeometryUtils from "three/examples/jsm/utils/BufferGeometryUti
 //To display anything with three.js, need the following:
 //scene, camera, renderer, so we can render scene with camera.
 
+
+
 // ----------------------   STEP OF CREATING SCENE AND CAMERA ORBIT 
 const scene = new THREE.Scene();
 
@@ -32,10 +34,45 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 
 // ----------------------   END 
 
+// ---------------------- STEP OF TOGGLE BLOCK
+
+//0 = wood, 1 = cobble
+let current_block_path = "./cobblestone.jpg";
+let is_wood = true;
+const geometry = new THREE.BoxGeometry(1, 1, 1);
+var texture = new THREE.TextureLoader().load(current_block_path);
+const material = new THREE.MeshStandardMaterial({
+  map: texture,
+  metalness: 0.5,
+  roughness: 0.3
+});
+let cube = new THREE.Mesh(geometry, material);
+
+window.addEventListener('keydown', (e) => {
+  if(e.key === 's'){
+    is_wood = !is_wood;
+    if(!is_wood){
+      current_block_path = "./cobblestone.jpg";
+    }
+    else{
+      current_block_path = "./wood_plank.jpg";
+    }
+    var texture = new THREE.TextureLoader().load(current_block_path);
+    const material = new THREE.MeshStandardMaterial({
+      map: texture,
+      metalness: 0.5,
+      roughness: 0.3
+    });
+    cube = new THREE.Mesh(geometry, material);
+  }
+});
+
+
+// ---------------------- END
+
 
 
 // ----------------------   STEP OF CREATING AMBIENT LIGHTING AND LOADING TEXTURE
-
 var ambLight = new THREE.AmbientLight(0xffffff, 0.5);
 scene.add(ambLight);
 
@@ -47,7 +84,6 @@ var pointLightRight = new THREE.PointLight(0x33ff77, 1);
 pointLightRight.position.set(3, 2, 2);
 scene.add(pointLightRight);
 //texture is jpg downloaded online
-var texture = new THREE.TextureLoader().load('./wood_plank.jpg');
 
 // ----------------------   END 
 
@@ -74,16 +110,15 @@ const stairMesh = new THREE.Mesh(stairGeometry, stairMaterial);
 
 
 //Object that contains all points(vertices) and fill(Faces) of cube.
-const geometry = new THREE.BoxGeometry(1, 1, 1);
 //Material colour 
 // const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
 //mesh: takes geometry, applies material, so that we can insert to our scene, and move freely around.
-const material = new THREE.MeshStandardMaterial({
-  map: texture,
-  metalness: 0.5,
-  roughness: 0.3
-});
-const cube = new THREE.Mesh(geometry, material);
+// const material = new THREE.MeshStandardMaterial({
+//   map: texture,
+//   metalness: 0.5,
+//   roughness: 0.3
+// });
+// const cube = new THREE.Mesh(geometry, material);
 //scene.add(): will add to the coors (0,0,0).
 
 //cause both the cam and cube to be inside eachother. to avoid, move camera out a bit.
@@ -205,6 +240,8 @@ window.addEventListener('mousedown', () => {
 
 
 // ----------------------  END
+
+
 
 
 
