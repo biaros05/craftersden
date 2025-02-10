@@ -1,0 +1,19 @@
+{
+  "name": "comments-app",
+  "version": "1.0.0",
+  "description": "Proof of concept which lets users comment",
+  "scripts": {
+    "start": "cd server && node bin/www",
+    "build": "cd client && npm install && npm run build && cd ../server && npm install",
+    "critical": "node critical.js",
+    "dev": "cd server && nodemon bin/www",
+    "lint": "cd client && eslint . --fix && cd ../server && eslint . --fix"
+  },
+  "author": "Amy, Marin, Axel, Bianca",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "comments-app": "file:",
+    "dotenv": "^16.4.7"
+  }
+}
