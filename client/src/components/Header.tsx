@@ -9,6 +9,10 @@ export default function Header() {
     const location = useLocation();
     const isDen = location.pathname === '/den';
 
+    if (loading) {
+        return <h2>Loading...</h2>;
+    }
+
     return <header id="site-header">
         <Link to='/profile'>
             <Avatar src={avatar} />
@@ -16,9 +20,9 @@ export default function Header() {
         <h2>
             {isDen ? `Crafter's Den` : `Crafter's Forum`}
         </h2>
-        <Link to={isDen ? `/den` : `/forum`}>
+        <Link to={!isDen ? `/den` : `/forum`}>
             <Button variant="filled">
-                {isDen ? `Den` : `Forum`}
+                {!isDen ? `Den` : `Forum`}
             </Button>
         </Link>
     </header>

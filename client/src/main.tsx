@@ -9,6 +9,7 @@ import {
 } from 'react-router-dom';
 import ErrorPage from './error-page.jsx';
 import Header from './components/Header.tsx';
+import Footer from './components/Footer.tsx';
 import Welcome from './components/Welcome.tsx';
 
 import '@mantine/core/styles.css';
@@ -20,6 +21,7 @@ function Main() {
   return <>
     <Header />
     <Outlet />
+    <Footer />
   </>
 }
 
