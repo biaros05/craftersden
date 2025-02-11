@@ -2,34 +2,19 @@ import * as THREE from 'three';
 import { createMesh } from '../utils/building_plane_utils.mjs';
 import { useEffect, useRef } from 'react';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import grass_top from '../assets/grass_top.png';
 
-
+/* ==== STAIRS ==== */
 const tos_froms = [
   {
-    "from": [
-      0.05,
-      0,
-      0.5
-    ],
-    "to": [
-      0.95,
-      1,
-      0.5
-    ],
+    from: [0, 0, 0],
+    to: [1, 0.5, 1],
   },
   {
-    "from": [
-      0.5,
-      0,
-      0.05
-    ],
-    "to": [
-      0.5,
-      1,
-      0.95
-    ],
-  },
-]
+    from: [0.5, 0.5, 0],
+    to: [1, 1, 1],
+  }
+];
 
 export default function BuildPlane() {
   //use ref is a react hok that lets you refernce a value that's not needed for rendering
@@ -61,7 +46,7 @@ export default function BuildPlane() {
     pointLightRight.position.set(3, 2, 2);
     scene.add(pointLightRight);
 
-    const grassTexture = new THREE.TextureLoader().load('./grass_top.png', function(texture) {
+    const grassTexture = new THREE.TextureLoader().load(grass_top, function(texture) {
       texture.colorSpace = THREE.SRGBColorSpace; // Ensure correct color space
     });
     
