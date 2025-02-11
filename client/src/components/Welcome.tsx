@@ -11,6 +11,7 @@ export default function Welcome() {
             <h2>Let's get started</h2>
             <p>
                 Crafter's Den is a website that allows you create minecraft builds and share them with your friends.
+                Lorem ipsum dolor sit amet consectetur, adipisicing elit. Error reprehenderit quos neque ipsum voluptatum aperiam sed consectetur magnam vero asperiores ipsam, laborum perspiciatis laudantium excepturi dolorum sequi possimus doloribus dicta?
             </p>
             <div className="buttons">
                 <Link to='/login'>
