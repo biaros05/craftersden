@@ -10,7 +10,7 @@ import ErrorPage from './error-page.jsx';
 
 import '@mantine/core/styles.css';
 
-import { MantineProvider } from '@mantine/core';
+import { MantineProvider, createTheme } from '@mantine/core';
 import React from 'react';
 
 
@@ -22,10 +22,15 @@ const router = createBrowserRouter([
   }
 ]);
 
+const theme = createTheme({
+  primaryColor: 'green',
+  primaryShade: 7,
+});
+
 createRoot(document.getElementById('root')!!).
   render(
     <StrictMode>
-      <MantineProvider>
+      <MantineProvider theme={theme}>
         <RouterProvider router={router} />
       </MantineProvider>
     </StrictMode>
