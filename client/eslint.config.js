@@ -3,6 +3,7 @@ import globals from 'globals';
 import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
+import jsdoc from 'eslint-plugin-jsdoc';
 
 export default [
   { ignores: ['dist'] },
@@ -22,6 +23,7 @@ export default [
       react,
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
+      jsdoc
     },
     rules: {
       ...js.configs.recommended.rules,
@@ -75,7 +77,8 @@ export default [
       'space-infix-ops': 'error',
       'space-unary-ops': 'error',
       'semi': 'error',
-      'semi-spacing': 'error'
+      'semi-spacing': 'error',
     },
   },
+  jsdoc.configs['flat/recommended-error'],
 ];
