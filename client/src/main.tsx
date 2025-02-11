@@ -11,6 +11,7 @@ import ErrorPage from './error-page.jsx';
 import '@mantine/core/styles.css';
 
 import { MantineProvider } from '@mantine/core';
+import React from 'react';
 
 
 const router = createBrowserRouter([
@@ -21,7 +22,7 @@ const router = createBrowserRouter([
   }
 ]);
 
-createRoot(document.getElementById('root')).
+createRoot(document.getElementById('root')!!).
   render(
     <StrictMode>
       <MantineProvider>
