@@ -7,12 +7,18 @@ import {
   RouterProvider,
 } from 'react-router-dom';
 import ErrorPage from './error-page.jsx';
+import CraftersDen from './components/CraftersDen.jsx';
 
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: <App/>,
+    errorElement: <ErrorPage/>
+  },
+  {
+    path: '/den',
+    element: <CraftersDen/>,
     errorElement: <ErrorPage/>
   }
 ]);

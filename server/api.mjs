@@ -32,7 +32,7 @@ app.get('*', (req, res) => {
 });
 
 
-app.use(function (err, req, res) {
+app.use(function (err, req, res, next) {
   const error = app.get('env') === 'development' ? err : {};
   res.status(err.status || 500);
   res.json({ error: error });
