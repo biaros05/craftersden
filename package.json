@@ -11,13 +11,5 @@
   },
   "author": "Amy, Marin, Axel, Bianca",
   "license": "ISC",
-  "type": "module",
-  "dependencies": {
-    "dotenv": "^16.4.7"
-  },
-  "devDependencies": {
-    "@types/react": "^19.0.8",
-    "@types/react-dom": "^19.0.3",
-    "typescript": "^5.7.3"
-  }
+  "type": "module"
 }
