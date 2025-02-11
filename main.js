@@ -91,6 +91,45 @@ scene.add(pointLightRight);
 
 // ----------------------   STEP OF CREATING CUBE WITH GEOMETRY, MATERIAL, AND ADDING TO SCENE
 
+// Define 'from' and 'to' points
+
+// Define 'from' and 'to' points
+const from = new THREE.Vector3(0, 0, 0);
+const to = new THREE.Vector3(1, 0.5, 1);
+
+// Calculate size
+const size = new THREE.Vector3().subVectors(to, from);
+
+// Calculate center position
+const center = new THREE.Vector3().addVectors(from, to).multiplyScalar(0.5);
+
+// Create first box and translate it
+const boxGeom = new THREE.BoxGeometry(size.x, size.y, size.z);
+boxGeom.translate(center.x, center.y, center.z); // Apply translation
+
+const from2 = new THREE.Vector3(0.5, 0.5, 0);
+const to2 = new THREE.Vector3(1, 1, 1);
+
+// Calculate size
+const size2 = new THREE.Vector3().subVectors(to2, from2);
+
+// Calculate center position
+const center2 = new THREE.Vector3().addVectors(from2, to2).multiplyScalar(0.5);
+
+// Create second box and translate it
+const boxGeom2 = new THREE.BoxGeometry(size2.x, size2.y, size2.z);
+boxGeom2.translate(center2.x, center2.y, center2.z); // Apply translation
+
+// Merge geometries
+const stairGeom = BufferGeometryUtils.mergeGeometries([boxGeom, boxGeom2]);
+
+// Create the final mesh
+const complexBlockMaterial = new THREE.MeshStandardMaterial({ color: 0x8B5A2B });
+const stairMesh = new THREE.Mesh(stairGeom, complexBlockMaterial);
+
+scene.add(stairMesh);
+
+
 // Create the bottom step (full width, half height)
 const bottomStep = new THREE.BoxGeometry(1, 0.5, 1);
 // bottomStep.translate(-0.5,-0.25,-0.5);
@@ -106,7 +145,7 @@ const stairGeometry = BufferGeometryUtils.mergeGeometries([bottomStep, topStep])
 const stairMaterial = new THREE.MeshStandardMaterial({ color: 0x8B5A2B, wireframe: false });
 
 // Create the mesh
-const stairMesh = new THREE.Mesh(stairGeometry, stairMaterial);
+// const stairMesh = new THREE.Mesh(stairGeometry, stairMaterial);
 
 
 //Object that contains all points(vertices) and fill(Faces) of cube.
@@ -160,7 +199,7 @@ scene.add(gridHelper);
 
 
 // ---------------------- END 
-
+let pointer = new THREE.Vector2();
 
 // ----------------------  STEP OF HIGHLIGHTING ON MOUSE HOVER
 const highlightMesh = new THREE.Mesh(
@@ -178,18 +217,18 @@ const mousePosition = new THREE.Vector2();
 const raycaster = new THREE.Raycaster();
 let intersects;
 
-window.addEventListener('mousemove', (e) => {
-  mousePosition.x = (e.clientX / window.innerWidth) * 2 - 1;
-  mousePosition.y = -(e.clientY / window.innerHeight) * 2 + 1;
-  raycaster.setFromCamera(mousePosition, camera);
-  intersects = raycaster.intersectObjects(scene.children);
-  intersects.forEach(function (intersect) {
-    if (intersect.object.name === 'ground') {
-      const highlightPos = new THREE.Vector3().copy(intersect.point).floor().addScalar(0.5);
-      highlightMesh.position.set(highlightPos.x, 0, highlightPos.z);
-    }
-  })
-})
+// window.addEventListener('mousemove', (e) => {
+//   mousePosition.x = (e.clientX / window.innerWidth) * 2 - 1;
+//   mousePosition.y = -(e.clientY / window.innerHeight) * 2 + 1;
+//   raycaster.setFromCamera(mousePosition, camera);
+//   intersects = raycaster.intersectObjects(scene.children);
+//   intersects.forEach(function (intersect) {
+//     if (intersect.object.name === 'ground') {
+//       const highlightPos = new THREE.Vector3().copy(intersect.point).floor().addScalar(0.5);
+//       highlightMesh.position.set(highlightPos.x, 0, highlightPos.z);
+//     }
+//   })
+// })
 // ----------------------   END 
 
 // ----------------------   STEP OF ADDING BLOCK ON CLICK
@@ -216,25 +255,112 @@ const objects = [];
 //   }
 // });
 
-window.addEventListener('mousedown', () => {
-  let highestY = -0.5; // Keep track of the highest cube at this X, Z
+// window.addEventListener('mousedown', (event) => {
+//   pointer.set((event.clientX / window.innerWidth) * 2 - 1, -(event.clientY / window.innerHeight) * 2 + 1);
 
-  // Find all cubes that exist at the same X, Z position
-  objects.forEach((object) => {
-    if (
-      object.position.x === highlightMesh.position.x &&
-      object.position.z === highlightMesh.position.z
-    ) {
-      highestY = Math.max(highestY, object.position.y);
-    }
-  });
+//   raycaster.setFromCamera(pointer, camera);
+//   const intersects = raycaster.intersectObjects(scene.children, true);
 
-  // Create a new cube and place it one unit above the highest cube found
-  const cubeClone = stairMesh.clone();
-  // cubeClone.position.set(highlightMesh.position.x, highestY + 1, highlightMesh.position.z);
-  cubeClone.position.set(0,0.25,0);
-  scene.add(cubeClone);
-  objects.push(cubeClone);
+//   if (intersects.length > 0) {
+//     let intersect = intersects.find(intersect => intersect.object.name === 'ground');
+
+//     if (intersect) {
+//       // Clone stairMesh instead of reusing the same object
+//       const stairClone = stairMesh.clone();
+//       stairClone.scale.set(1, 1, 1); // Ensure correct scale
+//       stairClone.position.copy(intersect.point).floor().addScalar(0.5); // Snap to grid
+//       stairClone.position.y += 0.5; // Adjust height to sit on top of the ground
+
+//       scene.add(stairClone);
+//       objects.push(stairClone);
+//     }
+//   }
+// });
+
+// window.addEventListener('mousedown', (event) => {
+//   pointer.set((event.clientX / window.innerWidth) * 2 - 1, -(event.clientY / window.innerHeight) * 2 + 1);
+  
+//   raycaster.setFromCamera(pointer, camera);
+//   const intersects = raycaster.intersectObjects(scene.children, true);
+
+//   if (intersects.length > 0) {
+//     let intersect = intersects.find(i => i.object.type === 'Mesh' || i.object.name === 'ground');
+
+//     if (intersect) {
+//       stairMesh.scale.set(1, 1, 1);
+
+//       // Get base grid position
+//       let newPosition = new THREE.Vector3().copy(intersect.point).add(intersect.face.normal);
+//       newPosition.divideScalar(30).floor().multiplyScalar(30).addScalar(16);
+
+//       // Ensure stacking works by checking for blocks at this position
+//       let maxHeight = 0;
+//       objects.forEach((obj) => {
+//         if (obj.position.x === newPosition.x && obj.position.z === newPosition.z) {
+//           maxHeight = Math.max(maxHeight, obj.position.y);
+//         }
+//       });
+
+//       newPosition.y = maxHeight + 30; // Stack block on top
+
+//       // Clone stairMesh to prevent modifying original object
+//       const newBlock = stairMesh.clone();
+//       newBlock.position.copy(newPosition);
+
+//       scene.add(newBlock);
+//       objects.push(newBlock);
+//     }
+//   }
+// });
+
+
+window.addEventListener('mousedown', (event) => {
+
+  pointer.set( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1 );
+
+  console.log(pointer);
+  raycaster.setFromCamera( pointer, camera );
+
+  const intersects = raycaster.intersectObjects( scene.children, true );
+
+  console.log(intersects);
+  if ( intersects.length > 0 ) {
+
+      let intersect = intersects.filter(intersect => intersect.object.type === 'Mesh' || intersect.object.name === 'ground')[0];
+
+      stairMesh.scale.set(1, 1, 1);
+      console.log(stairMesh.position);
+      let newPosition = stairMesh.position.copy( intersect.point ).add( intersect.face.normal );
+      console.log(newPosition);
+      console.log(stairMesh.position);
+      newPosition.divideScalar(  ).floor().multiplyScalar( 2 ).addScalar(-1);
+      //newPosition.y+=0.5;
+      console.log(stairMesh.position);
+      const newBlock = stairMesh.clone();
+      newBlock.position.copy(newPosition);
+      scene.add( newBlock );
+      objects.push( newBlock );
+
+  }
+
+  // let highestY = -0.5; // Keep track of the highest cube at this X, Z
+
+  // // Find all cubes that exist at the same X, Z position
+  // objects.forEach((object) => {
+  //   if (
+  //     object.position.x === highlightMesh.position.x &&
+  //     object.position.z === highlightMesh.position.z
+  //   ) {
+  //     highestY = Math.max(highestY, object.position.y);
+  //   }
+  // });
+
+  // // Create a new cube and place it one unit above the highest cube found
+  // const cubeClone = stairMesh.clone();
+  // // cubeClone.position.set(highlightMesh.position.x, highestY + 1, highlightMesh.position.z);
+  // cubeClone.position.set(0,0.25,0);
+  // scene.add(cubeClone);
+  // objects.push(cubeClone);
 });
 
 
