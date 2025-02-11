@@ -9,6 +9,11 @@ import {
 import ErrorPage from './error-page.jsx';
 import CraftersDen from './components/CraftersDen.jsx';
 
+import '@mantine/core/styles.css';
+
+import { MantineProvider, createTheme } from '@mantine/core';
+import React from 'react';
+
 
 const router = createBrowserRouter([
   {
@@ -23,9 +28,16 @@ const router = createBrowserRouter([
   }
 ]);
 
-createRoot(document.getElementById('root')).
+const theme = createTheme({
+  primaryColor: 'green',
+  primaryShade: 7,
+});
+
+createRoot(document.getElementById('root')!!).
   render(
     <StrictMode>
-      <RouterProvider router={router} />
+      <MantineProvider theme={theme}>
+        <RouterProvider router={router} />
+      </MantineProvider>
     </StrictMode>
   );
