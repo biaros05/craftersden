@@ -1,6 +1,7 @@
 import React from 'react';
 import './App.css';
 import HelloWorld from './components/HelloWorld';
+import BlockImage from './components/BlockImage';
 
 function App() {
   
