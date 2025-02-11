@@ -8,6 +8,10 @@ import {
 } from 'react-router-dom';
 import ErrorPage from './error-page.jsx';
 
+import '@mantine/core/styles.css';
+
+import { MantineProvider } from '@mantine/core';
+
 
 const router = createBrowserRouter([
   {
@@ -20,6 +24,8 @@ const router = createBrowserRouter([
 createRoot(document.getElementById('root')).
   render(
     <StrictMode>
-      <RouterProvider router={router} />
+      <MantineProvider>
+        <RouterProvider router={router} />
+      </MantineProvider>
     </StrictMode>
   );
