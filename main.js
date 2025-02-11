@@ -10,6 +10,7 @@ import { ConvexGeometry } from 'three/examples/jsm/Addons.js';
 //To display anything with three.js, need the following:
 //scene, camera, renderer, so we can render scene with camera.
 
+// SAMPLE DATA
 /* ==== STAIRS ==== */
 // const tos_froms = [
 //   {
@@ -63,120 +64,160 @@ import { ConvexGeometry } from 'three/examples/jsm/Addons.js';
 // ];
 
 /* ==== FENCE GATE ==== */
+// const tos_froms = [
+//   {
+//     from: [0, 0.3125, 0.4375],
+//     to: [0.125, 1, 0.5625],
+//   },
+//   {
+//     from: [0.875, 0.3125, 0.4375],
+//     to: [1, 1, 0.5625],
+//   },
+//   {
+//     from: [0.375, 0.375, 0.4375],
+//     to: [0.5, 0.9375, 0.5625],
+//   },
+//   {
+//     from: [0.5, 0.375, 0.4375],
+//     to: [0.625, 0.9375, 0.5625],
+//   },
+//   {
+//     from: [0.125, 0.375, 0.4375],
+//     to: [0.375, 0.5625, 0.5625],
+//   },
+//   {
+//     from: [0.125, 0.75, 0.4375],
+//     to: [0.375, 0.9375, 0.5625],
+//   },
+//   {
+//     from: [0.625, 0.375, 0.4375],
+//     to: [0.875, 0.5625, 0.5625],
+//   },
+//   {
+//     from: [0.625, 0.75, 0.4375],
+//     to: [0.875, 0.9375, 0.5625],
+//   },
+// ];
+
+/* ==== CROSS ==== */
 const tos_froms = [
   {
-    from: [0, 0.3125, 0.4375],
-    to: [0.125, 1, 0.5625],
+    "from": [
+      0.05,
+      0,
+      0.5
+    ],
+    "to": [
+      0.95,
+      1,
+      0.5
+    ],
   },
   {
-    from: [0.875, 0.3125, 0.4375],
-    to: [1, 1, 0.5625],
+    "from": [
+      0.5,
+      0,
+      0.05
+    ],
+    "to": [
+      0.5,
+      1,
+      0.95
+    ],
   },
-  {
-    from: [0.375, 0.375, 0.4375],
-    to: [0.5, 0.9375, 0.5625],
-  },
-  {
-    from: [0.5, 0.375, 0.4375],
-    to: [0.625, 0.9375, 0.5625],
-  },
-  {
-    from: [0.125, 0.375, 0.4375],
-    to: [0.375, 0.5625, 0.5625],
-  },
-  {
-    from: [0.125, 0.75, 0.4375],
-    to: [0.375, 0.9375, 0.5625],
-  },
-  {
-    from: [0.625, 0.375, 0.4375],
-    to: [0.875, 0.5625, 0.5625],
-  },
-  {
-    from: [0.625, 0.75, 0.4375],
-    to: [0.875, 0.9375, 0.5625],
-  },
-];
+]
 
-// function calculateOffset(toFrom) {
-//   // if (toFrom.from[0] !== 0 && toFrom.from[2] !== 0) {
-//   //   return [ 0, 0, 0 ];
-//   // }
+/* ==== FLOWER POT ==== */
+// const tos_froms = [
+//   {
+//     "from": [
+//       0.3125,
+//       0,
+//       0.3125
+//     ],
+//     "to": [
+//       0.375,
+//       0.375,
+//       0.6875
+//     ],
+//   },
+//   {
+//     "from": [
+//       0.625,
+//       0,
+//       0.3125
+//     ],
+//     "to": [
+//       0.6875,
+//       0.375,
+//       0.6875
+//     ],
+//   },
+//   {
+//     "from": [
+//       0.375,
+//       0,
+//       0.3125
+//     ],
+//     "to": [
+//       0.625,
+//       0.375,
+//       0.375
+//     ],
+//   },
+//   {
+//     "from": [
+//       0.375,
+//       0,
+//       0.625
+//     ],
+//     "to": [
+//       0.625,
+//       0.375,
+//       0.6875
+//     ],
+//   },
+//   {
+//     "from": [
+//       0.375,
+//       0,
+//       0.375
+//     ],
+//     "to": [
+//       0.625,
+//       0.25,
+//       0.625
+//     ],
+//   },
+// ];
 
-//   // const x = 0.5 - toFrom.from[0];
-//   // const y = toFrom.from[1];
-//   // const z = 0.5 - toFrom.from[2];
-  
-//   // return [ x, y, z ];
-// }
-
-// function calculateSize(toFrom) {
-//   const x = toFrom.to[0] - toFrom.from[0];
-//   const y = toFrom.to[1] - toFrom.from[1];
-//   const z = toFrom.to[2] - toFrom.from[2];
-
-//   return [ x, y, z ];
-// }
-
-// function createGeometry(tos_froms) {
-//   let height = 0;
-//   const cuboids = tos_froms.map(tf => {
-//     const size = calculateSize(tf);
-//     if (size[1] > height)
-//       height = size[1];
-//     const geometry = new THREE.BoxGeometry(size[0], size[1], size[2]);
-
-//     // const offset = calculateOffset(tf);
-//     // geometry.translate(offset[0], offset[1], offset[2]);
-//     geometry.setFromPoints(tf.from);
-
-//     return geometry;
-//   });
-
-//   const geometry = BufferGeometryUtils.mergeGeometries(cuboids);
-//   console.log(height)
-//   // height = height / 4.0 * 3;
-//   let offset = height / 2.0;
-//   if (height % 1 !== 0) {
-//     offset += 0.5;
-//   }
-//   offset = 0;
-
-//   geometry.translate(0, -offset, 0);
-//   return geometry;
-// }
-/*  E        H
-    +--------+ 
-   / |      /|
-  /F |   G / |
- +--------+  |
- |   |D   |  |
- |   +----|--+ C
- |  /     | /
- | /      |/
- +--------+ 
-A         B
-*/
+/**
+ * Creates an array of cuboids that get merged into a
+ * single geometry.
+ * 
+ * @param {Object[]} tos_froms Array of objects that contain a to and from for each cuboid
+ * @returns Merged geometry built from cuboids
+ */
 function createGeometry(tos_froms) {
-  const cuboids = tos_froms.map(tf => {
-    const [x1, y1, z1] = tf.from;
-    const [x2, y2, z2] = tf.to;
+  const geos = tos_froms.map(tf => {
+    const to = new THREE.Vector3(...tf.to);
+    const from = new THREE.Vector3(...tf.from);
 
-    const A = new THREE.Vector3(x1, y1, z1);
-    const B = new THREE.Vector3(x2, y1, z1);
-    const C = new THREE.Vector3(x2, y1, z2);
-    const D = new THREE.Vector3(x2, y1, z2);
-    const E = new THREE.Vector3(x2, y2, z2);
-    const F = new THREE.Vector3(x1, y2, z1);
-    const G = new THREE.Vector3(x2, y2, z1);
-    const H = new THREE.Vector3(x2, y2, z2);
+    // Calculate size
+    const size = new THREE.Vector3().subVectors(to, from);
+  
+    // Calculate center position
+    const center = new THREE.Vector3().addVectors(from, to).multiplyScalar(0.5);
+  
+    // Create first box and translate it
+    const boxGeom = new THREE.BoxGeometry(size.x, size.y, size.z);
+    boxGeom.translate(center.x, center.y, center.z); // Apply translation
 
-    return new ConvexGeometry([A, B, C, D, E, F, G, H]);
+    return boxGeom;
   });
-
-  const geometry = BufferGeometryUtils.mergeGeometries(cuboids);
-  console.log(geometry)
-  return geometry;
+  
+  const geo = BufferGeometryUtils.mergeGeometries(geos);
+  return geo;
 }
 
 function createMesh(tos_froms, material) {
@@ -187,7 +228,7 @@ function createMesh(tos_froms, material) {
   }
 
   const mesh = new THREE.Mesh(geometry, material);
-
+  
   return mesh;
 }
 
@@ -271,25 +312,6 @@ scene.add(pointLightRight);
 
 
 // ----------------------   STEP OF CREATING CUBE WITH GEOMETRY, MATERIAL, AND ADDING TO SCENE
-
-// Create the bottom step (full width, half height)
-// const bottomStep = new THREE.BoxGeometry(1, 0.5, 1);
-// // bottomStep.translate(-0.5,-0.25,-0.5);
-
-// // Create the top step (half width, full height)
-// const topStep = new THREE.BoxGeometry(0.5, 0.5, 1);
-// topStep.translate(0.25,0.5,0); // Shift it to the correct position
-
-// // Merge both geometries into one
-// // const stairGeometry = BufferGeometryUtils.mergeGeometries([bottomStep, topStep]);
-// const stairGeometry = createGeometry(tos_froms);
-
-// // Create a material
-// const stairMaterial = new THREE.MeshStandardMaterial({ color: 0x8B5A2B, wireframe: false });
-
-// // Create the mesh
-// const stairMesh = new THREE.Mesh(stairGeometry, stairMaterial);
-
 
 //Object that contains all points(vertices) and fill(Faces) of cube.
 //Material colour 
@@ -414,7 +436,7 @@ window.addEventListener('mousedown', () => {
   // Create a new cube and place it one unit above the highest cube found
   const geometryClone = currentGeometry.clone();
   // xhfj
-  geometryClone.position.set(highlightMesh.position.x, highestY + 1, highlightMesh.position.z);
+  geometryClone.position.set(highlightMesh.position.x - 0.5, highestY, highlightMesh.position.z - 0.5);
   // cubeClone.position.set(0,0.25,0);
   scene.add(geometryClone);
   objects.push(geometryClone);
