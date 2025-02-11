@@ -1,0 +1,29 @@
+#welcome-page {
+    padding: 1em;
+
+    display: flex;
+    flex-direction: row;
+}
+
+#welcome-left {
+    flex: 1;
+}
+
+#welcome-left p {
+    width: 80%;
+}
+
+#welcome-right {
+    flex: 1;
+}
+
+#welcome-right img {
+    width: 100%;
+}
+
+#welcome-left .buttons {
+    width: 80%;
+
+    display: flex;
+    justify-content: space-between;
+}

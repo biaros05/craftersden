@@ -5,20 +5,35 @@ import { StrictMode } from 'react';
 import {
   createBrowserRouter,
   RouterProvider,
+  Outlet
 } from 'react-router-dom';
 import ErrorPage from './error-page.jsx';
+import Header from './components/Header.tsx';
+import Welcome from './components/Welcome.tsx';
 
 import '@mantine/core/styles.css';
 
 import { MantineProvider, createTheme } from '@mantine/core';
 import React from 'react';
 
+function Main() {
+  return <>
+    <Header />
+    <Outlet />
+  </>
+}
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <App/>,
-    errorElement: <ErrorPage/>
+    element: <Main/>,
+    errorElement: <ErrorPage/>,
+    children: [
+      {
+        path: '',
+        element: <Welcome />,
+      }
+    ]
   }
 ]);
 
