@@ -3,6 +3,12 @@ import '../App.css';
 import {Image, ActionIcon} from '@mantine/core';
 import { IconPlus } from '@tabler/icons-react';
 
+/**
+ * Displays an image with an action icon.
+ * @param src image source
+ * @param alt image alt text
+ * @returns React.JSX.Element
+ */
 export default function BlockImage({src = null, alt = ''}) {
 
   return (
