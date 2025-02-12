@@ -27,7 +27,7 @@ function App() {
       <main>
         <section id="main-app">
           <HelloWorld></HelloWorld>
-          <BlockSelection blockList={blockList}/>
+          <BlockSelection blockList={blockList} style={{width: "30%"}}/>
         </section>
       </main>
     </>
