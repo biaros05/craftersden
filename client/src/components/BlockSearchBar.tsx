@@ -10,6 +10,11 @@ export default function BlockSearchBar({blockList, style={}}) {
   ? blockList.map(block => block.name) 
   : Array.from(blockHistory);
   
+  function handleOptionSubmit(value: string) {
+    setBlockHistory(new Set([...blockHistory, value]));
+    setSearchValue('');
+    //TODO: add block to inventory/call func to select it
+  }
   return (
       <Autocomplete
         label="Search"
@@ -18,10 +23,7 @@ export default function BlockSearchBar({blockList, style={}}) {
         value={searchValue}
         onChange={setSearchValue}
         limit={5}
-        onOptionSubmit={(value) => {
-          setBlockHistory(new Set([...blockHistory, value]));
-          setSearchValue('');
-        }}
+        onOptionSubmit={handleOptionSubmit}
         style={style}
       />
   );
