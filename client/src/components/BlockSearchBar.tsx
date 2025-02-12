@@ -6,12 +6,15 @@ export default function BlockSearchBar({blockList, style={}}) {
   const [blockHistory, setBlockHistory] = useState(new Set<string>());
   const [searchValue, setSearchValue] = useState('');
 
-  const filteredData = searchValue.length > 0 ? blockList : Array.from(blockHistory);
+  const filteredData = searchValue.length > 0 
+  ? blockList.map(block => block.name) 
+  : Array.from(blockHistory);
+  
   return (
       <Autocomplete
         label="Search"
         placeholder="grass_block"
-        data={filteredData.map(block => block.name)}
+        data={filteredData}
         value={searchValue}
         onChange={setSearchValue}
         limit={5}
