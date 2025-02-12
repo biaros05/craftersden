@@ -35,7 +35,11 @@ export default function BlockSearchBar({blockList, style={}}) {
         limit={5}
         onOptionSubmit={handleOptionSubmit}
         leftSection={SEARCH_ICON}
-        style={style}
+        style={{
+          width: '50%',
+          margin: '1em',
+          ...style
+          }}
       />
   );
 }
