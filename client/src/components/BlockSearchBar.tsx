@@ -1,7 +1,11 @@
 import React, {useState} from 'react';
 import { Autocomplete } from '@mantine/core';
+import { IconSearch } from '@tabler/icons-react';
+
+const SEARCH_ICON = <IconSearch/>;
 
 export default function BlockSearchBar({blockList, style={}}) {
+
   // data in Autocomplete cannot have duplicate values, so use a set, better solution possible??
   const [blockHistory, setBlockHistory] = useState(new Set<string>());
   const [searchValue, setSearchValue] = useState('');
@@ -24,6 +28,7 @@ export default function BlockSearchBar({blockList, style={}}) {
         onChange={setSearchValue}
         limit={5}
         onOptionSubmit={handleOptionSubmit}
+        leftSection={SEARCH_ICON}
         style={style}
       />
   );
