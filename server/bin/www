@@ -34,6 +34,7 @@ process.on('SIGINT', async () => {
         console.debug('HTTP server closed');
       });
     }
+    process.exit();
   } catch (error) {
     console.error(error);
     console.dir(error);
