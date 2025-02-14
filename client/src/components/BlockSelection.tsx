@@ -16,8 +16,11 @@ export default function BlockSelection({ blockList, style}) {
         <Tabs.Tab value="all">
           All
         </Tabs.Tab>
-        <Tabs.Tab value="overworld">
-          Overworld
+        <Tabs.Tab value="resources">
+          Resources
+        </Tabs.Tab>
+        <Tabs.Tab value="materials">
+          Materials
         </Tabs.Tab>
       </Tabs.List>
 
@@ -25,8 +28,12 @@ export default function BlockSelection({ blockList, style}) {
         <BlockScrollArea blockList={blockList}/>
       </Tabs.Panel>
 
-      <Tabs.Panel value="overworld">
+      <Tabs.Panel value="resources">
         <BlockScrollArea blockList={blockList.filter(block => block.type === 'overworld')}/>
+      </Tabs.Panel>
+      
+      <Tabs.Panel value="materials">
+        <BlockScrollArea blockList={blockList}/>
       </Tabs.Panel>
 
     </Tabs>
