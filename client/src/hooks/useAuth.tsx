@@ -1,3 +1,4 @@
+import { CredentialResponse } from '@react-oauth/google';
 import { useState, createContext, useContext } from 'react';
 import React from 'react';
 
@@ -10,7 +11,7 @@ type AuthContextType = {
     email: string,
     avatar: string,
     loading: boolean, 
-    login: (googleCredentials: { credential: any; }) => void,
+    login: (googleCredentials: CredentialResponse) => void,
     logout: () => void
 };
 
@@ -39,7 +40,7 @@ export const AuthProvider = ({ children }: ContextProviderProps) => {
     }
   })();
 
-  const login = async (googleData: { credential: any; }) => {
+  const login = async (googleData: CredentialResponse) => {
     let data: {user: {username: string, email: string, avatar: string}};
     try {
       const res = await fetch('/api/auth', {
