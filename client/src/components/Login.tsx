@@ -2,6 +2,7 @@ import { GoogleLogin } from '@react-oauth/google';
 import { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import React from 'react';
+import '../styles/login.css';
 
 export default function Login() {
   const {username, loading, login, logout} = useAuth() ?? {};

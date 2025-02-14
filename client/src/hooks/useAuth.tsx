@@ -21,7 +21,7 @@ export const AuthProvider = ({ children }: ContextProviderProps) => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [avatar, setAvatar] = useState('');
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   (async function query() {
     if (loading) {

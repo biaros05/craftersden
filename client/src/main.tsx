@@ -7,10 +7,13 @@ import {
   RouterProvider,
   Outlet
 } from 'react-router-dom';
+import { GoogleOAuthProvider } from '@react-oauth/google';
+import { AuthProvider } from './hooks/useAuth.tsx';
 import ErrorPage from './error-page.jsx';
 import Header from './components/Header.tsx';
 import Footer from './components/Footer.tsx';
 import Welcome from './components/Welcome.tsx';
+import Login from './components/Login.tsx';
 
 import '@mantine/core/styles.css';
 
@@ -34,6 +37,10 @@ const router = createBrowserRouter([
       {
         path: '',
         element: <Welcome />,
+      },
+      {
+        path: 'login',
+        element: <Login />
       }
     ]
   }
@@ -47,8 +54,12 @@ const theme = createTheme({
 createRoot(document.getElementById('root')!!).
   render(
     <StrictMode>
-      <MantineProvider theme={theme}>
-        <RouterProvider router={router} />
-      </MantineProvider>
+      <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+        <MantineProvider theme={theme}>
+          <AuthProvider >
+            <RouterProvider router={router} />
+          </AuthProvider>
+        </MantineProvider>
+      </GoogleOAuthProvider>
     </StrictMode>
   );
