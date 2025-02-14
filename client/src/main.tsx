@@ -15,6 +15,7 @@ import Footer from './components/Footer.tsx';
 import Welcome from './components/Welcome.tsx';
 import Login from './components/Login.tsx';
 import ProtectedRoute from './components/ProtectedRoute.tsx';
+import Profile from './components/Profile.tsx';
 
 import '@mantine/core/styles.css';
 
@@ -42,6 +43,10 @@ const router = createBrowserRouter([
       {
         path: 'login',
         element: <ProtectedRoute to={'/'} authed={false} ><Login /></ProtectedRoute>
+      },
+      {
+        path: 'profile',
+        element: <ProtectedRoute to={'/login'} authed={true} ><Profile /></ProtectedRoute>
       }
     ]
   }
