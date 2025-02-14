@@ -3,6 +3,11 @@ import { ScrollArea, SimpleGrid, Autocomplete } from '@mantine/core';
 import BlockImage from './BlockImage';
 import BlockSearchBar from './BlockSearchBar';
 
+/**
+ * Scrollable area for displaying grid of BlockImage. Contains BlockSearchBar.
+ * @param blockList list of blocks/entities to display
+ * @returns React.JSX.Element
+ */
 export default function BlockScrollArea({blockList}) {
 
   return (
