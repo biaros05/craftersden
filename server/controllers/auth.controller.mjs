@@ -28,7 +28,11 @@ async function authenticateUser(req, res) {
   // We'll probably want to save those other fields too
   // We should probably use the email to find instead of username
   try {
-    const user = await User.findOneAndUpdate({username: name}, {username: name}, {upsert: true});
+    const user = await User.findOneAndUpdate(
+      {email: email}, 
+      {username: name, email: email, avatar: picture}, 
+      {upsert: true}
+    );
     req.session.regenerate(err => {
       if (err) {
         return res.status(500).json({message: 'Failed to create token'});

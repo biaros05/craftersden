@@ -2,8 +2,9 @@ import { Schema, model } from 'mongoose';
 
 // Define a schema
 const UserSchema = new Schema({
-  url: Array,
+  email: String,
   username: String,
+  avatar: String
 });
 
 // Compile model from schema, name of collection in the
