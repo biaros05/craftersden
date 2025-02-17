@@ -5,7 +5,7 @@ import React from 'react';
 import '../styles/login.css';
 
 export default function Login() {
-  const {username, loading, login, logout} = useAuth() ?? {};
+  const {loading, login} = useAuth() ?? {};
   const [errorMessage, setErrorMessage] = useState('');
 
   const handleError = (error = 'Error logging in') => {
@@ -19,12 +19,13 @@ export default function Login() {
 
   return (
     <div className="login">
-      <p className="error">{errorMessage}</p>
-      <h2>Welcome {username ? username : 'Anonymous'}</h2>
-      {!username && <GoogleLogin
-        onSuccess={login}
-        onError={handleError} /> }
-      {username && <button onClick={logout}>Logout</button> } 
+      <section className='login-box'>
+        <h2>Login</h2>
+        <p className="error">{errorMessage}</p>
+        <GoogleLogin
+          onSuccess={login}
+          onError={handleError} />
+      </section>
     </div>
   );
 }
