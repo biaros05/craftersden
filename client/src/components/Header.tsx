@@ -18,7 +18,9 @@ export default function Header() {
             <Avatar src={avatar} />
         </Link>
         <h2>
-            {isDen ? `Crafter's Den` : `Crafter's Forum`}
+            <Link to={isDen ? `/den` : `/forum`}>
+                {isDen ? `Crafter's Den` : `Crafter's Forum`}
+            </Link>
         </h2>
         <Link to={!isDen ? `/den` : `/forum`}>
             <Button variant="filled">

@@ -13,7 +13,11 @@ import { useAuth } from "./../hooks/useAuth";
  * @returns Renders the component if the user is allowed to view the route
  */
 export default function ProtectedRoute({ authed, to, children }: {authed: boolean, to: string, children: React.ReactNode}) {
-  const { username } = useAuth() ?? {};
+  const { username, loading } = useAuth() ?? {};
+
+  if (loading) {
+    return <h2>Loading...</h2>
+  }
 
   if (username && !authed || !username && authed) {
     return <Navigate to={to} />;

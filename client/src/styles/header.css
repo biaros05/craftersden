@@ -5,3 +5,7 @@ header#site-header {
     flex-direction: row;
     justify-content: space-between;
 }
+
+header > h2 > a {
+    color: black;
+}

@@ -1,5 +1,5 @@
 import { CredentialResponse } from '@react-oauth/google';
-import { useState, createContext, useContext } from 'react';
+import { useState, createContext, useContext, useEffect } from 'react';
 import React from 'react';
 
 type ContextProviderProps = {
@@ -23,22 +23,26 @@ export const AuthProvider = ({ children }: ContextProviderProps) => {
   const [avatar, setAvatar] = useState('');
   const [loading, setLoading] = useState(true);
 
-  (async function query() {
-    if (loading) {
-      if (!username) {
-        const resp = await fetch('/api/query');
-        if (resp.ok) {
-          const data = await resp.json();
-          if (data) {
-            setUsername(data.user.username);
-            setEmail(data.user.email);
-            setAvatar(data.user.avatar);
+  useEffect(() => {
+    async function query() {
+      if (loading) {
+        if (!username) {
+          const resp = await fetch('/api/query');
+          if (resp.ok) {
+            const data = await resp.json();
+            if (data) {
+              setUsername(data.user.username);
+              setEmail(data.user.email);
+              setAvatar(data.user.avatar);
+            }
           }
         }
+        setLoading(false);
       }
-      setLoading(false);
-    }
-  })();
+    };
+
+    query();
+  }, []);
 
   const login = async (googleData: CredentialResponse) => {
     let data: {user: {username: string, email: string, avatar: string}};
