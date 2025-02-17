@@ -12,7 +12,8 @@ export default [
       '**/webpack.config.{js,cjs}',
       'eslint.config.mjs',
     ],
-  },
+  },  
+  jsdoc.configs['flat/recommended-error'],
   {
     plugins: {
       jsdoc,
@@ -29,7 +30,7 @@ export default [
       sourceType: 'module',
     },
     rules: {
-    ////////// Possible Errors //////////
+      ////////// Possible Errors //////////
       'no-console': ['warn', { 'allow': ['error', 'debug', 'dir'] }],
       'one-var': ['warn', 'never'],
       'no-undef': 'warn',
@@ -69,9 +70,9 @@ export default [
       'space-infix-ops': 'error',
       'space-unary-ops': 'error',
       'semi': 'error',
-      'semi-spacing': 'error'
+      'semi-spacing': 'error',
+      'jsdoc/require-description': 'warn'
     }
   },
-  jsdoc.configs['flat/recommended-error'],
 ];
 

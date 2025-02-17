@@ -23,7 +23,6 @@ async function authenticateUser(req, res) {
     return res.sendStatus(401);
   }
 
-  // eslint-disable-next-line no-unused-vars
   const { name, email, picture } = ticket.getPayload();
   // We'll probably want to save those other fields too
   // We should probably use the email to find instead of username

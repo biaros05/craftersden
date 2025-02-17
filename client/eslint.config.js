@@ -7,6 +7,7 @@ import jsdoc from 'eslint-plugin-jsdoc';
 
 export default [
   { ignores: ['dist'] },
+  jsdoc.configs['flat/recommended-error'],
   {
     files: ['**/*.{js,jsx}'],
     languageOptions: {
@@ -78,7 +79,7 @@ export default [
       'space-unary-ops': 'error',
       'semi': 'error',
       'semi-spacing': 'error',
+      'jsdoc/require-description': 'warn'
     },
   },
-  jsdoc.configs['flat/recommended-error'],
 ];
