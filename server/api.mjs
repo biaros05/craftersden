@@ -18,7 +18,7 @@ const MongoDBStore = connectMongoDBSession(session);
 const dbUrl = process.env.ATLAS_URI;
 
 app.use(session({
-  secret: process.env.SECRET,
+  secret: process.env.SECRET ?? 'UNSECURE',
   name: 'id',
   saveUninitialized: false,
   resave: false,
