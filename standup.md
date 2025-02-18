@@ -10,4 +10,17 @@
 - **Amy Nguyen:** Still in the process of making the build pannel be in the UI, and this weekend will work on the Forum skeleton.
 - **Bianca Rossetti:** Worked on the script yesterday, still in the process of fixing and finalizing it. Need to translate inconcistencies.
 - **Axel Brochu:** Made the UI for the welcome page, and setting up the login.
-- **Marin Melentii:** FInished the block selection pannel on the UI front end.
+- **Marin Melentii:** Finished the block selection pannel on the UI front end.
+
+## February 17 2025
+- **Amy Nguyen:** Had some setbacks, will finish issues this week, maybe will take Saturday and Sunday for full finishing.
+- **Bianca Rossetti:** Finsihed seeding script, tested it and worked!
+- **Axel Brochu:** Finished login and now made a ProtectedRoute component to make sure users going to a route are logged in.
+- **Marin Melentii:** Same log from last time. Will work on API route for getting blocks. 
+
+
+### Template 
+- **Amy Nguyen:** 
+- **Bianca Rossetti:** 
+- **Axel Brochu:** 
+- **Marin Melentii:** 
