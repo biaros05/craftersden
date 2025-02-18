@@ -34,7 +34,11 @@ export default function BuildPlane() {
     const orbit = new OrbitControls(camera, renderer.domElement);
     orbit.update();
     renderer.setSize(window.innerWidth, window.innerHeight);
-    refContainer.current && refContainer.current.appendChild(renderer.domElement);
+
+    if (!refContainer.current.hasChildNodes()) {
+      refContainer.current.appendChild(renderer.domElement);
+    }
+    
     var ambLight = new THREE.AmbientLight(0xffffff, 0.5);
     scene.add(ambLight);
 
