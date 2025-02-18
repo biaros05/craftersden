@@ -7,7 +7,7 @@ import {
   RouterProvider,
 } from 'react-router-dom';
 import ErrorPage from './error-page.jsx';
-import CraftersDen from './components/CraftersDen.jsx';
+import CraftersDen from './components/mainUI/CraftersDen.jsx';
 
 import '@mantine/core/styles.css';
 

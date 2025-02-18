@@ -1,8 +1,8 @@
 import * as THREE from 'three';
-import { createMesh } from '../utils/building_plane_utils.mjs';
+import { createMesh } from '../../utils/building_plane_utils.mjs';
 import { useEffect, useRef } from 'react';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import grass_top from '../assets/grass_top.png';
+import grass_top from '../../assets/grass_top.png';
 
 /* ==== STAIRS ==== */
 const tos_froms = [
@@ -134,6 +134,6 @@ export default function BuildPlane() {
     renderer.setAnimationLoop(animate);
   }, []);
   return(
-    <div ref={refContainer}></div>
+    <div id="build-plane" ref={refContainer}></div>
   );
 }
