@@ -1,3 +1,5 @@
+import { OAuth2Client } from 'google-auth-library';
+
 /**
  * Checks if the requesting client is authenticated using its session
  * @param {object} req - Request
@@ -7,9 +9,34 @@
  */
 function isAuthenticated(req, res, next) {
   if (!req.session || !req.session.user) {
-    return res.sendStatus(401);
+    res.sendStatus(401);
+    return;
   }
   next();
 }
-  
-export {isAuthenticated};
+
+class OAuthService {
+  client = null;
+
+  constructor() {
+    this.#createClient();
+  }
+
+  #createClient() {
+    this.client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+  }
+
+  async verifyToken(token) {
+    const ticket = await this.client.verifyIdToken({
+      idToken: token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+    if (!ticket) {
+      throw new Error('No ticket found');
+    }
+
+    return ticket.getPayload();
+  }
+}
+
+export {isAuthenticated, OAuthService};
