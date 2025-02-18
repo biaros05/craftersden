@@ -1,5 +1,6 @@
 import globals from 'globals';
 import js from '@eslint/js';
+import jsdoc from 'eslint-plugin-jsdoc';
 
 export default [
   // files to ignore entirely
@@ -11,6 +12,12 @@ export default [
       '**/webpack.config.{js,cjs}',
       'eslint.config.mjs',
     ],
+  },  
+  jsdoc.configs['flat/recommended-error'],
+  {
+    plugins: {
+      jsdoc,
+    },
   },
   //use recommended rules as a base for all files and then override
   js.configs.recommended,
@@ -23,7 +30,7 @@ export default [
       sourceType: 'module',
     },
     rules: {
-    ////////// Possible Errors //////////
+      ////////// Possible Errors //////////
       'no-console': ['warn', { 'allow': ['error', 'debug', 'dir'] }],
       'one-var': ['warn', 'never'],
       'no-undef': 'warn',
@@ -63,7 +70,8 @@ export default [
       'space-infix-ops': 'error',
       'space-unary-ops': 'error',
       'semi': 'error',
-      'semi-spacing': 'error'
+      'semi-spacing': 'error',
+      'jsdoc/require-description': 'warn'
     }
   },
 ];
