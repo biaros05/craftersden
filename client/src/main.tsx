@@ -14,6 +14,7 @@ import Header from './components/Header.tsx';
 import Footer from './components/Footer.tsx';
 import Welcome from './components/Welcome.tsx';
 import Login from './components/Login.tsx';
+import Logout from './components/Logout.tsx';
 import ProtectedRoute from './components/ProtectedRoute.tsx';
 import Profile from './components/Profile.tsx';
 
@@ -43,6 +44,10 @@ const router = createBrowserRouter([
       {
         path: 'login',
         element: <ProtectedRoute to={'/'} authed={false} ><Login /></ProtectedRoute>
+      },
+      {
+        path: 'logout',
+        element: <ProtectedRoute to={'/'} authed={true} ><Logout /></ProtectedRoute>
       },
       {
         path: 'profile',

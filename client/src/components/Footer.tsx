@@ -14,7 +14,7 @@ export default function Footer() {
             <h3>Account</h3>
             <li><Link to='/profile'>Profile</Link></li>
             <li><Link to='/login'>Login</Link></li>
-            <li><Link to='/'>Logout</Link></li>
+            <li><Link to='/logout'>Logout</Link></li>
         </ul>
         <ul className="footer-copyright">
             <h3>Copyright</h3>
