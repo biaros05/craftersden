@@ -1,7 +1,8 @@
+import React from 'react';
 
 /**
- * 
- * @returns - Hello world component with nav bars.
+ * Renders a simple hello world component.
+ * @returns {React.ReactNode} - Hello world component with nav bars.
  */
 export default function HelloWorld() {
   return (
