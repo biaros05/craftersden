@@ -1,5 +1,14 @@
 import Block from '../models/Block.js';
 
+/**
+ * Gets a list of blocks. Default is page 1 and limit of 50.
+ * @param {object} req - Request
+ * @param {number} [req.query.page] - Page number
+ * @param {number} [req.query.limit] - Number of items per page
+ * @param {object} res - Response
+ * @param {function} next - Next
+ * @returns {void}
+ */
 export async function getBlocks(req, res, next) {
   try {
     const { page = 1, limit = 50 } = req.query;
@@ -22,6 +31,14 @@ export async function getBlocks(req, res, next) {
   }
 }
 
+/**
+ * Gets a block by its id.
+ * @param {object} req - Request
+ * @param {string} req.params.id - Block id
+ * @param {object} res - Response
+ * @param {function} next - Next
+ * @returns {void}
+ */
 export async function getBlock(req, res, next) {
   try {
     const { id } = req.params;
