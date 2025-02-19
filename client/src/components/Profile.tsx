@@ -13,7 +13,8 @@ export default function Profile() {
       event.preventDefault();
       const target = event.target as HTMLFormElement;
       const formData = new FormData(target);
-      await fetch('/api/images/upload', { method: 'POST', body: formData});
+      console.log(formData)
+      await fetch('/api/user/', { method: 'PUT', body: formData});
       close();
     };
 

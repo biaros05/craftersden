@@ -6,7 +6,7 @@ import { fileURLToPath } from 'url';
 import session from 'express-session';
 import { default as connectMongoDBSession} from 'connect-mongodb-session';
 import authRouter from './routers/auth.router.mjs';
-
+import userRouter from './routers/user.router.mjs';
 
 dotenv.config();
 const app = express();
@@ -50,6 +50,8 @@ app.get('/api/helloworld', (req, res) => {
 });
 
 app.use('/api', authRouter);
+
+app.use('/api/user', userRouter);
 
 // Serve index.html for all other routes
 app.get('*', (req, res) => {
