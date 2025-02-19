@@ -8,7 +8,8 @@ export async function getBlocks(req, res, next) {
       return res.status(400).json({ error: 'page and limit parameters must be numbers'});
     }
 
-    const blocks = await Block.find()
+    const blocks = await Block.find({}, 'name inventoryTexture')
+      .sort({ name: 1 })
       .limit(limit)
       .skip((page - 1) * limit)
 
