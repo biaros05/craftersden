@@ -17,6 +17,7 @@ import Login from './components/Login.tsx';
 import Logout from './components/Logout.tsx';
 import ProtectedRoute from './components/ProtectedRoute.tsx';
 import Profile from './components/Profile.tsx';
+import BlockSelection from './components/BlockSelection.tsx';
 
 import '@mantine/core/styles.css';
 
@@ -52,6 +53,10 @@ const router = createBrowserRouter([
       {
         path: 'profile',
         element: <ProtectedRoute to={'/login'} authed={true} ><Profile /></ProtectedRoute>
+      },
+      {
+        path: 'test',
+        element: <BlockSelection blockList={undefined} style={undefined} />
       }
     ]
   }
