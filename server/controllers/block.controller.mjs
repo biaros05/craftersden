@@ -6,7 +6,7 @@ import Block from '../models/Block.js';
  * @param {number} [req.query.page] - Page number
  * @param {number} [req.query.limit] - Number of items per page
  * @param {object} res - Response
- * @param {function} next - Next
+ * @param {Function} next - Next
  * @returns {void}
  */
 export async function getBlocks(req, res, next) {
@@ -17,15 +17,15 @@ export async function getBlocks(req, res, next) {
       return res.status(400).json({ message: 'page and limit parameters must be numbers'});
     }
 
-    const blocks = await Block.find({}, 'name inventoryTexture')
-      .sort({ name: 1 })
-      .limit(limit)
-      .skip((page - 1) * limit)
+    const blocks = await Block.find({}, 'name inventoryTexture').
+      sort({ name: 1 }).
+      limit(limit).
+      skip((page - 1) * limit);
 
     return res.status(200).json({
       blocks: blocks,
       currentPage: page
-    })
+    });
   } catch (error) {
     next(error);
   }
@@ -36,7 +36,7 @@ export async function getBlocks(req, res, next) {
  * @param {object} req - Request
  * @param {string} req.params.id - Block id
  * @param {object} res - Response
- * @param {function} next - Next
+ * @param {Function} next - Next
  * @returns {void}
  */
 export async function getBlock(req, res, next) {
