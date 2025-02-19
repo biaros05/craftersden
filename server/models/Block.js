@@ -30,6 +30,6 @@ const BlockSchema = new Schema({
   inventoryTexture: String
 });
 
-const Block = model('Block', BlockSchema);
+const Block = model('blocks', BlockSchema);
 
 export default Block;

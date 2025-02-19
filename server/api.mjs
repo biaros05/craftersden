@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url';
 import session from 'express-session';
 import { default as connectMongoDBSession} from 'connect-mongodb-session';
 import authRouter from './routers/auth.router.mjs';
+import blockRouter from './routers/block.router.mjs';
 
 
 dotenv.config();
@@ -50,6 +51,7 @@ app.get('/api/helloworld', (req, res) => {
 });
 
 app.use('/api', authRouter);
+app.use('/api', blockRouter);
 
 // Serve index.html for all other routes
 app.get('*', (req, res) => {
