@@ -1,4 +1,4 @@
-import Block from '../models/Block.ts';
+import Block from '../models/Block.js';
 
 /**
  * Gets a list of blocks. Default is page 1 and limit of 50.
