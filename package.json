@@ -6,7 +6,7 @@
     "start": "cd server && node bin/www",
     "build": "cd client && npm install && npm run build && cd ../server && npm install",
     "critical": "node critical.js",
-    "dev": "cd server && nodemon bin/www",
+    "dev": "nodemon",
     "lint": "cd client && eslint . --fix && cd ../server && eslint . --fix"
   },
   "author": "Amy, Marin, Axel, Bianca",
