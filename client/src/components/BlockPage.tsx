@@ -3,7 +3,7 @@ import { SimpleGrid, Loader, Notification } from '@mantine/core';
 import { IconX } from '@tabler/icons-react';
 import BlockImage from './BlockImage';
 import useSWR from 'swr';
-import { BlockType } from '../../../server/models/Block';
+import { BlockType } from '../../../server/models/BlockType';
 
 const errorIcon = <IconX size="md" />;
 
