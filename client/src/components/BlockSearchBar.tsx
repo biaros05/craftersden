@@ -22,13 +22,13 @@ export default function BlockSearchBar({blockList, style={}}) {
   
   function handleOptionSubmit(value: string) {
     setBlockHistory(new Set([...blockHistory, value]));
-    setSearchValue('');
     //TODO: add block to inventory/call func to select it
   }
   return (
       <Autocomplete
         label="Search"
         placeholder="grass_block"
+        clearable={true}
         data={filteredData}
         value={searchValue}
         onChange={setSearchValue}
