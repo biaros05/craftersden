@@ -4,7 +4,11 @@ import { Schema, model } from 'mongoose';
 const UserSchema = new Schema({
   email: String,
   username: String,
-  avatar: String
+  avatar: String,
+  customized: {
+    type: Boolean,
+    default: false
+  }
 });
 
 // Compile model from schema, name of collection in the

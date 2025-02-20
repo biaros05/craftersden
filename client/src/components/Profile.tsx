@@ -6,7 +6,7 @@ import { IconEdit } from "@tabler/icons-react";
 import '../styles/profile.css'
 
 export default function Profile() {
-    const {username, email, avatar} = useAuth() ?? {};
+    const {username, email, avatar, query} = useAuth() ?? {};
     const [opened, {open, close}] = useDisclosure(false);
 
     const onSubmitHandler: FormEventHandler = async (event: FormEvent) => {
@@ -15,6 +15,7 @@ export default function Profile() {
       const formData = new FormData(target);
       console.log(formData)
       await fetch('/api/user/', { method: 'PUT', body: formData});
+      query!();
       close();
     };
 
