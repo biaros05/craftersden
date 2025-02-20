@@ -32,7 +32,7 @@ export default function BlockSelection({ blockList, style}) {
       </Tabs.Panel>
 
       <Tabs.Panel value="resources">
-        <BlockScrollArea blockList={blockList.filter(block => block.type === 'overworld')}/>
+        <BlockScrollArea blockList={blockList}/>
       </Tabs.Panel>
       
       <Tabs.Panel value="materials">
