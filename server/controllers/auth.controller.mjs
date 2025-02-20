@@ -26,11 +26,14 @@ async function authenticateUser(req, res) {
 
   const { name, email, picture } = ticket.getPayload();
   try {
-    const user = await User.findOneAndUpdate(
-      {email: email}, 
-      {username: name, email: email, avatar: picture}, 
-      {upsert: true, returnDocument: 'after'}
-    );
+    let user = await User.findOne({email: email});
+    if (!user || !user.customized) {
+      user = await User.findOneAndUpdate(
+        {email: email}, 
+        {username: name, email: email, avatar: picture}, 
+        {upsert: true, returnDocument: 'after'}
+      );
+    }
     req.session.regenerate(err => {
       if (err) {
         return res.status(500).json({message: 'Failed to create token'});

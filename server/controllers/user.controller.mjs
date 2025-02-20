@@ -69,7 +69,7 @@ async function storeImageWithName(req, res, next) {
   try {
     const user = await User.findOneAndUpdate(
       {email: req.session.user.email}, 
-      {username: String(req.body.username), avatar: req.url}, 
+      {username: String(req.body.username), avatar: req.url, customized: true}, 
       {returnDocument: 'after'}
     );
     req.session.user = user;
