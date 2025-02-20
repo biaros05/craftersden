@@ -11,9 +11,5 @@
   },
   "author": "Amy, Marin, Axel, Bianca",
   "license": "ISC",
-  "type": "module",
-  "devDependencies": {
-    "ts-node": "^10.9.2",
-    "typescript": "^5.7.3"
-  }
+  "type": "module"
 }
