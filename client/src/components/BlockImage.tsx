@@ -9,7 +9,7 @@ import { IconPlus } from '@tabler/icons-react';
  * @param alt image alt text
  * @returns React.JSX.Element
  */
-export default function BlockImage({ src = null, alt = null }: { src?: string | null; alt?: string | null}) {
+export default function BlockImage({ src = null, alt = undefined }: { src?: string | null; alt?: string | undefined}) {
 
   return (
     <div className="block-image" style={{ position: 'relative'}}>
