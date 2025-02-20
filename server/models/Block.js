@@ -1,4 +1,4 @@
-import { Schema, model, InferSchemaType } from 'mongoose';
+import { Schema, model } from 'mongoose';
 
 const UVSchema = new Schema({
   uv: [],
@@ -8,11 +8,11 @@ const UVSchema = new Schema({
 const CuboidSchema = new Schema({
   from: {
     type: [],
-    validate: [(value: number[]) => value.length === 3, 'from must have 3 elements'],
+    validate: [(value) => value.length === 3, 'from must have 3 elements'],
   },
   to: {
     type: [],
-    validate: [(value: number[]) => value.length === 3, 'to must have 3 elements'],
+    validate: [(value) => value.length === 3, 'to must have 3 elements'],
   },
   faces: {
     down: UVSchema,
@@ -38,7 +38,5 @@ const BlockSchema = new Schema({
 
 const Block = model('blocks', BlockSchema);
 
-type BlockType = InferSchemaType<typeof BlockSchema>;
 
 export default Block;
-export type { BlockType };
