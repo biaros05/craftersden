@@ -32,7 +32,6 @@ export default function BlockSearchBar({blockList, style={}}) {
         data={filteredData}
         value={searchValue}
         onChange={setSearchValue}
-        limit={5}
         onOptionSubmit={handleOptionSubmit}
         leftSection={SEARCH_ICON}
         style={{
