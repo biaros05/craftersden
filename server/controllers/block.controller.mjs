@@ -11,12 +11,6 @@ import Block from '../models/Block.js';
  */
 export async function getBlocks(req, res, next) {
   try {
-
-    if (!req.query.page && !req.query.limit) {
-      const blocks = await Block.find({}, 'name inventoryTexture').sort({ name: 1 });
-      return res.status(200).json(blocks);
-    }
-
     const { page = 1, limit = 50 } = req.query;
 
     if (isNaN(page) || isNaN(limit)) {
@@ -27,7 +21,14 @@ export async function getBlocks(req, res, next) {
     if (page > totalPages) {
       return res.status(404).json({ message: 'Page not found' });
     }
-
+    
+    if (!req.query.page && !req.query.limit) {
+      const blocks = await Block.find({}, 'name inventoryTexture').sort({ name: 1 });
+      return res.status(200).json({
+        blocks: blocks,
+        totalBlocks: blocks.length
+      });
+    }
 
     const blocks = await Block.find({}, 'name inventoryTexture').
       sort({ name: 1 }).
