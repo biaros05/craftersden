@@ -13,13 +13,27 @@ import useSWR from 'swr';
 export default function BlockScrollArea({blockList}) {
 
   const [pageIndex, setPageIndex] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>();
+
+  useEffect(() => {
+    const getTotalPages = async () => {
+      const res = await fetch(`/api/blocks/page-count`);
+      if (res.ok) {
+        const data = await res.json();
+        setTotalPages(data.totalPages);
+      } else {
+        console.error('Failed to fetch page count ', res.status);
+      }
+    }
+    getTotalPages();
+  }, []);
 
   return (
     <section id="block-scroll-area">
       <BlockSearchBar blockList={blockList}/>
       {/* Cache next page */}
       <div style={{ display: 'none' }}><BlockPage index={ pageIndex + 1 }/></div>
-      <Pagination total={50} value={pageIndex} onChange={setPageIndex} withPages={true}/>
+      {totalPages && <Pagination total={totalPages} value={pageIndex} onChange={setPageIndex} withPages={true}/>}
       <ScrollArea h={250} type="always" scrollbarSize={12} style={{ padding: '1em'}}>
         <BlockPage index={pageIndex}/>
       </ScrollArea>
