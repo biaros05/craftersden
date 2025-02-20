@@ -32,7 +32,8 @@ export default function BlockScrollArea({blockList}) {
     <section id="block-scroll-area">
       <BlockSearchBar blockList={blockList}/>
       {/* Cache next page */}
-      <div style={{ display: 'none' }}><BlockPage index={ pageIndex + 1 }/></div>
+      {pageIndex < totalPages &&
+        <div style={{ display: 'none' }}><BlockPage index={ pageIndex + 1 }/></div> }
       {totalPages && <Pagination total={totalPages} value={pageIndex} onChange={setPageIndex} withPages={true}/>}
       <ScrollArea h={250} type="always" scrollbarSize={12} style={{ padding: '1em'}}>
         <BlockPage index={pageIndex}/>
