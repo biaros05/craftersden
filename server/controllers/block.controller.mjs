@@ -11,11 +11,23 @@ import Block from '../models/Block.js';
  */
 export async function getBlocks(req, res, next) {
   try {
+
+    if (!req.query.page && !req.query.limit) {
+      const blocks = await Block.find({}, 'name inventoryTexture').sort({ name: 1 });
+      return res.status(200).json(blocks);
+    }
+
     const { page = 1, limit = 50 } = req.query;
 
     if (isNaN(page) || isNaN(limit)) {
       return res.status(400).json({ message: 'page and limit parameters must be numbers'});
     }
+
+    const totalPages = Math.ceil(await Block.countDocuments() / limit);
+    if (page > totalPages) {
+      return res.status(404).json({ message: 'Page not found' });
+    }
+
 
     const blocks = await Block.find({}, 'name inventoryTexture').
       sort({ name: 1 }).
@@ -24,7 +36,8 @@ export async function getBlocks(req, res, next) {
 
     return res.status(200).json({
       blocks: blocks,
-      currentPage: page
+      currentPage: page,
+      totalPages: totalPages
     });
   } catch (error) {
     next(error);
