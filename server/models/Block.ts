@@ -25,9 +25,15 @@ const CuboidSchema = new Schema({
 });
 
 const BlockSchema = new Schema({
-  name: String,
+  name: {
+    type: String,
+    required: true,
+  },
   cuboids: [CuboidSchema],
-  inventoryTexture: String
+  inventoryTexture: {
+    type: String,
+    required: true,
+  }
 });
 
 const Block = model('blocks', BlockSchema);
