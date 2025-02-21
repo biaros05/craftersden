@@ -1,11 +1,11 @@
 import * as THREE from 'three';
 import { createMesh } from '../../utils/building_plane_utils.mjs';
-import { useEffect, useRef } from 'react';
+import { Component, useEffect, useRef } from 'react';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import grass_top from '../../assets/grass_top.png';
+import grassTop from '../../assets/grass_top.png';
 
 /* ==== STAIRS ==== */
-const tos_froms = [
+const tosFroms = [
   {
     from: [0, 0, 0],
     to: [1, 0.5, 1],
@@ -16,11 +16,15 @@ const tos_froms = [
   }
 ];
 
+/**
+ * Build plane component that renders a 3D plane with grid to build on.
+ * @returns {Component} A div element with the id 'build-plane' to render the 3D plane.
+ */
 export default function BuildPlane() {
   //use ref is a react hok that lets you refernce a value that's not needed for rendering
   const refContainer = useRef(null);
   useEffect(() => {
-    const currentGeometry = createMesh(tos_froms);
+    const currentGeometry = createMesh(tosFroms);
     const container = refContainer.current;
     const width = container.clientWidth;
     const height = container.clientHeight;
@@ -29,8 +33,8 @@ export default function BuildPlane() {
 
     const camera = new THREE.PerspectiveCamera(
       75, width / height, 0.1, 1000);
-    camera.position.set(15, 15, 15); // Move it back and up
-    camera.lookAt(0, 0, 0); // Look at the center of the scene
+    camera.position.set(15, 15, 15); 
+    camera.lookAt(0, 0, 0); 
 
     const renderer = new THREE.WebGLRenderer();
 
@@ -61,8 +65,8 @@ export default function BuildPlane() {
     pointLightRight.position.set(3, 2, 2);
     scene.add(pointLightRight);
 
-    const grassTexture = new THREE.TextureLoader().load(grass_top, function(texture) {
-      texture.colorSpace = THREE.SRGBColorSpace; // Ensure correct color space
+    const grassTexture = new THREE.TextureLoader().load(grassTop, function(texture) {
+      texture.colorSpace = THREE.SRGBColorSpace; 
     });
     
     grassTexture.wrapS = THREE.RepeatWrapping;
@@ -73,7 +77,7 @@ export default function BuildPlane() {
     
     const planeMaterial = new THREE.MeshBasicMaterial({
       map: grassTexture,
-      color: 0x6F946F,  // Tint it a more vibrant green
+      color: 0x6F946F,  
       side: THREE.DoubleSide,
     });
     
@@ -82,7 +86,7 @@ export default function BuildPlane() {
     
     // Rotate to lay flat like the ground
     plane.rotation.x = -0.5 * Math.PI;
-    plane.name = "ground";
+    plane.name = 'ground';
     scene.add(plane);
     
     // Add a GridHelper to align with the texture
@@ -106,8 +110,9 @@ export default function BuildPlane() {
     let intersects;
     
     window.addEventListener('mousemove', (e) => {
-      const rect = container.getBoundingClientRect(); // Get container position
-      mousePosition.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      // Get container position
+      const rect = container.getBoundingClientRect();
+      mousePosition.x = (e.clientX - rect.left) / rect.width * 2 - 1;
       mousePosition.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
       
       raycaster.setFromCamera(mousePosition, camera);
@@ -117,13 +122,14 @@ export default function BuildPlane() {
           const highlightPos = new THREE.Vector3().copy(intersect.point).floor().addScalar(0.5);
           highlightMesh.position.set(highlightPos.x, 0, highlightPos.z);
         }
-      })
-    })
+      });
+    });
 
     const objects = [];
 
     window.addEventListener('mousedown', () => {
-      let highestY = 0; // Keep track of the highest cube at this X, Z
+      // Keep track of the highest cube at this X, Z
+      let highestY = 0; 
     
       // Find all cubes that exist at the same X, Z position
       objects.forEach((object) => {
@@ -138,12 +144,17 @@ export default function BuildPlane() {
       // Create a new cube and place it one unit above the highest cube found
       const geometryClone = currentGeometry.clone();
       // xhfj
-      geometryClone.position.set(highlightMesh.position.x - 0.5, highestY, highlightMesh.position.z - 0.5);
+      geometryClone.position.set(
+        highlightMesh.position.x - 0.5, highestY, 
+        highlightMesh.position.z - 0.5);
       // cubeClone.position.set(0,0.25,0);
       scene.add(geometryClone);
       objects.push(geometryClone);
     });
 
+    /**
+     * Animation loop to render the scene.
+     */
     function animate() {
       renderer.render(scene, camera);
     }

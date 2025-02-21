@@ -1,6 +1,7 @@
-import BuildPlane from "./BuildPlane";
-import BlockSelection from "./BlockSelection";
+import BuildPlane from './BuildPlane';
+import BlockSelection from './BlockSelection';
 import './CraftersDen.css';
+import { Component } from 'react';
 
 const blockList = [
   { name: 'grass', src: 'https://www.filterforge.com/filters/11635.jpg', type: 'overworld' },
@@ -15,11 +16,15 @@ const blockList = [
   { name: 'brick', src: 'https://www.filterforge.com/filters/11644.jpg' }
 ];
 
+/**
+ * Crafters den main ui component with build plane and block selecction panel.
+ * @returns {Component}A div element with the id 'main-ui' to render the den.
+ */
 export default function CraftersDen() {
   return (
-      <div id="main-ui">
-        <BuildPlane/>
-        <BlockSelection blockList={blockList}/>
-      </div>
+    <div id="main-ui">
+      <BuildPlane/>
+      <BlockSelection blockList={blockList}/>
+    </div>
   );
 }
