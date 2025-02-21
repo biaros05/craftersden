@@ -38,6 +38,14 @@ export default function BuildPlane() {
     orbit.update();
     renderer.setSize(width, height);
 
+    window.addEventListener('resize', () => {
+      const width = container.clientWidth;
+      const height = container.clientHeight;
+      renderer.setSize(width, height);
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+    });
+
     if (!refContainer.current.hasChildNodes()) {
       refContainer.current.appendChild(renderer.domElement);
     }
@@ -142,20 +150,6 @@ export default function BuildPlane() {
     
     renderer.setAnimationLoop(animate);
 
-    const handleResize = () => {
-      const newWidth = container.clientWidth;
-      const newHeight = container.clientHeight;
-      camera.aspect = newWidth / newHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(newWidth, newHeight);
-    };
-    
-    window.addEventListener('resize', handleResize);
-    
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      container.removeChild(renderer.domElement);
-    };
   }, []);
   return(
     <div id="build-plane" ref={refContainer}></div>
