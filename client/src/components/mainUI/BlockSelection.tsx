@@ -13,7 +13,7 @@ import BlockScrollArea from './BlockScrollArea';
  */
 export default function BlockSelection({ blockList, style}) {
   return (
-    <section id="block-selection" style={style}>
+    <div id="block-selection" style={style}>
     <Tabs defaultValue="all">
       <Tabs.List>
         <Tabs.Tab value="all">
@@ -40,6 +40,6 @@ export default function BlockSelection({ blockList, style}) {
       </Tabs.Panel>
 
     </Tabs>
-    </section>
+    </div>
   )
 }
