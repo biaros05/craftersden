@@ -63,7 +63,8 @@ app.get('*', (req, res) => {
 });
 
 
-app.use(function (err, req, res, next) {
+app.use(function (err, req, res) {
+  console.error(err);
   const error = app.get('env') === 'development' ? err : {};
   res.status(err.status || 500);
   res.json({ error: error });
