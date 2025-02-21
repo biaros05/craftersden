@@ -10,8 +10,12 @@ export default function Post({placeholderImages, description, liked, saved}) {
   return (
     <div className="post" style={{ width: '250px'}}>
       <Carousel
-      height={125}
-        slideSize="100%" align="start" slideGap="md" dragFree withIndicators slidesToScroll={1}
+        height={125}
+        slideSize="100%" 
+        align="start" 
+        slideGap="md" 
+        dragFree 
+        slidesToScroll={1}
       >
         {
           placeholderImages.map((url) => (
