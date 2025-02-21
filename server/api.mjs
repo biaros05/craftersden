@@ -17,6 +17,10 @@ app.use(express.json());
 const MongoDBStore = connectMongoDBSession(session);
 const dbUrl = process.env.ATLAS_URI;
 
+if (!process.env.SECRET) {
+  console.error('SECRET NOT SPECIFIED, THIS IS A BIG SECURITY RISK');
+}
+
 app.use(session({
   secret: process.env.SECRET ?? 'UNSECURE',
   name: 'id',

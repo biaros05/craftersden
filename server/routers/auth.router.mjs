@@ -1,5 +1,5 @@
 import express from 'express';
-import { isAuthenticated } from '../utils/auth.js';
+import { isAuthenticated } from '../utils/auth.mjs';
 import { authenticateUser, logoutUser, queryUser } from '../controllers/auth.controller.mjs';
 
 const auth = express.Router();
