@@ -44,18 +44,21 @@ const singleBlock = {
   'inventoryTexture': 'minecraft_acacia_button.png'
 };
 
-const multipleBlocks = [
-  {
-    '_id': '1',
-    'name': 'acacia_log',
-    'inventoryTexture': 'minecraft_acacia_log.png'
-  },
-  {
-    '_id': '2',
-    'name': 'acacia_button',
-    'inventoryTexture': 'minecraft_acacia_button.png'
-  }
-];
+const multipleBlocks = {
+  blocks: [
+    {
+      '_id': '1',
+      'name': 'acacia_log',
+      'inventoryTexture': 'minecraft_acacia_log.png'
+    },
+    {
+      '_id': '2',
+      'name': 'acacia_button',
+      'inventoryTexture': 'minecraft_acacia_button.png'
+    }
+  ],
+  totalBlocks: 2
+};
 
 let dbStub;
 
@@ -77,6 +80,37 @@ describe('GET /api/block', () => {
     const response = await request(app).get('/api/block/1000');
     expect(response.status).to.equal(404);
   });
+
+  after(() => {
+    dbStub.restore();
+  });
+
+});
+
+describe('GET /api/blocks', () => {
+  
+  before(() => {
+    dbStub = sinon.stub(mongoose.Model, 'find');
+    dbStub.resolves(multipleBlocks);
+  });
+
+  it('should return all blocks', async () => {
+    const response = await request(app).get('/api/blocks');
+    expect(response.status).to.equal(200);
+    expect(response.body).to.deep.equal(multipleBlocks);
+  });
+
+  it('should return all blocks with pagination', async () => {
+    const response = await request(app).get('/api/blocks?page=1&limit=2');
+    expect(response.status).to.equal(200);
+    expect(response.body).to.deep.equal(multipleBlocks);
+  });
+  
+  it('should return 400 for invalid page or limit', async () => {
+    const response = await request(app).get('/api/blocks?page=a&limit=-1');
+    expect(response.status).to.equal(400);
+  });
+
 
   after(() => {
     dbStub.restore();
