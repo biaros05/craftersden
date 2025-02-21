@@ -11,6 +11,7 @@ export default [
       '**/build/*', 
       '**/webpack.config.{js,cjs}',
       'eslint.config.mjs',
+      'api.mjs'
     ],
   },  
   jsdoc.configs['flat/recommended-error'],

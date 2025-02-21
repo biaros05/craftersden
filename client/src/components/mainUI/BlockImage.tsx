@@ -1,5 +1,5 @@
 import React from 'react';
-import '../App.css';
+import '../../App.css';
 import {Image, ActionIcon} from '@mantine/core';
 import { IconPlus } from '@tabler/icons-react';
 
