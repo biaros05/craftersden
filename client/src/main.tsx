@@ -17,6 +17,9 @@ import Login from './components/Login.tsx';
 import Logout from './components/Logout.tsx';
 import ProtectedRoute from './components/ProtectedRoute.tsx';
 import Profile from './components/Profile.tsx';
+import Forum from './components/Forum.tsx';
+import '@mantine/core/styles.css';
+import '@mantine/carousel/styles.css';
 import CraftersDen from './components/mainUI/CraftersDen.jsx';
 
 import '@mantine/core/styles.css';
@@ -49,6 +52,10 @@ const router = createBrowserRouter([
       {
         path: 'logout',
         element: <ProtectedRoute to={'/'} authed={true} ><Logout /></ProtectedRoute>
+      },
+      {
+        path: 'forum',
+        element: <ProtectedRoute to={'/forum'} authed={true} ><Forum /></ProtectedRoute>
       },
       {
         path: 'profile',

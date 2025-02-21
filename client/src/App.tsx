@@ -1,6 +1,7 @@
 import React from 'react';
 import './App.css';
 import HelloWorld from './components/HelloWorld';
+import Post from './components/Post';
 
 function App() {
   
@@ -8,7 +9,6 @@ function App() {
     <>
       <main>
         <section id="main-app">
-          <HelloWorld></HelloWorld>
         </section>
       </main>
     </>
