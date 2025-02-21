@@ -26,7 +26,6 @@ function App() {
     <>
       <main>
         <section id="main-app">
-          <Post></Post>
         </section>
       </main>
     </>

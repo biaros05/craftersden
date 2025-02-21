@@ -4,15 +4,7 @@ import { IconArrowRight, IconArrowLeft, IconBookmark, IconHeart } from '@tabler/
 import { Image } from '@mantine/core';
 import '../assets/Post.css'; 
 
-const placeholderImages = [
-  'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-1.png',
-  'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-2.png',
-  'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-3.png',
-  'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-4.png',
-  'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-5.png',
-];
-
-export default function Post() {
+export default function Post({placeholderImages}) {
   return (
     // <Carousel
     //   style={{ flex: 1 }}
