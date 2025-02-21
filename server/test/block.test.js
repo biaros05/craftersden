@@ -1,6 +1,6 @@
 import request from 'supertest';
 import * as chai from 'chai';
-import { describe, it } from 'mocha';
+import { describe, it, before, after } from 'mocha';
 const expect = chai.expect;
 import  app  from '../api.mjs';
 import sinon from 'sinon';
@@ -57,3 +57,29 @@ const multipleBlocks = [
   }
 ];
 
+let dbStub;
+
+describe('GET /api/block', () => {
+
+  before(() => {
+    dbStub = sinon.stub(mongoose.Model, 'findById');
+    dbStub.resolves(singleBlock);  
+  });
+
+  it('should return a single block with valid id', async () => {
+    const response = await request(app).get('/api/block/1');
+    expect(response.status).to.equal(200);
+    expect(response.body).to.deep.equal(singleBlock);
+  });
+
+  it('should return 404 for a block with invalid id', async () => {
+    dbStub.resolves(null);
+    const response = await request(app).get('/api/block/1000');
+    expect(response.status).to.equal(404);
+  });
+
+  after(() => {
+    dbStub.restore();
+  });
+
+});
