@@ -21,11 +21,14 @@ export default function BuildPlane() {
   const refContainer = useRef(null);
   useEffect(() => {
     const currentGeometry = createMesh(tos_froms);
+    const container = refContainer.current;
+    const width = container.clientWidth;
+    const height = container.clientHeight;
 
     const scene = new THREE.Scene();
 
     const camera = new THREE.PerspectiveCamera(
-      75, window.innerWidth / window.innerHeight, 0.1, 1000);
+      75, width / height, 0.1, 1000);
     camera.position.set(15, 15, 15); // Move it back and up
     camera.lookAt(0, 0, 0); // Look at the center of the scene
 
@@ -33,7 +36,7 @@ export default function BuildPlane() {
 
     const orbit = new OrbitControls(camera, renderer.domElement);
     orbit.update();
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setSize(width, height);
 
     if (!refContainer.current.hasChildNodes()) {
       refContainer.current.appendChild(renderer.domElement);
@@ -136,6 +139,21 @@ export default function BuildPlane() {
     }
     
     renderer.setAnimationLoop(animate);
+
+    const handleResize = () => {
+      const newWidth = container.clientWidth;
+      const newHeight = container.clientHeight;
+      camera.aspect = newWidth / newHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(newWidth, newHeight);
+    };
+    
+    window.addEventListener('resize', handleResize);
+    
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      container.removeChild(renderer.domElement);
+    };
   }, []);
   return(
     <div id="build-plane" ref={refContainer}></div>
