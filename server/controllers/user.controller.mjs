@@ -1,4 +1,4 @@
-import User from '../models/User.js';
+import User from '../models/User.mjs';
 import { BlobServiceClient} from '@azure/storage-blob';
 import { validationResult } from 'express-validator';
 import dotenv from 'dotenv';

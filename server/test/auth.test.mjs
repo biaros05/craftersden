@@ -7,7 +7,8 @@ import Sinon from 'sinon';
 import mongoose from 'mongoose';
 import { OAuthService } from '../utils/auth.mjs';
 
-let dbStub;
+let dbFindOneAndUpdateStub;
+let dbFindOneStub;
 let OAuthClientCreateClientStub;
 let OAuthClientStub;
 
@@ -21,8 +22,11 @@ const testUser = {
 
 describe('Tests authentication routes', () => {
   before(() => {
-    dbStub = Sinon.stub(mongoose.Model, 'findOneAndUpdate');
-    dbStub.resolves(testUser);
+    dbFindOneStub = Sinon.stub(mongoose.Model, 'findOne');
+    dbFindOneStub.resolves(testUser);
+
+    dbFindOneAndUpdateStub = Sinon.stub(mongoose.Model, 'findOneAndUpdate');
+    dbFindOneAndUpdateStub.resolves(testUser);
 
     OAuthClientCreateClientStub = Sinon.stub(OAuthService.prototype, 'createClient');
 
@@ -73,7 +77,7 @@ describe('Tests authentication routes', () => {
   });
 
   after(() => {
-    dbStub.restore();
+    dbFindOneAndUpdateStub.restore();
     OAuthClientCreateClientStub.restore();
     OAuthClientStub.restore();
   });
