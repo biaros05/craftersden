@@ -1,26 +1,14 @@
 import React from 'react';
 import { Carousel } from '@mantine/carousel';
 import { IconArrowRight, IconArrowLeft, IconBookmark, IconHeart } from '@tabler/icons-react';
-import { Image } from '@mantine/core';
+import { Image, Text, Box } from '@mantine/core';
 import '../assets/Post.css'; 
 
-export default function Post({placeholderImages}) {
+export default function Post({placeholderImages, description}) {
   return (
-    // <Carousel
-    //   style={{ flex: 1 }}
-    //   height={180}
-    //   slideSize="50%"
-    //   nextControlIcon={<IconArrowRight size={16} />}
-    //   previousControlIcon={<IconArrowLeft size={16} />}
-    // >
-    //   <Carousel.Slide>1</Carousel.Slide>
-    //   <Carousel.Slide>2</Carousel.Slide>
-    //   <Carousel.Slide>3</Carousel.Slide>
-    //   {/* ...other slides */}
-    // </Carousel>
-    <div className="post" style={{ width: '50%'}}>
+    <div className="post" style={{ width: '250px'}}>
       <Carousel
-      height={200}
+      height={125}
         slideSize="100%" align="start" slideGap="md" dragFree withIndicators slidesToScroll={1}
       >
         {
@@ -33,11 +21,17 @@ export default function Post({placeholderImages}) {
       </Carousel>
       <section className='post-information'>
         <div className='post-actions'>
-          <IconBookmark/>
+          <IconBookmark className="icons"/>
           <p>Username</p>
-          <IconHeart/>
+          <IconHeart className="icons"/>
         </div>
-        <p>This is a fun wooden home perfect for building in the nether right next to a lava pool!</p>
+        <Box>
+          <Text size={'xs'} component="p" lineClamp={3} inline={false}>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Unde provident eos fugiat id
+            necessitatibus magni ducimus molestias. Placeat, consequatur. Quisquam, quae magnam
+            perspiciatis excepturi iste sint itaque sunt laborum. Nihil?
+          </Text>
+        </Box>
       </section>
     </div>
   );

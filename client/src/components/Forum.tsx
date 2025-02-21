@@ -1,5 +1,9 @@
 import React from 'react';
 import Post from './Post';
+import '../styles/forum.css';
+import { TextInput } from '@mantine/core';
+import { IconSearch } from '@tabler/icons-react';
+
 const placeholderImages = [
   [
   'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-1.png',
@@ -28,20 +32,41 @@ const placeholderImages = [
     'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-3.png',
     'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-4.png',
     'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-5.png',
+  ],
+  [
+    'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-1.png',
+    'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-2.png',
+    'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-3.png',
+    'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-4.png',
+    'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-5.png',
+  ],
+  [
+    'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-1.png',
+    'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-2.png',
+    'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-3.png',
+    'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-4.png',
+    'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-5.png',
   ]
 ];
 
 
 export default function Forum() {
   return (
-    <div className="post-forum">
+    <section className="forum-page">
+      <TextInput
+        placeholder="Search"
+        leftSection={<IconSearch size={18} />}
+        w={200}
+      />
+      <div className="posts">
       {
       placeholderImages.map(images => {
         return (
-          <Post placeholderImages={images}/>
+          <Post description="This is a fun little house to build in the nether!!" placeholderImages={images}/>
         )
       })
       }
-    </div>
+      </div>
+    </section>
   );
 }

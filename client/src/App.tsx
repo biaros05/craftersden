@@ -2,8 +2,6 @@ import React from 'react';
 import './App.css';
 import HelloWorld from './components/HelloWorld';
 import Post from './components/Post';
-import '@mantine/core/styles.css';
-import '@mantine/carousel/styles.css';
 
 // const blockList = [
 //   { name: 'grass', src: 'https://www.filterforge.com/filters/11635.jpg', type: 'overworld' },
