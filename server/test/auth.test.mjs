@@ -11,6 +11,8 @@ let dbStub;
 let OAuthClientCreateClientStub;
 let OAuthClientStub;
 
+let cookie;
+
 const testUser = {
   username: 'testUser',
   email: 'test.user@test.com',
@@ -32,7 +34,7 @@ describe('Tests authentication routes', () => {
     });
   });
 
-  it('should return the user', async () => {
+  it('should login and return the user', async () => {
     const response = await request(app).
       post('/api/auth').
       send({
@@ -41,6 +43,33 @@ describe('Tests authentication routes', () => {
 
     expect(response.status).to.equal(200);
     expect(response.body).to.deep.equal({user: testUser});
+    cookie = response.headers['set-cookie'][0].split(';')[0];
+  });
+
+  it('should return the user info when the user is logged in', async () => {
+    const response = await request(app).
+      get('/api/query').
+      set('Cookie', cookie);
+
+    expect(response.status).to.equal(200);
+    expect(response.body).to.deep.equal({user: testUser});
+  });
+
+  it('should NOT return the user info when the user isnt logged in', async () => {
+    const response = await request(app).
+      get('/api/query');
+
+    expect(response.status).to.equal(401);
+    expect(response.body).to.deep.equal({});
+  });
+
+  it('should clear the cookie when the user logs out', async () => {
+    const response = await request(app).
+      get('/api/logout').
+      set('Cookie', cookie);
+    
+    expect(response.status).to.equal(200);
+    expect(response.headers['set-cookie'].includes(cookie)).to.be.false;
   });
 
   after(() => {
