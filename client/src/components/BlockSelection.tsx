@@ -4,14 +4,13 @@ import BlockScrollArea from './BlockScrollArea';
 
 /**
  * Displays a tabbed block selection area.
- * @param blockList list of blocks to display
  * @param style optional style prop applied to the block selection section
  * @example ```tsx
- * <BlockSelection blockList={blockList} style={{width: '30%'}}/>
+ * <BlockSelectio style={{width: '30%'}}/>
  * ```
  * @returns React.JSX.Element
  */
-export default function BlockSelection({ blockList, style}) {
+export default function BlockSelection({style}) {
   return (
     <section id="block-selection" style={style}>
     <Tabs defaultValue="all">
@@ -28,15 +27,15 @@ export default function BlockSelection({ blockList, style}) {
       </Tabs.List>
 
       <Tabs.Panel value="all">
-        <BlockScrollArea blockList={blockList}/>
+        <BlockScrollArea/>
       </Tabs.Panel>
 
       <Tabs.Panel value="resources">
-        <BlockScrollArea blockList={blockList}/>
+        <div> Resources used </div>
       </Tabs.Panel>
       
       <Tabs.Panel value="materials">
-        <BlockScrollArea blockList={blockList}/>
+        <div> Materials used </div>
       </Tabs.Panel>
 
     </Tabs>

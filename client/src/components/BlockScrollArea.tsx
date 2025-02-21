@@ -10,10 +10,9 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 /**
  * Scrollable area for displaying grid of BlockImage. Contains BlockSearchBar.
- * @param blockList list of blocks/entities to display
  * @returns React.JSX.Element
  */
-export default function BlockScrollArea({blockList}) {
+export default function BlockScrollArea() {
 
   const [pageIndex, setPageIndex] = useState<number>(1);
 
