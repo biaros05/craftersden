@@ -1,5 +1,5 @@
-import User from '../models/User.js';
-import { OAuthService } from '../utils/auth.js';
+import User from '../models/User.mjs';
+import { OAuthService } from '../utils/auth.mjs';
 
 const client = new OAuthService();
 

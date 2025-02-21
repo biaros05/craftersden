@@ -19,10 +19,10 @@ class OAuthService {
   client = null;
 
   constructor() {
-    this.#createClient();
+    this.createClient();
   }
 
-  #createClient() {
+  createClient() {
     this.client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
   }
 

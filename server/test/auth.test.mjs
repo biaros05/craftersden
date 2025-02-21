@@ -5,9 +5,10 @@ const expect = chai.expect;
 import  app  from '../api.mjs';
 import Sinon from 'sinon';
 import mongoose from 'mongoose';
-// import OAuthService from '../utils/auth';
+import { OAuthService } from '../utils/auth.mjs';
 
 let dbStub;
+let OAuthClientCreateClientStub;
 let OAuthClientStub;
 
 const testUser = {
@@ -16,12 +17,14 @@ const testUser = {
   avatar: 'googlepicture.com'
 };
 
-describe.skip('Tests authentication routes', () => {
+describe('Tests authentication routes', () => {
   before(() => {
     dbStub = Sinon.stub(mongoose.Model, 'findOneAndUpdate');
     dbStub.resolves(testUser);
 
-    OAuthClientStub = Sinon.stub(OAuthService, 'verifyToken');
+    OAuthClientCreateClientStub = Sinon.stub(OAuthService.prototype, 'createClient');
+
+    OAuthClientStub = Sinon.stub(OAuthService.prototype, 'verifyToken');
     OAuthClientStub.resolves({
       name: testUser.username,
       email: testUser.email,
@@ -37,11 +40,12 @@ describe.skip('Tests authentication routes', () => {
       });
 
     expect(response.status).to.equal(200);
-    expect(response.body).to.deep.equal({ alive: true });
+    expect(response.body).to.deep.equal({user: testUser});
   });
 
   after(() => {
     dbStub.restore();
+    OAuthClientCreateClientStub.restore();
     OAuthClientStub.restore();
   });
 });
