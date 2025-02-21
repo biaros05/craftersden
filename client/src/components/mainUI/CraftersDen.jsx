@@ -1,7 +1,8 @@
 import BuildPlane from './BuildPlane';
 import BlockSelection from './BlockSelection';
+import ButtonPanel from './ButtonPanel';
 import './CraftersDen.css';
-import { Component } from 'react';
+import { Component, useEffect, useState, useCallback } from 'react';
 
 const blockList = [
   { name: 'grass', src: 'https://www.filterforge.com/filters/11635.jpg', type: 'overworld' },
@@ -21,10 +22,44 @@ const blockList = [
  * @returns {Component}A div element with the id 'main-ui' to render the den.
  */
 export default function CraftersDen() {
+  const [toSave, setToSave] = useState(false);
+  const [scene, setScene] = useState({});
+
+    
+  const onSaveChanged = useCallback(
+    (newState) => {
+      setToSave(newState);
+    }, [setToSave]);
+
+  const onSceneChanged = useCallback(
+    (newScene) => {
+      setScene(newScene);
+    }, [setScene]);
+
+  useEffect(() => {
+    // TODO: change email
+    async function savePost() {
+      const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: 'biancaros05@gmail.com', build: scene})
+      };
+      // const response = await fetch('/api/post/save', requestOptions);
+      // const json = await response.json();
+      // console.log(json);
+      setToSave(false);
+    }
+    if (toSave) {
+      
+      savePost();
+    }
+  }, [toSave, scene]);
+
   return (
     <div id="main-ui">
-      <BuildPlane/>
+      <BuildPlane setScene={onSceneChanged} setToSave={onSaveChanged}/>
       <BlockSelection blockList={blockList}/>
+      <ButtonPanel/>
     </div>
   );
 }

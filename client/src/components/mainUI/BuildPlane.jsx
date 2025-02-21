@@ -18,9 +18,10 @@ const tosFroms = [
 
 /**
  * Build plane component that renders a 3D plane with grid to build on.
+ * @param {*} setScene - function to set the scene
  * @returns {Component} A div element with the id 'build-plane' to render the 3D plane.
  */
-export default function BuildPlane() {
+export default function BuildPlane({setScene, setToSave}) {
   //use ref is a react hok that lets you refernce a value that's not needed for rendering
   const refContainer = useRef(null);
   useEffect(() => {
@@ -152,6 +153,11 @@ export default function BuildPlane() {
       objects.push(geometryClone);
     });
 
+    document.getElementsByClassName('save-button')[0].addEventListener('click', (e) => {
+      setScene(scene.toJSON());
+      setToSave(true);
+    });
+
     /**
      * Animation loop to render the scene.
      */
@@ -161,7 +167,7 @@ export default function BuildPlane() {
     
     renderer.setAnimationLoop(animate);
 
-  }, []);
+  }, [setScene, setToSave]);
   return(
     <div id="build-plane" ref={refContainer}></div>
   );
