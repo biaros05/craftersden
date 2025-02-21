@@ -98,8 +98,10 @@ export default function BuildPlane() {
     let intersects;
     
     window.addEventListener('mousemove', (e) => {
-      mousePosition.x = (e.clientX / window.innerWidth) * 2 - 1;
-      mousePosition.y = -(e.clientY / window.innerHeight) * 2 + 1;
+      const rect = container.getBoundingClientRect(); // Get container position
+      mousePosition.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      mousePosition.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+      
       raycaster.setFromCamera(mousePosition, camera);
       intersects = raycaster.intersectObjects(scene.children);
       intersects.forEach(function (intersect) {
