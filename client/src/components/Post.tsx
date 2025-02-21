@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import { Carousel } from '@mantine/carousel';
 import { IconArrowRight, IconArrowLeft, IconBookmark, IconBookmarkFilled, IconHeart, IconHeartFilled } from '@tabler/icons-react';
 import { Image, Text, Box, ActionIcon } from '@mantine/core';
-import '../assets/Post.css'; 
+import '../styles/Post.css'; 
 
 export default function Post({placeholderImages, description, liked, saved}) {
   const [isLiked, setIsLiked] = useState(liked);
