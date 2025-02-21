@@ -19,7 +19,7 @@ export default function Profile() {
       close();
     };
 
-    return <div className="profile-page">
+    return <div className="profile-page container">
       <Modal opened={opened} onClose={close} title="Edit Profile" className="edit-profile-modal" centered >
         <form onSubmit={onSubmitHandler}>
           <label htmlFor="username">Username</label>
