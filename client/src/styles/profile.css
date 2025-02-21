@@ -1,3 +1,55 @@
 .container {
   height: 100%;
 }
+.profile-page {
+    height: 100vh;
+}
+
+.profile-page .user-info {
+    margin: 1em;
+    width: 100%;
+    height: 100%;
+    max-height: 20%;
+
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.profile-page .big-profile-image-wrapper {
+    height: 100%;
+
+    flex: 1;
+}
+
+.profile-page .big-profile-image {
+    height: 100%;
+    border-radius: 50em;
+}
+
+.profile-page .name-area {
+    flex: 2;
+
+    display: flex;
+    justify-content: center;
+    gap: 1em;
+
+    font-size: 1.5em;
+}
+
+.mantine-Modal-content form {
+    padding-right: 1em;
+}
+
+.mantine-Modal-content .form-submit {
+    margin: 0;
+    padding: 0;
+    grid-column-start: 1;
+    grid-column-end: 3;
+}
+
+.mantine-Modal-content form {
+    display: grid;
+    gap: 1em;
+    grid-template-columns: max-content max-content;
+    align-items: center;
+}
