@@ -2,7 +2,7 @@ import BuildPlane from './BuildPlane';
 import BlockSelection from './BlockSelection';
 import ButtonPanel from './ButtonPanel';
 import './CraftersDen.css';
-import { Component, useEffect, useState, useCallback } from 'react';
+import { Component, useEffect, useState, useCallback, useRef } from 'react';
 
 const blockList = [
   { name: 'grass', src: 'https://www.filterforge.com/filters/11635.jpg', type: 'overworld' },
@@ -23,18 +23,12 @@ const blockList = [
  */
 export default function CraftersDen() {
   const [toSave, setToSave] = useState(false);
-  const [scene, setScene] = useState({});
+  const scene = useRef({});
 
-    
   const onSaveChanged = useCallback(
     (newState) => {
       setToSave(newState);
     }, [setToSave]);
-
-  const onSceneChanged = useCallback(
-    (newScene) => {
-      setScene(newScene);
-    }, [setScene]);
 
   useEffect(() => {
     // TODO: change email
@@ -50,14 +44,14 @@ export default function CraftersDen() {
       setToSave(false);
     }
     if (toSave) {
-      
+      console.log(JSON.stringify(scene));
       savePost();
     }
-  }, [toSave, scene]);
+  }, [toSave]);
 
   return (
     <div id="main-ui">
-      <BuildPlane setScene={onSceneChanged} setToSave={onSaveChanged}/>
+      <BuildPlane sceneState={scene} setToSave={onSaveChanged}/>
       <BlockSelection blockList={blockList}/>
       <ButtonPanel/>
     </div>

@@ -3,6 +3,7 @@ import { createMesh } from '../../utils/building_plane_utils.mjs';
 import { Component, useEffect, useRef } from 'react';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import grassTop from '../../assets/grass_top.png';
+import {curScene} from './scene';
 
 /* ==== STAIRS ==== */
 const tosFroms = [
@@ -16,12 +17,13 @@ const tosFroms = [
   }
 ];
 
+
 /**
  * Build plane component that renders a 3D plane with grid to build on.
  * @param {*} setScene - function to set the scene
  * @returns {Component} A div element with the id 'build-plane' to render the 3D plane.
  */
-export default function BuildPlane({setScene, setToSave}) {
+export default function BuildPlane({sceneState, setToSave}) {
   //use ref is a react hok that lets you refernce a value that's not needed for rendering
   const refContainer = useRef(null);
   useEffect(() => {
@@ -30,7 +32,7 @@ export default function BuildPlane({setScene, setToSave}) {
     const width = container.clientWidth;
     const height = container.clientHeight;
 
-    const scene = new THREE.Scene();
+    let scene = new THREE.Scene();
 
     const camera = new THREE.PerspectiveCamera(
       75, width / height, 0.1, 1000);
@@ -56,15 +58,18 @@ export default function BuildPlane({setScene, setToSave}) {
     }
     
     var ambLight = new THREE.AmbientLight(0xffffff, 0.5);
-    scene.add(ambLight);
+    
+
 
     var pointLightLeft = new THREE.PointLight(0xff8833, 1);
     pointLightLeft.position.set(-2, 1, 2);
-    scene.add(pointLightLeft);
+    
+
 
     var pointLightRight = new THREE.PointLight(0x33ff77, 1);
     pointLightRight.position.set(3, 2, 2);
-    scene.add(pointLightRight);
+   
+
 
     const grassTexture = new THREE.TextureLoader().load(grassTop, function(texture) {
       texture.colorSpace = THREE.SRGBColorSpace; 
@@ -88,12 +93,9 @@ export default function BuildPlane({setScene, setToSave}) {
     // Rotate to lay flat like the ground
     plane.rotation.x = -0.5 * Math.PI;
     plane.name = 'ground';
-    scene.add(plane);
     
     // Add a GridHelper to align with the texture
     const gridHelper = new THREE.GridHelper(30, 30);
-    scene.add(gridHelper);
-
 
     const highlightMesh = new THREE.Mesh(
       new THREE.PlaneGeometry(1, 1),
@@ -103,8 +105,16 @@ export default function BuildPlane({setScene, setToSave}) {
     );
     highlightMesh.rotateX(-Math.PI / 2);
     highlightMesh.position.set(0.5, 0, 0.5);
+    if (!curScene) {
+      scene.add(plane);
+    } else {
+      scene = new THREE.ObjectLoader().parse( JSON.parse( JSON.stringify(curScene.current) ) );
+    }
+    scene.add(gridHelper);
     scene.add(highlightMesh);
-    
+    scene.add(ambLight);
+    scene.add(pointLightLeft);
+    scene.add(pointLightRight);
     
     const mousePosition = new THREE.Vector2();
     const raycaster = new THREE.Raycaster();
@@ -154,7 +164,7 @@ export default function BuildPlane({setScene, setToSave}) {
     });
 
     document.getElementsByClassName('save-button')[0].addEventListener('click', (e) => {
-      setScene(scene.toJSON());
+      sceneState.current = scene.toJSON();
       setToSave(true);
     });
 
@@ -167,7 +177,7 @@ export default function BuildPlane({setScene, setToSave}) {
     
     renderer.setAnimationLoop(animate);
 
-  }, [setScene, setToSave]);
+  }, [sceneState, setToSave]);
   return(
     <div id="build-plane" ref={refContainer}></div>
   );
