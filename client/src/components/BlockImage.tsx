@@ -22,8 +22,6 @@ export default function BlockImage({ src = null, alt = undefined }: { src?: stri
     </ActionIcon>
       <Image
         src={src}
-        height={100}
-        width="auto"
         alt={alt}
         fallbackSrc="https://placehold.co/600x400?text=Placeholder"
       />
