@@ -62,7 +62,12 @@ export default function Forum() {
       {
       placeholderImages.map(images => {
         return (
-          <Post description="This is a fun little house to build in the nether!!" placeholderImages={images}/>
+          <Post 
+          description="This is a fun little house to build in the nether!!" 
+          placeholderImages={images}
+          liked={false}
+          saved={false}
+          />
         )
       })
       }

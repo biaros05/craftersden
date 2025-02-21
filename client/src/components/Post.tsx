@@ -1,10 +1,12 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { Carousel } from '@mantine/carousel';
-import { IconArrowRight, IconArrowLeft, IconBookmark, IconHeart } from '@tabler/icons-react';
-import { Image, Text, Box } from '@mantine/core';
+import { IconArrowRight, IconArrowLeft, IconBookmark, IconBookmarkFilled, IconHeart, IconHeartFilled } from '@tabler/icons-react';
+import { Image, Text, Box, ActionIcon } from '@mantine/core';
 import '../assets/Post.css'; 
 
-export default function Post({placeholderImages, description}) {
+export default function Post({placeholderImages, description, liked, saved}) {
+  const [isLiked, setIsLiked] = useState(liked);
+  const [isSaved, setIsSaved] = useState(saved);
   return (
     <div className="post" style={{ width: '250px'}}>
       <Carousel
@@ -21,15 +23,48 @@ export default function Post({placeholderImages, description}) {
       </Carousel>
       <section className='post-information'>
         <div className='post-actions'>
-          <IconBookmark className="icons"/>
+
+        <ActionIcon 
+          className="icons" 
+          color="rgba(74, 173, 24, 1)" 
+          variant="subtle" 
+          aria-label="Settings"
+          onClick={() => {
+            setIsSaved(!isSaved);
+          }}
+        >
+          {
+            isSaved ? 
+            <IconBookmarkFilled style={{ width: '70%', height: '70%' }} stroke={1.5} /> 
+            : 
+            <IconBookmark style={{ width: '70%', height: '70%' }} stroke={1.5} />
+          }
+        </ActionIcon>
+
+          {/* <IconBookmark className="icons"/> */}
           <p>Username</p>
-          <IconHeart className="icons"/>
+          {/* <IconHeart className="icons"/> */}
+
+          <ActionIcon
+            className="icons" 
+            color="rgba(74, 173, 24, 1)" 
+            variant="subtle" 
+            aria-label="Settings"
+            onClick={() => {
+              setIsLiked(!isLiked);
+            }}
+          >
+          {
+            isLiked ?
+            <IconHeartFilled/>
+            :
+            <IconHeart style={{ width: '70%', height: '70%' }} stroke={1.5} />
+          }
+        </ActionIcon>
         </div>
         <Box>
           <Text size={'xs'} component="p" lineClamp={3} inline={false}>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Unde provident eos fugiat id
-            necessitatibus magni ducimus molestias. Placeat, consequatur. Quisquam, quae magnam
-            perspiciatis excepturi iste sint itaque sunt laborum. Nihil?
+            {description}
           </Text>
         </Box>
       </section>
