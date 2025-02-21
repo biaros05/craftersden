@@ -1,5 +1,6 @@
 import BuildPlane from "./BuildPlane";
 import BlockSelection from "./BlockSelection";
+import './CraftersDen.css';
 
 const blockList = [
   { name: 'grass', src: 'https://www.filterforge.com/filters/11635.jpg', type: 'overworld' },
