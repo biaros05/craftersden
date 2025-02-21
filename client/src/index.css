@@ -19,36 +19,3 @@ a:hover {
   padding: 0px 5px;
   border-radius: 5px;
 }
-
-footer a {
-  color: red;
-  text-decoration: none;
-  background: none;
-  transition: all 0.5s ease-out;
-}
-
-footer a:hover {
-  color: white;
-  font-style: italic;
-  padding: 0px 5px;
-  border-radius: 5px;
-}
-
-form {
-  display: grid;
-  grid-template-columns: max-content max-content;
-  align-items: center;
-}
-
-form input {
-  margin: 0.5em;
-  padding: 0.5em;
-  border-radius: 5px;
-  border: 1px solid black;
-}
-
-.form-submit {
-  margin: 0.5em;
-  padding: 0.5em;
-  grid-column: 2;
-}
