@@ -29,7 +29,9 @@ function uploadValidation(req, res, next) {
  */
 async function uploadImage(req, res, next) {
   try {
-    req.blobUrl = await blobService.saveFile(req.file);
+    if (req.file) {
+      req.blobUrl = await blobService.saveFile(req.file);
+    }
     next();
   } catch (e){
     e.status = 500;
@@ -46,9 +48,23 @@ async function uploadImage(req, res, next) {
  */
 async function storeImageWithName(req, res, next) {
   try {
+    const update = {
+      username: String(req.body.username),
+      avatar: req.blobUrl,
+      customized: true
+    };
+
+    if (!req.blobUrl) {
+      delete update.avatar;
+    }
+
+    if (!req.body.username) {
+      delete update.username;
+    }
+
     const user = await User.findOneAndUpdate(
       {email: req.session.user.email}, 
-      {username: String(req.body.username), avatar: req.blobUrl, customized: true}, 
+      update,
       {returnDocument: 'after'}
     );
     req.session.user = user;

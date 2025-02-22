@@ -45,6 +45,14 @@ describe('User profile endpoints', () => {
         ...filter,
         ...params
       };
+
+      if (!params.avatar) {
+        user.avatar = initialTestUser.avatar;
+      }
+
+      if (!params.username) {
+        user.username = initialTestUser.username;
+      }
       
       return user;
     });
@@ -59,7 +67,27 @@ describe('User profile endpoints', () => {
       resolves('https://imageblobbed.blob.core.windows.net/imageblob/image');
   });
 
-  it('should update user in db', async () => {
+  it('should update user name in db', async () => {
+    const loginResp = await request(app).post('/api/auth').
+      send({token: 'faketoken'});
+    cookie = loginResp.headers['set-cookie'][0].split(';')[0];
+
+    const response = await request(app).
+      put('/api/user').
+      field('username', 'newname').
+      set('Cookie', cookie);
+
+    const query = await request(app).
+      get('/api/query').
+      set('Cookie', cookie);
+    
+    const expectedUser = {...finalTestuser};
+    expectedUser.avatar = initialTestUser.avatar;
+    expect(query.body.user).to.deep.equal(expectedUser);
+    expect(response.status).to.equal(200);
+  });
+
+  it('should update user picture and name in db', async () => {
     const loginResp = await request(app).post('/api/auth').
       send({token: 'faketoken'});
     cookie = loginResp.headers['set-cookie'][0].split(';')[0];
@@ -76,6 +104,34 @@ describe('User profile endpoints', () => {
     
     expect(query.body.user).to.deep.equal(finalTestuser);
     expect(response.status).to.equal(200);
+  });
+
+  it('should update user picture in db', async () => {
+    const loginResp = await request(app).post('/api/auth').
+      send({token: 'faketoken'});
+    cookie = loginResp.headers['set-cookie'][0].split(';')[0];
+
+    const response = await request(app).
+      put('/api/user').      
+      attach('avatar', Buffer.from('somebits'), {filename: 'image.png', contentType: 'image/png'}).
+      set('Cookie', cookie);
+
+    const query = await request(app).
+      get('/api/query').
+      set('Cookie', cookie);
+    
+    const expectedUser = {...finalTestuser};
+    expectedUser.username = initialTestUser.username;
+    expect(query.body.user).to.deep.equal(expectedUser);
+    expect(response.status).to.equal(200);
+  });
+
+  it('should fail when user not logged in', async () => {
+    const response = await request(app).
+      put('/api/user').      
+      attach('avatar', Buffer.from('somebits'), {filename: 'image.png', contentType: 'image/png'});
+    
+    expect(response.status).to.equal(401);
   });
 
   after(() => {
