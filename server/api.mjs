@@ -26,7 +26,7 @@ app.use(session({
   name: 'id',
   saveUninitialized: false,
   resave: false,
-  store: dbUrl ? new MongoDBStore({
+  store: app.get('env') !== 'test' ? new MongoDBStore({
     uri: dbUrl,
     collection: 'sessions'
   }) : null,
@@ -65,7 +65,7 @@ app.get('*', (req, res) => {
 
 app.use(function (err, req, res) {
   console.error(err);
-  const error = app.get('env') === 'development' ? err : {};
+  const error = app.get('env') !== 'production' ? err : {};
   res.status(err.status || 500);
   res.json({ error: error });
 });

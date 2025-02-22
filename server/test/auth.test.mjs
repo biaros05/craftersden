@@ -77,6 +77,7 @@ describe('Tests authentication routes', () => {
   });
 
   after(() => {
+    dbFindOneStub.restore();
     dbFindOneAndUpdateStub.restore();
     OAuthClientCreateClientStub.restore();
     OAuthClientStub.restore();

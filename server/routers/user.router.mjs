@@ -30,8 +30,8 @@ const userUpdateValidation = [
 
     return true;
   }),
-  body('username', 'Username is required').notEmpty(),
-  body('username', 'Username must be a string').isString(),
+  // body('username', 'Username is required').notEmpty(),
+  // body('username', 'Username must be a string').isString(),
 ];
 
 userRouter.put('/', 

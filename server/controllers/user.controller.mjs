@@ -29,7 +29,7 @@ function uploadValidation(req, res, next) {
  */
 async function uploadImage(req, res, next) {
   try {
-    req.blobUrl = blobService.saveFile(req.file);
+    req.blobUrl = await blobService.saveFile(req.file);
     next();
   } catch (e){
     e.status = 500;

@@ -2,8 +2,8 @@
   "name": "server",
   "version": "1.0.0",
   "scripts": {
-    "ci-test": "mocha --timeout 10000 --exit --reporter mocha-junit-reporter --reporter-options mochaFile=junit.xml",
-    "test": "mocha --timeout 10000",
+    "ci-test": "export NODE_ENV='test' && mocha --timeout 10000 --exit --reporter mocha-junit-reporter --reporter-options mochaFile=junit.xml",
+    "test": "set NODE_ENV=test&& mocha --timeout 10000",
     "lint": "eslint .",
     "start": "node bin/www"
   },
