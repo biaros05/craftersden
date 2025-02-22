@@ -15,7 +15,7 @@ let server;
     await mongoose.connect(dbUrl);
     console.log('Database connection established');
     server = app.listen(port, () => {
-      console.log(`Server listening on http://localhost:${port}`);
+      console.log(`Server listening on http://localhost:${port} in ${app.get('env')} mode`);
     });
   } catch (e) {
     console.error('could not connect');
