@@ -13,19 +13,26 @@ dotenv.config();
  * @returns {JSON} - JSON with status code
  */
 async function saveBuild(req, res, next) {
+  const build = req.body.build;
+  const email = req.body.email;
   try {
-    const build = req.body.build;
-    const email = req.body.email;
-    const user = await User.findOne({email: email});
-    const post = new Post({
-      buildJSON: build, 
-      user: user._id, 
-      description: '',
-      thumbnails: [],
-      isPublished: false
-    });
+    if (req.body.buildId) {
+      await Post.findOneAndUpdate(
+        {_id: req.body.buildId}, 
+        {buildJSON: build}
+      );
+    } else {
+      const user = await User.findOne({email: email});
+      const post = new Post({
+        buildJSON: build, 
+        user: user._id, 
+        description: '',
+        thumbnails: [],
+        isPublished: false
+      });
 
-    await post.save();
+      await post.save();
+    }
 
     res.status(200).json({status : 'success'});
     return;

@@ -1,6 +1,7 @@
 import BuildPlane from './BuildPlane';
 import BlockSelection from './BlockSelection';
 import ButtonPanel from './ButtonPanel';
+import { useAuth } from '../../hooks/useAuth';
 import './CraftersDen.css';
 import { Component, useEffect, useState, useCallback, useRef } from 'react';
 
@@ -24,6 +25,10 @@ const blockList = [
 export default function CraftersDen() {
   const [toSave, setToSave] = useState(false);
   const scene = useRef({});
+  const {email} = useAuth() ?? {};
+
+  // PLEASE CHANGE!!!!!!
+  const curBuildId = '67b9ee078afa93a541131d01';
 
   const onSaveChanged = useCallback(
     (newState) => {
@@ -31,23 +36,29 @@ export default function CraftersDen() {
     }, [setToSave]);
 
   useEffect(() => {
-    // TODO: change email
+    /**
+     * Saves the current build in the db
+     */
     async function savePost() {
       const requestOptions = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: 'biancaros05@gmail.com', build: scene})
+        // TODO: change id to be not null if the build exists!!!
+        body: JSON.stringify({ email: email, build: scene, buildId: curBuildId})
+        // use ID to find pre-existing build if it exists, if not leave it null.
       };
-      // const response = await fetch('/api/post/save', requestOptions);
-      // const json = await response.json();
-      // console.log(json);
+      const response = await fetch('/api/post/save', requestOptions);
+      const json = await response.json();
+      console.log(json);
       setToSave(false);
     }
     if (toSave) {
-      console.log(JSON.stringify(scene));
+      //console.log(JSON.stringify(scene));
       savePost();
     }
-  }, [toSave]);
+
+    // TODO: add cleanup function in case the toSave is spammed
+  }, [toSave, email]);
 
   return (
     <div id="main-ui">

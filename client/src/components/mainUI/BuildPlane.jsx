@@ -163,6 +163,7 @@ export default function BuildPlane({sceneState, setToSave}) {
       objects.push(geometryClone);
     });
 
+    /* eslint-disable no-unused-vars */
     document.getElementsByClassName('save-button')[0].addEventListener('click', (e) => {
       sceneState.current = scene.toJSON();
       setToSave(true);
