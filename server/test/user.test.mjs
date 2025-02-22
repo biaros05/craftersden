@@ -64,7 +64,7 @@ describe('User profile endpoints', () => {
 
     blobServiceConstructorStub = Sinon.stub(BlobServiceProvider.prototype, 'initializeFields');
     saveImageStub = Sinon.stub(BlobServiceProvider.prototype, 'saveFile').
-      resolves('https://imageblobbed.blob.core.windows.net/imageblob/image');
+      resolves(BlobServiceProvider.blobPublicUrl + 'image');
   });
 
   it('should update user name in db', async () => {
