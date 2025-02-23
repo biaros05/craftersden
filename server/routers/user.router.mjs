@@ -9,6 +9,7 @@ import
 import { body } from 'express-validator';
 import multer from 'multer';
 import path from 'path';
+import { isAuthenticated } from '../utils/auth.mjs';
 
 const upload = multer({
   limits: {
@@ -21,7 +22,7 @@ const userRouter = express.Router();
 const userUpdateValidation = [
   body().custom((_, { req }) => {
     if (!req.file) {
-      throw new Error('File is required');
+      return true;
     }
 
     const extension = path.extname(req.file.originalname).toLowerCase();
@@ -31,11 +32,10 @@ const userUpdateValidation = [
 
     return true;
   }),
-  body('username', 'Username is required').notEmpty(),
-  body('username', 'Username must be a string').isString(),
+  body('username', 'Username must be a string').optional().isString(),
 ];
 
-userRouter.put('/', 
+userRouter.put('/', isAuthenticated,
   upload.single('avatar'), userUpdateValidation, uploadValidation, uploadImage, storeImageWithName);
 
 userRouter.get('/builds', 
