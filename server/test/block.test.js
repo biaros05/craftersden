@@ -126,6 +126,11 @@ describe('GET /api/blocks', () => {
     expect(response.status).to.equal(400);
   });
 
+  it('should return 404 for invalid page', async () => {
+    const response = await request(app).get('/api/blocks?page=1000');
+    expect(response.status).to.equal(404);
+  });
+
 
   after(() => {
     dbStub.restore();
