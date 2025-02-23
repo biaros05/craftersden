@@ -1,7 +1,8 @@
-import BuildPlane from './BuildPlane';
-import BlockSelection from './BlockSelection';
+import BuildPlane from './BuildPlane.tsx';
+import BlockSelection from './BlockSelection.tsx';
 import './CraftersDen.css';
 import { Component } from 'react';
+import { useState } from 'react';
 
 const blockList = [
   { name: 'grass', src: 'https://www.filterforge.com/filters/11635.jpg', type: 'overworld' },
@@ -21,10 +22,32 @@ const blockList = [
  * @returns {Component}A div element with the id 'main-ui' to render the den.
  */
 export default function CraftersDen() {
-  return (
-    <div id="main-ui">
-      <BuildPlane/>
-      <BlockSelection blockList={blockList}/>
-    </div>
-  );
+  const [isViewMode, setIsViewMode] = useState(false);
+  if(!isViewMode)
+    {
+      return (
+        <>
+          <div id="main-ui">
+            <BuildPlane/>
+            <BlockSelection blockList={blockList}/>
+          </div>
+          <button type="button" onClick={() => setIsViewMode(!isViewMode)}>
+            Toggle Mode
+          </button>
+        </>
+      );
+    }
+    else
+    {
+      return (
+        <>
+          <div id="main-ui">
+            <BuildPlane/>
+          </div>
+          <button type="button" onClick={() => setIsViewMode(!isViewMode)}>
+            Toggle Mode
+          </button>
+        </>
+      );
+    }
 }
