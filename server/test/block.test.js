@@ -57,7 +57,7 @@ const multipleBlocks = {
       'inventoryTexture': 'minecraft_acacia_button.png'
     }
   ],
-  totalBlocks: 2
+  totalBlocks: 2,
 };
 
 let dbStub;
@@ -112,7 +112,8 @@ describe('GET /api/blocks', () => {
     expect(response.status).to.equal(200);
     expect(response.body).to.deep.equal({
       blocks: multipleBlocks.blocks,
-      totalBlocks: multipleBlocks.totalBlocks
+      currentPage: '1',
+      totalPages: 1
     });
   });
   
