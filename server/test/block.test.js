@@ -90,15 +90,14 @@ describe('GET /api/block', () => {
 describe('GET /api/blocks', () => {
   let dbCountDocumentsStub;
   before(() => {
-    dbStub = sinon.stub(mongoose.Model, 'find').returns({
-      sort: sinon.stub().returnsThis(),
-      limit: sinon.stub().returnsThis(),
-      skip: sinon.stub().returns(multipleBlocks.blocks)
-    });
+    dbStub = sinon.stub(mongoose.Model, 'find');
     dbCountDocumentsStub = sinon.stub(mongoose.Model, 'countDocuments').returns(2);
   });
 
   it('should return all blocks with no page or limit', async () => {
+    dbStub.returns({
+      sort: sinon.stub().returns(multipleBlocks.blocks)
+    });
     const response = await request(app).get('/api/blocks');
     expect(response.status).to.equal(200);
     expect(response.body).to.deep.equal({
@@ -108,6 +107,11 @@ describe('GET /api/blocks', () => {
   });
 
   it('should return all blocks with pagination', async () => {
+    dbStub.returns({
+      sort: sinon.stub().returnsThis(),
+      limit: sinon.stub().returnsThis(),
+      skip: sinon.stub().returns(multipleBlocks.blocks)
+    });
     const response = await request(app).get('/api/blocks?page=1&limit=2');
     expect(response.status).to.equal(200);
     expect(response.body).to.deep.equal({
