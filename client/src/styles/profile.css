@@ -53,3 +53,15 @@
     grid-template-columns: max-content max-content;
     align-items: center;
 }
+
+.profile-page {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px 0;
+    padding: 10px;
+}
+
+#mantine-6x0g87hhx-panel-builds {
+    display: flex;
+}

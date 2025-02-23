@@ -31,7 +31,7 @@ export default function CraftersDen() {
   const {email} = useAuth() ?? {};
 
   // PLEASE CHANGE!!!!!!
-  const curBuildId = '67ba9e59d60be99570e2e0c6';
+  const curBuildId = null;
 
   const onSaveChanged = useCallback(
     (newState) => {

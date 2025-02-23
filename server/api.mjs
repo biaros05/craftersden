@@ -66,7 +66,7 @@ app.get('*', (req, res) => {
 });
 
 
-app.use(function (err, req, res) {
+app.use(function (err, req, res, next) {
   console.error(err);
   const error = app.get('env') !== 'production' ? err : {};
   res.status(err.status || 500);

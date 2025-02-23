@@ -1,11 +1,3 @@
-.forum-page {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 10px 0;
-  padding: 10px;
-}
-
 .posts {
   height: 100%;
   width: 100%;

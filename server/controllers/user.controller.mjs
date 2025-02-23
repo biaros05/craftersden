@@ -87,7 +87,7 @@ async function storeImageWithName(req, res, next) {
  */
 async function getUsersSavedBuilds(req, res, next) {
   try {
-    const user = await User.findOne({email: req.body.email});
+    const user = await User.findOne({email: req.query.email});
     const builds = await Post.find({user: user._id});
 
     res.status(200).json({status : 'success', builds: builds});

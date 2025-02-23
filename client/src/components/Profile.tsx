@@ -13,14 +13,7 @@ export default function Profile() {
 
     useEffect(() => {
       async function getBuilds() {
-        const requestOptions = {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          // TODO: change id to be not null if the build exists!!!
-          body: JSON.stringify({ email: email})
-          // use ID to find pre-existing build if it exists, if not leave it null.
-        };
-        const response = await fetch('/api/user/builds', requestOptions);
+        const response = await fetch(`/api/user/builds?email=${email}`);
         const json = await response.json();
         console.log(json);
         setBuilds(json.builds);
@@ -75,7 +68,7 @@ export default function Profile() {
             </Tabs.Tab>
           </Tabs.List>
 
-          <Tabs.Panel value="builds">
+          <Tabs.Panel value="builds" className="posts">
             <Builds builds={builds}/>
           </Tabs.Panel>
 
