@@ -17,7 +17,7 @@ async function authenticateUser(req, res, next) {
   }
 
   try {
-    const {name, email, picture} = client.verifyToken(token);
+    const {name, email, picture} = await client.verifyToken(token);
     
     let user = await User.findOne({email: email});
     if (!user || !user.customized) {
