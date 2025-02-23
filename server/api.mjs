@@ -68,7 +68,7 @@ app.get('*', (req, res) => {
 
 app.use(function (err, req, res, next) {
   console.error(err);
-  const error = app.get('env') !== 'production' ? err : {};
+  const error = app.get('env') !== 'production' ? err.message : {};
   res.status(err.status || 500);
   res.json({ error: error });
 });

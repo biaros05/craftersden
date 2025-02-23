@@ -13,7 +13,7 @@ export default function Profile() {
 
     useEffect(() => {
       async function getBuilds() {
-        const response = await fetch(`/api/user/builds?email=${email}`);
+        const response = await fetch(`/api/user/${email}/builds`);
         const json = await response.json();
         console.log(json);
         setBuilds(json.builds);
