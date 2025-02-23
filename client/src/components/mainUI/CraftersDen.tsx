@@ -28,7 +28,7 @@ export default function CraftersDen() {
       return (
         <>
           <div id="main-ui">
-            <BuildPlane/>
+            <BuildPlane isViewMode={isViewMode}/>
             <BlockSelection blockList={blockList}/>
           </div>
           <button type="button" onClick={() => setIsViewMode(!isViewMode)}>
@@ -42,7 +42,7 @@ export default function CraftersDen() {
       return (
         <>
           <div id="main-ui">
-            <BuildPlane/>
+            <BuildPlane isViewMode={isViewMode}/>
           </div>
           <button type="button" onClick={() => setIsViewMode(!isViewMode)}>
             Toggle Mode
