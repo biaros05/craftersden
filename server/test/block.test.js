@@ -138,3 +138,21 @@ describe('GET /api/blocks', () => {
   });
 
 });
+
+describe('GET /api/blocks/page-count', () => {
+  let dbCountDocumentsStub;
+  before(() => {
+    dbCountDocumentsStub = sinon.stub(mongoose.Model, 'countDocuments').returns(2);
+  });
+
+  it('should return total number of pages with default limit 50', async () => {
+    const response = await request(app).get('/api/blocks/page-count');
+    expect(response.status).to.equal(200);
+    expect(response.body).to.deep.equal({ totalPages: 1 });
+  });
+
+  after(() => {
+    dbCountDocumentsStub.restore();
+  });
+
+});
