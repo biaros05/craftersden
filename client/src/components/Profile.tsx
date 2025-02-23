@@ -68,7 +68,7 @@ export default function Profile() {
             </Tabs.Tab>
           </Tabs.List>
 
-          <Tabs.Panel value="builds" className="posts">
+          <Tabs.Panel value="builds">
             <Builds builds={builds}/>
           </Tabs.Panel>
 
