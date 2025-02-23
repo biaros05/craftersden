@@ -1,36 +1,33 @@
-import User from '../models/User.js';
-import {OAuth2Client} from 'google-auth-library';
+import User from '../models/User.mjs';
+import { OAuthService } from '../utils/auth.mjs';
 
-const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+const client = new OAuthService();
 
 /**
  * Authenticates the user using googles OAuth
  * @param {object} req - Request
  * @param {object} res - Response
+ * @param {Function} next - Next
  * @returns {void}
  */
-async function authenticateUser(req, res) {
+async function authenticateUser(req, res, next) {
   const {token} = req.body;
   if (!token) {
     return res.sendStatus(400);
   }
 
-  const ticket = await client.verifyIdToken({
-    idToken: token,
-    audience: process.env.GOOGLE_CLIENT_ID
-  });
-  
-  if (!ticket) {
-    return res.sendStatus(401);
-  }
-
-  const { name, email, picture } = ticket.getPayload();
   try {
-    const user = await User.findOneAndUpdate(
-      {email: email}, 
-      {username: name, email: email, avatar: picture}, 
-      {upsert: true, returnDocument: 'after'}
-    );
+    const {name, email, picture} = client.verifyToken(token);
+    
+    let user = await User.findOne({email: email});
+    if (!user || !user.customized) {
+      user = await User.findOneAndUpdate(
+        {email: email}, 
+        {username: name, email: email, avatar: picture}, 
+        {upsert: true, returnDocument: 'after'}
+      );
+    }
+
     req.session.regenerate(err => {
       if (err) {
         return res.status(500).json({message: 'Failed to create token'});
@@ -46,8 +43,7 @@ async function authenticateUser(req, res) {
     });
 
   } catch (err) {
-    console.error(`Failed to add user ${name}: `, err);
-    return res.status(500).json({message: 'Failed to add user to DB'});
+    next(err);
   }
 }
 
