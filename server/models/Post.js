@@ -6,7 +6,8 @@ const PostSchema = new Schema({
   user: { type: Schema.Types.ObjectId, ref: 'User' },
   buildJSON: {},
   isPublished: Boolean,
-  thumnails: []
+  thumnails: [],
+  progressPicture: String
 });
 
 // Compile model from schema, name of collection in the

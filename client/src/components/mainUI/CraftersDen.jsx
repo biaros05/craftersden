@@ -4,6 +4,8 @@ import ButtonPanel from './ButtonPanel';
 import { useAuth } from '../../hooks/useAuth';
 import './CraftersDen.css';
 import { Component, useEffect, useState, useCallback, useRef } from 'react';
+import {toByteArray} from 'base64-js';
+
 
 const blockList = [
   { name: 'grass', src: 'https://www.filterforge.com/filters/11635.jpg', type: 'overworld' },
@@ -25,10 +27,11 @@ const blockList = [
 export default function CraftersDen() {
   const [toSave, setToSave] = useState(false);
   const scene = useRef({});
+  const progressPicture = useRef('');
   const {email} = useAuth() ?? {};
 
   // PLEASE CHANGE!!!!!!
-  const curBuildId = '67b9ee078afa93a541131d01';
+  const curBuildId = '67ba9e59d60be99570e2e0c6';
 
   const onSaveChanged = useCallback(
     (newState) => {
@@ -40,17 +43,30 @@ export default function CraftersDen() {
      * Saves the current build in the db
      */
     async function savePost() {
-      const requestOptions = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        // TODO: change id to be not null if the build exists!!!
-        body: JSON.stringify({ email: email, build: scene, buildId: curBuildId})
-        // use ID to find pre-existing build if it exists, if not leave it null.
-      };
-      const response = await fetch('/api/post/save', requestOptions);
-      const json = await response.json();
-      console.log(json);
-      setToSave(false);
+      // fetch dataURL to get the blob
+      try{
+        console.log(progressPicture);
+        const base64Data = progressPicture.current.split(',')[1];
+        const byteArray = toByteArray(base64Data);
+        const blob = new Blob([byteArray], { type: 'image/png' });
+        const data = new FormData();
+        data.append('file', blob, 'blob.png');
+        data.append('build', scene);
+        data.append('buildId', curBuildId);
+        data.append('email', email);
+        const requestOptions = {
+          method: 'POST',
+          // TODO: change id to be not null if the build exists!!!
+          body: data
+          // use ID to find pre-existing build if it exists, if not leave it null.
+        };
+        const response = await fetch('/api/post/save', requestOptions);
+        const json = await response.json();
+        console.log(json);
+        setToSave(false);
+      } catch (error) {
+        console.log(error);
+      }
     }
     if (toSave) {
       //console.log(JSON.stringify(scene));
@@ -62,7 +78,7 @@ export default function CraftersDen() {
 
   return (
     <div id="main-ui">
-      <BuildPlane sceneState={scene} setToSave={onSaveChanged}/>
+      <BuildPlane sceneState={scene} progressPicture={progressPicture} setToSave={onSaveChanged}/>
       <BlockSelection blockList={blockList}/>
       <ButtonPanel/>
     </div>

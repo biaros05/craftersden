@@ -1,13 +1,32 @@
-import React, { FormEvent, FormEventHandler } from "react";
+import React, { FormEvent, FormEventHandler, useEffect, useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { Tabs, ActionIcon, Button, Modal } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IconEdit } from "@tabler/icons-react";
 import '../styles/profile.css'
+import Builds from './Builds';
 
 export default function Profile() {
     const {username, email, avatar} = useAuth() ?? {};
     const [opened, {open, close}] = useDisclosure(false);
+    const [builds, setBuilds] = useState([]);
+
+    useEffect(() => {
+      async function getBuilds() {
+        const requestOptions = {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          // TODO: change id to be not null if the build exists!!!
+          body: JSON.stringify({ email: email})
+          // use ID to find pre-existing build if it exists, if not leave it null.
+        };
+        const response = await fetch('/api/user/builds', requestOptions);
+        const json = await response.json();
+        console.log(json);
+        setBuilds(json.builds);
+      }
+      getBuilds();
+    },[]);
 
     const onSubmitHandler: FormEventHandler = async (event: FormEvent) => {
       event.preventDefault();
@@ -57,7 +76,7 @@ export default function Profile() {
           </Tabs.List>
 
           <Tabs.Panel value="builds">
-            Builds go here
+            <Builds builds={builds}/>
           </Tabs.Panel>
 
           <Tabs.Panel value="saves">

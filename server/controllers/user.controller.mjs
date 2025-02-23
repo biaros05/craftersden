@@ -1,6 +1,7 @@
 import User from '../models/User.js';
 import { BlobServiceClient} from '@azure/storage-blob';
 import { validationResult } from 'express-validator';
+import Post from '../models/Post.js';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -81,4 +82,25 @@ async function storeImageWithName(req, res, next) {
   }
 }
 
-export {uploadImage, storeImageWithName, uploadValidation};
+/**
+ * Extracts parameters from request body and saves the build in the user's profile as 
+ * a non-published post
+ * @param {*} req -
+ * @param {*} res -
+ * @param {*} next -
+ * @returns {JSON} - JSON with status code
+ */
+async function getUsersSavedBuilds(req, res, next) {
+  try {
+    const user = await User.findOne({email: req.body.email});
+    const builds = await Post.find({user: user._id});
+
+    res.status(200).json({status : 'success', builds: builds});
+    return;
+  } catch (e){
+    e.status = 500;
+    next(e);
+  }
+}
+
+export {uploadImage, storeImageWithName, uploadValidation, getUsersSavedBuilds};

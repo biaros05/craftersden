@@ -3,7 +3,8 @@ import
 { 
   uploadImage,
   storeImageWithName,
-  uploadValidation
+  uploadValidation,
+  getUsersSavedBuilds
 } from '../controllers/user.controller.mjs';
 import { body } from 'express-validator';
 import multer from 'multer';
@@ -36,5 +37,8 @@ const userUpdateValidation = [
 
 userRouter.put('/', 
   upload.single('avatar'), userUpdateValidation, uploadValidation, uploadImage, storeImageWithName);
+
+userRouter.get('/builds', 
+  upload.none(), getUsersSavedBuilds);
 
 export default userRouter;

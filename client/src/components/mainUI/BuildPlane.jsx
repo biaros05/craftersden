@@ -23,7 +23,7 @@ const tosFroms = [
  * @param {*} setScene - function to set the scene
  * @returns {Component} A div element with the id 'build-plane' to render the 3D plane.
  */
-export default function BuildPlane({sceneState, setToSave}) {
+export default function BuildPlane({sceneState, setToSave, progressPicture}) {
   //use ref is a react hok that lets you refernce a value that's not needed for rendering
   const refContainer = useRef(null);
   useEffect(() => {
@@ -68,7 +68,7 @@ export default function BuildPlane({sceneState, setToSave}) {
 
     var pointLightRight = new THREE.PointLight(0x33ff77, 1);
     pointLightRight.position.set(3, 2, 2);
-   
+
 
 
     const grassTexture = new THREE.TextureLoader().load(grassTop, function(texture) {
@@ -165,6 +165,13 @@ export default function BuildPlane({sceneState, setToSave}) {
 
     /* eslint-disable no-unused-vars */
     document.getElementsByClassName('save-button')[0].addEventListener('click', (e) => {
+      // ensure scene is rendered before capture
+      camera.position.set(15, 15, 15);
+      camera.lookAt(new THREE.Vector3(0, 0, 0));
+      const canvas = renderer.domElement;
+      animate();
+      const imageURL = canvas.toDataURL('image/png');
+      progressPicture.current = imageURL;
       sceneState.current = scene.toJSON();
       setToSave(true);
     });
@@ -178,7 +185,7 @@ export default function BuildPlane({sceneState, setToSave}) {
     
     renderer.setAnimationLoop(animate);
 
-  }, [sceneState, setToSave]);
+  }, [sceneState, setToSave, progressPicture]);
   return(
     <div id="build-plane" ref={refContainer}></div>
   );
