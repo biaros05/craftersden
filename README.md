@@ -181,3 +181,9 @@ In another terminal (for the server):
 cd server
 nodemon api.mjs
 ```
+
+## Tests
+To run the tests:
+```
+npm run test
+```
