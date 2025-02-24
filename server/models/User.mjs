@@ -13,6 +13,6 @@ const UserSchema = new Schema({
 
 // Compile model from schema, name of collection in the
 //first parameter, Mongoose will pluralize
-const User = model('User', UserSchema);
+const User = model('User', UserSchema, 'users');
 
 export default User;

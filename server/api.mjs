@@ -7,6 +7,7 @@ import session from 'express-session';
 import { default as connectMongoDBSession} from 'connect-mongodb-session';
 import authRouter from './routers/auth.router.mjs';
 import userRouter from './routers/user.router.mjs';
+import postRouter from './routers/post.router.mjs'
 
 dotenv.config();
 const app = express();
@@ -57,15 +58,17 @@ app.use('/api', authRouter);
 
 app.use('/api/user', userRouter);
 
+app.use('/api/post', postRouter);
+
 // Serve index.html for all other routes
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../client/dist/index.html'));
 });
 
 
-app.use(function (err, req, res) {
+app.use(function (err, req, res, next) {
   console.error(err);
-  const error = app.get('env') !== 'production' ? err : {};
+  const error = app.get('env') !== 'production' ? err.message : {};
   res.status(err.status || 500);
   res.json({ error: error });
 });
