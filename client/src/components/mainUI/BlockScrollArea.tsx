@@ -4,7 +4,6 @@ import BlockImage from './BlockImage';
 import BlockSearchBar from './BlockSearchBar';
 import BlockPage from './BlockPage';
 import useSWR from 'swr';
-import { BlockType } from '../../../server/models/BlockType';
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
