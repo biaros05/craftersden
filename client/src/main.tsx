@@ -63,7 +63,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'den',
-        element: <ProtectedRoute to={'/den'} authed={true}><CraftersDen /></ProtectedRoute>
+        element: <CraftersDen/>
       }
     ]
   }
