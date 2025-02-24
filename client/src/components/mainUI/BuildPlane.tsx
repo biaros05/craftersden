@@ -4,6 +4,7 @@ import { Component, useEffect, useRef } from 'react';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import grassTop from '../../assets/grass_top.png';
 import {curScene} from './scene';
+import React from 'react';
 
 /* ==== STAIRS ==== */
 const tosFroms = [

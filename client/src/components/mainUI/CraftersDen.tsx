@@ -53,7 +53,7 @@ export default function CraftersDen() {
         const blob = new Blob([byteArray], { type: 'image/png' });
         const data = new FormData();
         data.append('file', blob, 'blob.png');
-        data.append('build', scene);
+        data.append('build', scene.current);
         data.append('buildId', curBuildId);
         data.append('email', email);
         const requestOptions = {
@@ -85,7 +85,7 @@ export default function CraftersDen() {
           <div id="main-ui">
             <BuildPlane sceneState={scene} progressPicture={progressPicture} setToSave={onSaveChanged} isViewMode={isViewMode}/>
             <BlockSelection blockList={blockList}/>
-            
+            <ButtonPanel/>
           </div>
           <button type="button" onClick={() => setIsViewMode(!isViewMode)}>
                 Toggle Mode
