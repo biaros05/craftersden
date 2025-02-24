@@ -3,9 +3,11 @@ import BlockSelection from './BlockSelection';
 import ButtonPanel from './ButtonPanel';
 import { useAuth } from '../../hooks/useAuth';
 import './CraftersDen.css';
-import { Component, useEffect, useState, useCallback, useRef } from 'react';
+import { Component, useEffect, useState, 
+  useCallback, useRef, createContext} from 'react';
 import {toByteArray} from 'base64-js';
 
+const CurrentBlockContext = createContext(null);
 
 /**
  * Crafters den main ui component with build plane and block selecction panel.
@@ -16,6 +18,7 @@ export default function CraftersDen() {
   const scene = useRef({});
   const progressPicture = useRef('');
   const {email} = useAuth() ?? {};
+  const [currentBlock, setCurrentBlock] = useState(null);
 
   // PLEASE CHANGE!!!!!!
   const curBuildId = null;
@@ -64,10 +67,12 @@ export default function CraftersDen() {
   }, [toSave, email]);
 
   return (
-    <div id="main-ui">
-      <BuildPlane sceneState={scene} progressPicture={progressPicture} setToSave={onSaveChanged}/>
-      <BlockSelection/>
-      <ButtonPanel/>
-    </div>
+    <CurrentBlockContext.Provider value={{currentBlock, setCurrentBlock}}>
+      <div id="main-ui">
+        <BuildPlane sceneState={scene} progressPicture={progressPicture} setToSave={onSaveChanged}/>
+        <BlockSelection/>
+        <ButtonPanel/>
+      </div>
+    </CurrentBlockContext.Provider>
   );
 }
