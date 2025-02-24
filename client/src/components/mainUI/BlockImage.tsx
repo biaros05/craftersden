@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import '../../App.css';
 import {Image, ActionIcon} from '@mantine/core';
 import { IconPlus } from '@tabler/icons-react';
+import { CurrentBlockContext } from '../../context/currentBlockContext';
 
 /**
  * Displays an image with an action icon.
@@ -10,6 +11,11 @@ import { IconPlus } from '@tabler/icons-react';
  * @returns React.JSX.Element
  */
 export default function BlockImage({ src = null, alt = undefined }: { src?: string | null; alt?: string | undefined}) {
+
+  const {
+    currentBlock,
+    setCurrentBlock
+  } = useContext(CurrentBlockContext);
 
   return (
     <div className="block-image" style={{ position: 'relative'}}>

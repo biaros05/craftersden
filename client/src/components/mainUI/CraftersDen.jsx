@@ -4,10 +4,10 @@ import ButtonPanel from './ButtonPanel';
 import { useAuth } from '../../hooks/useAuth';
 import './CraftersDen.css';
 import { Component, useEffect, useState, 
-  useCallback, useRef, createContext} from 'react';
+  useCallback, useRef} from 'react';
 import {toByteArray} from 'base64-js';
+import { CurrentBlockContext } from '../../context/CurrentBlockContext';
 
-const CurrentBlockContext = createContext(null);
 
 /**
  * Crafters den main ui component with build plane and block selecction panel.
