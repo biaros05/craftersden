@@ -1,4 +1,7 @@
 import { OAuth2Client } from 'google-auth-library';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 /**
  * Checks if the requesting client is authenticated using its session
@@ -9,8 +12,7 @@ import { OAuth2Client } from 'google-auth-library';
  */
 function isAuthenticated(req, res, next) {
   if (!req.session || !req.session.user) {
-    res.sendStatus(401);
-    return;
+    return res.sendStatus(401);
   }
   next();
 }

@@ -6,7 +6,9 @@ import { fileURLToPath } from 'url';
 import session from 'express-session';
 import { default as connectMongoDBSession} from 'connect-mongodb-session';
 import authRouter from './routers/auth.router.mjs';
+import blockRouter from './routers/block.router.mjs';
 import userRouter from './routers/user.router.mjs';
+import postRouter from './routers/post.router.mjs'
 
 dotenv.config();
 const app = express();
@@ -26,7 +28,7 @@ app.use(session({
   name: 'id',
   saveUninitialized: false,
   resave: false,
-  store: dbUrl ? new MongoDBStore({
+  store: app.get('env') !== 'test' ? new MongoDBStore({
     uri: dbUrl,
     collection: 'sessions'
   }) : null,
@@ -54,8 +56,11 @@ app.get('/api/helloworld', (req, res) => {
 });
 
 app.use('/api', authRouter);
+app.use('/api', blockRouter);
 
 app.use('/api/user', userRouter);
+
+app.use('/api/post', postRouter);
 
 // Serve index.html for all other routes
 app.get('*', (req, res) => {
@@ -64,7 +69,8 @@ app.get('*', (req, res) => {
 
 
 app.use(function (err, req, res, next) {
-  const error = app.get('env') === 'development' ? err : {};
+  console.error(err);
+  const error = app.get('env') !== 'production' ? err.message : {};
   res.status(err.status || 500);
   res.json({ error: error });
 });

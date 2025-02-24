@@ -1,19 +1,9 @@
 import User from '../models/User.mjs';
-import { BlobServiceClient} from '@azure/storage-blob';
+import BlobServiceProvider from '../utils/BlobService.mjs';
 import { validationResult } from 'express-validator';
-import dotenv from 'dotenv';
+import Post from '../models/Post.js';
 
-dotenv.config();
-
-const sasToken = process.env.AZURE_SAS;
-const containerName = process.env.AZURE_BLOB_CONTAINER || 'imageblob';
-const storageAccountName = process.env.AZURE_STORAGE_ACCOUNT || 'nameofyourstorageaccount';
-const blobPublicUrl = `https://${storageAccountName}.blob.core.windows.net/${containerName}/`;
-
-const blobService = new BlobServiceClient(
-  `https://${storageAccountName}.blob.core.windows.net/?${sasToken}`
-);
-const containerClient = blobService.getContainerClient(containerName);
+const blobService = new BlobServiceProvider();
 
 /**
  * Checks that the request contains all required data.
@@ -39,18 +29,10 @@ function uploadValidation(req, res, next) {
  * @param {Function} next - Next
  */
 async function uploadImage(req, res, next) {
-  // set as single file upload in router
-  const file = req.file; 
-  //moves the file to the current folder
-  const blobName = file.originalname;
-
   try {
-    const blobClient = containerClient.getBlockBlobClient(blobName);
-    // set mimetype as determined from browser with file upload control
-    const options = { blobHTTPHeaders: { blobContentType: file.mimetype } };
-    await blobClient.uploadData(file.buffer, options);
-    const fullUrl = blobPublicUrl + blobName;
-    req.url = fullUrl;
+    if (req.file) {
+      req.blobUrl = await blobService.saveFile(req.file);
+    }
     next();
   } catch (e){
     e.status = 500;
@@ -67,9 +49,23 @@ async function uploadImage(req, res, next) {
  */
 async function storeImageWithName(req, res, next) {
   try {
+    const update = {
+      username: String(req.body.username),
+      avatar: req.blobUrl,
+      customized: true
+    };
+
+    if (!req.blobUrl) {
+      delete update.avatar;
+    }
+
+    if (!req.body.username) {
+      delete update.username;
+    }
+
     const user = await User.findOneAndUpdate(
       {email: req.session.user.email}, 
-      {username: String(req.body.username), avatar: req.url, customized: true}, 
+      update,
       {returnDocument: 'after'}
     );
     req.session.user = user;
@@ -81,4 +77,32 @@ async function storeImageWithName(req, res, next) {
   }
 }
 
-export {uploadImage, storeImageWithName, uploadValidation};
+/**
+ * Extracts parameters from request body and saves the build in the user's profile as 
+ * a non-published post
+ * @param {*} req -
+ * @param {*} res -
+ * @param {*} next -
+ * @returns {JSON} - JSON with status code
+ */
+async function getUsersSavedBuilds(req, res, next) {
+  try {
+    const user = await User.findOne({email: req.params.email});
+    
+    if (!user) {
+      const error = new Error('this user does not exist');
+      error.status = 404;
+      next(error);
+    }
+    
+    const builds = await Post.find({user: user._id});
+
+    res.status(200).json({status : 'success', builds: builds});
+    return;
+  } catch (e){
+    e.status = 500;
+    next(e);
+  }
+}
+
+export {uploadImage, storeImageWithName, uploadValidation, getUsersSavedBuilds};
