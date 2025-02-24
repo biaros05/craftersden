@@ -89,6 +89,10 @@ export default function BuildPlane({sceneState, setToSave, progressPicture}) {
     
     const planeGeometry = new THREE.PlaneGeometry(30, 30);
     const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+
+    // currentGeometry.material = new THREE.MeshBasicMaterial({
+    //   map: grassTexture,
+    // });
     
     // Rotate to lay flat like the ground
     plane.rotation.x = -0.5 * Math.PI;
