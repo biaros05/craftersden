@@ -12,7 +12,9 @@ let server;
 
 (async () => {
   try {
-    await mongoose.connect(dbUrl);
+    await mongoose.connect(dbUrl, {
+      dbName: 'craftersden'
+    });
     console.log('Database connection established');
     server = app.listen(port, () => {
       console.log(`Server listening on http://localhost:${port} in ${app.get('env')} mode`);

@@ -1,9 +1,9 @@
-.container {
+/* .container {
   height: 100%;
-}
-.profile-page {
+} */
+/* .profile-page {
     height: 100vh;
-}
+} */
 
 .profile-page .user-info {
     margin: 1em;
@@ -52,4 +52,15 @@
     gap: 1em;
     grid-template-columns: max-content max-content;
     align-items: center;
+}
+
+.profile-page {
+    display: flex;
+    flex-direction: column;
+    gap: 10px 0;
+    padding: 10px;
+}
+
+#mantine-6x0g87hhx-panel-builds {
+    display: flex;
 }
