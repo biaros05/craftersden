@@ -192,7 +192,7 @@ export default function BuildPlane({sceneState, setToSave, progressPicture, isVi
     }
     renderer.setAnimationLoop(animate);
   
-    console.log(`View mode: ${isViewMode}`);
+    // console.log(`View mode: ${isViewMode}`);
   
     // Cleanup function to remove event listeners properly
     return () => {
