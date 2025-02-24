@@ -18,12 +18,14 @@ export default function BlockImage({ block }) {
     setCurrentBlock
   } = useContext(CurrentBlockContext);
 
+
   return (
     <div className="block-image" style={{ position: 'relative'}}>
     <ActionIcon
       size="sm"
       style={{ position: 'absolute', top: "10px", right: "10px", zIndex: 2 }}
       aria-label="Add to inventory"
+      onClick={() => setCurrentBlock(block)}
     >
       <IconPlus/>
     </ActionIcon>
