@@ -1,0 +1,9 @@
+.posts {
+  height: 100%;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 30px 20px;
+  justify-items: center;
+  padding: 10px;
+}
