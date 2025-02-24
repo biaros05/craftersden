@@ -1,6 +1,6 @@
 import request from 'supertest';
 import * as chai from 'chai';
-import { describe, it, after } from 'mocha';
+import { describe, it, after, before } from 'mocha';
 const expect = chai.expect;
 import  app  from '../api.mjs';
 import Sinon from 'sinon';
@@ -21,11 +21,15 @@ const testPost = {
   'progressPicture': 'sampleURL'
 };
 
+let getUserStub;
+let getPostsStub;
 
 describe('Test the /api/user/builds endpoint', () => {
 
-  const getUserStub = Sinon.stub(mongoose.Model, 'findOne');
-  const getPostsStub = Sinon.stub(mongoose.Model, 'find');
+  before(() => {
+    getUserStub = Sinon.stub(mongoose.Model, 'findOne');
+    getPostsStub = Sinon.stub(mongoose.Model, 'find');
+  });
 
   it('should get the users saved builds', async () => {
     getUserStub.resolves(initialTestUser);
@@ -48,5 +52,6 @@ describe('Test the /api/user/builds endpoint', () => {
   after(() => {
     getUserStub.restore();
     getPostsStub.restore();
+    Sinon.restore();
   }); 
 });
