@@ -1,0 +1,8 @@
+.post-actions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.icons:hover {
+  cursor: pointer;
+} 

@@ -1,0 +1,13 @@
+.site-footer {
+    padding: 1em;
+    width: 100%;
+
+    display: flex;
+    justify-content: space-evenly;
+
+    background-color: lightgrey;
+}
+
+.site-footer li {
+    list-style: none;
+}
