@@ -50,8 +50,9 @@ export default function CraftersDen() {
         const byteArray = toByteArray(base64Data);
         const blob = new Blob([byteArray], { type: 'image/png' });
         const data = new FormData();
+        console.log(scene);
         data.append('file', blob, 'blob.png');
-        data.append('build', scene);
+        data.append('build', JSON.stringify(scene));
         data.append('buildId', curBuildId);
         data.append('email', email);
         const requestOptions = {

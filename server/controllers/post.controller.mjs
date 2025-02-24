@@ -47,7 +47,7 @@ function uploadValidation(req, res, next) {
  * @returns {JSON} - JSON with status code
  */
 async function saveBuild(req, res, next) {
-  const build = req.body.build;
+  const build = JSON.parse(req.body.build);
   const email = req.body.email;
   try {
     if (req.body.buildId !== 'null' && req.body.buildId !== undefined) {
