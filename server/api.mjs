@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url';
 import session from 'express-session';
 import { default as connectMongoDBSession} from 'connect-mongodb-session';
 import authRouter from './routers/auth.router.mjs';
+import blockRouter from './routers/block.router.mjs';
 import userRouter from './routers/user.router.mjs';
 import postRouter from './routers/post.router.mjs'
 
@@ -55,6 +56,7 @@ app.get('/api/helloworld', (req, res) => {
 });
 
 app.use('/api', authRouter);
+app.use('/api', blockRouter);
 
 app.use('/api/user', userRouter);
 

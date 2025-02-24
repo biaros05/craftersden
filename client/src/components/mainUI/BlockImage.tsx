@@ -9,7 +9,7 @@ import { IconPlus } from '@tabler/icons-react';
  * @param alt image alt text
  * @returns React.JSX.Element
  */
-export default function BlockImage({src = null, alt = ''}) {
+export default function BlockImage({ src = null, alt = undefined }: { src?: string | null; alt?: string | undefined}) {
 
   return (
     <div className="block-image" style={{ position: 'relative'}}>
@@ -22,8 +22,6 @@ export default function BlockImage({src = null, alt = ''}) {
     </ActionIcon>
       <Image
         src={src}
-        height={100}
-        width="auto"
         alt={alt}
         fallbackSrc="https://placehold.co/600x400?text=Placeholder"
       />
