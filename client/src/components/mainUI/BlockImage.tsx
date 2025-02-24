@@ -3,6 +3,7 @@ import '../../App.css';
 import {Image, ActionIcon} from '@mantine/core';
 import { IconPlus } from '@tabler/icons-react';
 import { CurrentBlockContext } from '../../context/currentBlockContext';
+import { BlockType } from '../../../server/models/BlockType';
 
 /**
  * Displays an image with an action icon.
@@ -10,7 +11,7 @@ import { CurrentBlockContext } from '../../context/currentBlockContext';
  * @param alt image alt text
  * @returns React.JSX.Element
  */
-export default function BlockImage({ src = null, alt = undefined }: { src?: string | null; alt?: string | undefined}) {
+export default function BlockImage({ block }) {
 
   const {
     currentBlock,
@@ -27,11 +28,11 @@ export default function BlockImage({ src = null, alt = undefined }: { src?: stri
       <IconPlus/>
     </ActionIcon>
       <Image
-        src={src}
-        alt={alt}
+        src={block.inventoryTexture}
+        alt={block.name}
         fallbackSrc="https://placehold.co/600x400?text=Placeholder"
       />
-      {alt}
+      {block.name}
     </div>
     
   )

@@ -27,7 +27,7 @@ export default function BlockPage({ index }) {
   return (
     <SimpleGrid cols={4} spacing="sm">
     {data?.blocks?.map((block: BlockType, index: number) => 
-      <BlockImage src={block.inventoryTexture} alt={block.name} key={index}/>
+      <BlockImage block={block} key={index}/>
     )}
     </SimpleGrid>
   )
