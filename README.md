@@ -2,6 +2,9 @@
 
 This app will let users unleash their minecraft creativity by building anything they want in the 3d plane we provide them. They can select any blocks they want from the side panel and build on the 3d plane, and when done, they can either save their builds for later, or publish them to the forum! On the forum, users are able to look at all the builds that have been published, and will be able to search through them to filter them by their descriptions!
 
+## Deployment URL
+[Deployment URL](proof-of-concept-drgeagazfdfvhsa6.canadacentral-01.azurewebsites.net)
+
 ## Authors: Amy Nguyen, Axel Brochu, Bianca Rossetti, Marin Melentii
 
 There are two directories in the __root__ of the project.
@@ -11,6 +14,9 @@ There are two directories in the __root__ of the project.
 * The server responsd to API calls and serves the __built__ React app.
 
 There are 3 package.json files -- see what `scripts` they define.
+
+## Simple tech stack
+Full stack MERN app with Mocha-Chai testing frameworks. Threejs used for the building plane, along with Mantine component library for all components used.
 
 ## Setup
 
