@@ -3,7 +3,8 @@ import BlockSelection from './BlockSelection';
 import ButtonPanel from './ButtonPanel';
 import { useAuth } from '../../hooks/useAuth';
 import './CraftersDen.css';
-import { Component, useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
+import React from 'react';
 import {toByteArray} from 'base64-js';
 
 
@@ -29,6 +30,7 @@ export default function CraftersDen() {
   const scene = useRef({});
   const progressPicture = useRef('');
   const {email} = useAuth() ?? {};
+  const [isViewMode, setIsViewMode] = useState(false);
 
   // PLEASE CHANGE!!!!!!
   const curBuildId = null;
@@ -51,7 +53,7 @@ export default function CraftersDen() {
         const blob = new Blob([byteArray], { type: 'image/png' });
         const data = new FormData();
         data.append('file', blob, 'blob.png');
-        data.append('build', scene);
+        data.append('build', scene.current);
         data.append('buildId', curBuildId);
         data.append('email', email);
         const requestOptions = {
@@ -76,11 +78,33 @@ export default function CraftersDen() {
     // TODO: add cleanup function in case the toSave is spammed
   }, [toSave, email]);
 
-  return (
-    <div id="main-ui">
-      <BuildPlane sceneState={scene} progressPicture={progressPicture} setToSave={onSaveChanged}/>
-      <BlockSelection blockList={blockList}/>
-      <ButtonPanel/>
-    </div>
-  );
+  if(!isViewMode)
+    {
+      return (
+        <>
+          <div id="main-ui">
+            <BuildPlane sceneState={scene} progressPicture={progressPicture} setToSave={onSaveChanged} isViewMode={isViewMode}/>
+            <BlockSelection blockList={blockList}/>
+            <ButtonPanel/>
+          </div>
+          <button type="button" onClick={() => setIsViewMode(!isViewMode)}>
+                Toggle Mode
+          </button>
+        </>
+      );
+    }
+    else
+    {
+      return (
+        <>
+          <div id="main-ui">
+            <BuildPlane sceneState={scene} progressPicture={progressPicture} setToSave={onSaveChanged} isViewMode={isViewMode}/>
+          </div>
+          <ButtonPanel/>
+          <button type="button" onClick={() => setIsViewMode(!isViewMode)}>
+            Toggle Mode
+          </button>
+        </>
+      );
+    }
 }
