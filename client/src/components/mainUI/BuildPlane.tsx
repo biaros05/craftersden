@@ -3,7 +3,6 @@ import { createMesh, Cuboid, Coordinates } from '../../utils/building_plane_util
 import { useEffect, useRef } from 'react';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import grassTop from '../../assets/grass_top.png';
-import { curScene } from './scene';
 import React from 'react';
 
 /* ==== STAIRS ==== */
@@ -107,10 +106,10 @@ export default function BuildPlane({ sceneState, setToSave, progressPicture, isV
     );
     highlightMesh.rotateX(-Math.PI / 2);
     highlightMesh.position.set(0.5, 0, 0.5);
-    if (!curScene) {
+    if (!sceneState.current || Object.keys(sceneState.current).length == 0) {
       scene.add(plane);
     } else {
-      scene = new THREE.ObjectLoader().parse(JSON.parse(JSON.stringify(curScene.current))) as THREE.Scene;
+      scene = new THREE.ObjectLoader().parse( JSON.parse( JSON.stringify(sceneState.current) ) );
     }
     scene.add(gridHelper);
     scene.add(highlightMesh);
@@ -251,13 +250,13 @@ export default function BuildPlane({ sceneState, setToSave, progressPicture, isV
     renderer.setAnimationLoop(animate);
 
 
-    return () => {
-      if (buildPlane) {
-        console.log("Clean up function: Removing event listeners.");
-        buildPlane.removeEventListener('mousemove', onMouseMove);
-        buildPlane.removeEventListener('mousedown', onMouseDown);
-      }
-    }
+    // return () => {
+    //   if (buildPlane) {
+    //     console.log("Clean up function: Removing event listeners.");
+    //     buildPlane.removeEventListener('mousemove', onMouseMove);
+    //     buildPlane.removeEventListener('mousedown', onMouseDown);
+    //   }
+    // }
 
   }, [isViewMode, sceneState, setToSave, progressPicture]);
 

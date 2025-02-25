@@ -6,7 +6,8 @@ import './CraftersDen.css';
 import { useEffect, useState, useCallback, useRef } from 'react';
 import React from 'react';
 import {toByteArray} from 'base64-js';
-
+import ErrorPopup from '../Notifications/ErrorPopup';
+import SuccessPopup from '../Notifications/SuccessPopup';
 
 const blockList = [
   { name: 'grass', src: 'https://www.filterforge.com/filters/11635.jpg', type: 'overworld' },
@@ -23,13 +24,15 @@ const blockList = [
 
 /**
  * Crafters den main ui component with build plane and block selecction panel.
- * @returns {Component}A div element with the id 'main-ui' to render the den.
+ * @returns {Component} - A div element with the id 'main-ui' to render the den.
  */
 export default function CraftersDen() {
   const [toSave, setToSave] = useState(false);
   const scene = useRef({});
   const progressPicture = useRef('');
   const {email} = useAuth() ?? {};
+  const [isViewMode, setIsViewMode] = useState(false);
+  const {error, setError} = useState({});
 
   // PLEASE CHANGE!!!!!!
   const curBuildId = null;
@@ -51,8 +54,9 @@ export default function CraftersDen() {
         const byteArray = toByteArray(base64Data);
         const blob = new Blob([byteArray], { type: 'image/png' });
         const data = new FormData();
+        console.log(scene);
         data.append('file', blob, 'blob.png');
-        data.append('build', scene.current);
+        data.append('build', JSON.stringify(scene));
         data.append('buildId', curBuildId);
         data.append('email', email);
         const requestOptions = {
@@ -63,49 +67,29 @@ export default function CraftersDen() {
         };
         const response = await fetch('/api/post/save', requestOptions);
         const json = await response.json();
-        console.log(json);
         setToSave(false);
       } catch (error) {
         console.log(error);
       }
     }
     if (toSave) {
-      //console.log(JSON.stringify(scene));
       savePost();
     }
 
     // TODO: add cleanup function in case the toSave is spammed
   }, [toSave, email]);
 
-  const [isViewMode, setIsViewMode] = useState(false);
-  
-  if(!isViewMode)
-    {
-      return (
-        <>
-          <div id="main-ui">
-            <BuildPlane sceneState={scene} progressPicture={progressPicture} setToSave={onSaveChanged} isViewMode={isViewMode}/>
-            <BlockSelection blockList={blockList}/>
-            <ButtonPanel/>
-          </div>
-          <button id="toggle" type="button" onClick={() => setIsViewMode(!isViewMode)}>
-                Toggle Mode
-          </button>
-        </>
-      );
-    }
-    else
-    {
-      return (
-        <>
-          <div id="main-ui">
-            <BuildPlane sceneState={scene} progressPicture={progressPicture} setToSave={onSaveChanged} isViewMode={isViewMode}/>
-          </div>
-          <ButtonPanel/>
-          <button type="button" id="toggle" onClick={() => setIsViewMode(!isViewMode)}>
-            Toggle Mode
-          </button>
-        </>
-      );
-    }
+    return (
+      <>
+        <div id="main-ui">
+          <BuildPlane 
+          sceneState={scene}
+          progressPicture={progressPicture} 
+          setToSave={onSaveChanged} 
+          isViewMode={isViewMode}/>
+          {!isViewMode && <BlockSelection blockList={blockList}/>}
+          <ButtonPanel setIsViewMode={setIsViewMode} isViewMode={isViewMode}/>
+        </div>
+      </>
+    );
 }
