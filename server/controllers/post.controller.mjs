@@ -119,7 +119,7 @@ async function updatePostPicture(req, res, next) {
       {progressPicture: req.url}
     );
 
-    res.status(200).json({status : 'success'});
+    res.status(200).json({status : 'Build successfully saved!'});
     return;
   } catch (e){
     e.status = 500;
