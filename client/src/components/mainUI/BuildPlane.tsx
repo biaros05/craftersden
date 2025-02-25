@@ -1,13 +1,13 @@
 import * as THREE from 'three';
-import { createMesh } from '../../utils/building_plane_utils.mjs';
-import { Component, useEffect, useRef } from 'react';
+import { createMesh, Cuboid, Coordinates } from '../../utils/building_plane_utils.js';
+import { useEffect, useRef } from 'react';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import grassTop from '../../assets/grass_top.png';
 import { curScene } from './scene';
 import React from 'react';
 
 /* ==== STAIRS ==== */
-const tosFroms = [
+const tosFroms: Cuboid[] = [
   {
     from: [0, 0, 0],
     to: [1, 0.5, 1],
@@ -24,9 +24,9 @@ const tosFroms = [
  * @param {*} setScene - function to set the scene
  * @returns {Component} A div element with the id 'build-plane' to render the 3D plane.
  */
-export default function BuildPlane({ sceneState, setToSave, progressPicture, isViewMode }) {
+export default function BuildPlane({ sceneState, setToSave, progressPicture, isViewMode }: { sceneState: any, setToSave: any, progressPicture: any, isViewMode: boolean}): React.ReactNode {
   //use ref is a react hok that lets you refernce a value that's not needed for rendering
-  const refContainer = useRef(null);
+  const refContainer = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const currentGeometry = createMesh(tosFroms);
     const container = refContainer.current;
@@ -110,7 +110,7 @@ export default function BuildPlane({ sceneState, setToSave, progressPicture, isV
     if (!curScene) {
       scene.add(plane);
     } else {
-      scene = new THREE.ObjectLoader().parse(JSON.parse(JSON.stringify(curScene.current)));
+      scene = new THREE.ObjectLoader().parse(JSON.parse(JSON.stringify(curScene.current))) as THREE.Scene;
     }
     scene.add(gridHelper);
     scene.add(highlightMesh);
@@ -120,18 +120,18 @@ export default function BuildPlane({ sceneState, setToSave, progressPicture, isV
 
     const mousePosition = new THREE.Vector2();
     const raycaster = new THREE.Raycaster();
-    let intersects;
+    let intersects: THREE.Intersection[];
     const objects: THREE.Object3D[] = [];
 
 
     console.log(`View mode: ${isViewMode}`);
 
     /**
- * Finds the height of the highest block in the stack at a given x and z
- * @param {object} highLightPos Object holding the normalized coordinates of the highlight
- * @returns {number} Height of the highest block at a given x and z coordinate
- */
-    function computeHighestY(highLightPos) {
+     * Finds the height of the highest block in the stack at a given x and z
+     * @param {Coordinates} highLightPos Object holding the normalized coordinates of the highlight
+     * @returns {number} Height of the highest block at a given x and z coordinate
+     */
+    function computeHighestY(highLightPos: Coordinates): number {
       let highestY = 0;
       // Find all cubes that exist at the same X, Z position
       objects.forEach((object) => {
@@ -146,14 +146,14 @@ export default function BuildPlane({ sceneState, setToSave, progressPicture, isV
     }
 
     /**
- * Places block at the highlighted position
- * @param {object} highLightPos Object holding the normalized coordinates of the highlight
- */
-    function placeBlock(highLightPos) {
+     * Places block at the highlighted position
+     * @param {Coordinates} highLightPos Object holding the normalized coordinates of the highlight
+     */
+    function placeBlock(highLightPos: Coordinates) {
       // Keep track of the highest cube at this X, Z
       const highestY = computeHighestY(highLightPos);
 
-      // Create a new cube and place it one unit above the highest cube found
+      // Create a new cube and place it
       const geometryClone = currentGeometry.clone();
 
       scene.add(geometryClone);
@@ -164,15 +164,14 @@ export default function BuildPlane({ sceneState, setToSave, progressPicture, isV
       );
       geometryClone.name = 'block';
       objects.push(geometryClone);
-      console.log(objects.length);
-
+      console.log(highLightPos, highestY, geometryClone)
     }
 
     /**
      * Removes block at the highlighted position
-     * @param {object} highLightPos Object holding the normalized coordinates of the highlight 
+     * @param {Coordinates} highLightPos Object holding the normalized coordinates of the highlight 
      */
-    function removeBlock(highLightPos) {
+    function removeBlock(highLightPos: Coordinates) {
       const objIndex = objects.findIndex(o => {
         return o.position.x === highLightPos.x &&
           o.position.y === highLightPos.y &&
@@ -185,10 +184,9 @@ export default function BuildPlane({ sceneState, setToSave, progressPicture, isV
       }
     }
 
-    const onMouseMove = (e) => {
+    const onMouseMove = (e: MouseEvent) => {
+      console.log("I am inside mouse move");
       // Get container position
-      if (isViewMode) return;
-      // console.log("I am inside mouse move")
       const rect = container.getBoundingClientRect();
       mousePosition.x = (e.clientX - rect.left) / rect.width * 2 - 1;
       mousePosition.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
@@ -203,29 +201,29 @@ export default function BuildPlane({ sceneState, setToSave, progressPicture, isV
       });
     }
 
-    const onMouseDown = (e) => {
-      if (isViewMode) return
-      else{
-        // console.log("I am inside mouse down")
-        // console.log(scene.children);
-        const highLightPos = {
-          x: highlightMesh.position.x - 0.5,
-          y: highlightMesh.position.y,
-          z: highlightMesh.position.z - 0.5
-        };
-  
-        if (e.button === 2) {
-          placeBlock(highLightPos);
-        } else if (e.button === 0) {
-          removeBlock(highLightPos);
-        }
+    const onMouseDown = (e: MouseEvent) => {
+      console.log("I am inside mouse down")
+      console.log(scene.children.filter(c => c.name === 'block'))
+
+      const highLightPos = {
+        x: highlightMesh.position.x - 0.5,
+        y: highlightMesh.position.y,
+        z: highlightMesh.position.z - 0.5
+      };
+
+      if (e.button === 2) {
+        placeBlock(highLightPos);
+      } else if (e.button === 0) {
+        removeBlock(highLightPos);
       }
     };
 
+
+    console.log(scene)
     if (!isViewMode && buildPlane) {
       console.log("Adding mouse events on window");
-        buildPlane.addEventListener('mousemove', onMouseMove);
-        buildPlane.addEventListener('mousedown', onMouseDown);
+      buildPlane.addEventListener('mousemove', onMouseMove);
+      buildPlane.addEventListener('mousedown', onMouseDown);
     }
 
 
