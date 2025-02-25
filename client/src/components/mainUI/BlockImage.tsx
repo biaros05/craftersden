@@ -15,7 +15,7 @@ export default function BlockImage({ block }) {
 
   const {
     currentBlock,
-    setCurrentBlock
+    storeBlock
   } = useContext(CurrentBlockContext);
 
 
@@ -25,7 +25,7 @@ export default function BlockImage({ block }) {
       size="sm"
       style={{ position: 'absolute', top: "10px", right: "10px", zIndex: 2 }}
       aria-label="Add to inventory"
-      onClick={() => setCurrentBlock(block)}
+      onClick={() => storeBlock(block)}
     >
       <IconPlus/>
     </ActionIcon>

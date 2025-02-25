@@ -17,7 +17,7 @@ export default function BlockSearchBar({blockList, style={}}) {
   const [blockHistory, setBlockHistory] = useState(new Set<string>());
   const [searchValue, setSearchValue] = useState('');
 
-  const { currentBlock, setCurrentBlock } = useContext(CurrentBlockContext);
+  const { currentBlock, storeBlock } = useContext(CurrentBlockContext);
 
   const filteredData = searchValue.length > 0 
   ? blockList.map(block => block.name) 
@@ -25,7 +25,7 @@ export default function BlockSearchBar({blockList, style={}}) {
   
   function handleOptionSubmit(value: string) {
     setBlockHistory(new Set([...blockHistory, value]));
-    setCurrentBlock(blockList.find(block => block.name === value));
+    storeBlock(blockList.find(block => block.name === value));
   }
   return (
       <Autocomplete
