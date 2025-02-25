@@ -35,7 +35,7 @@ function createGeometry(tos_froms) {
  * Function to create a mesh from an array of cuboids.
  * @param {object[]} tos_froms - Array of objects that contain a to and from for each cuboid
  * @param {THREE.MeshStandardMaterial} material - Material to apply to the mesh
- * @returns {THREE.MeshStandardMaterial} Material mesh.
+ * @returns {THREE.Mesh} Mesh.
  */
 function createMesh(tos_froms, material) {
   const geometry = createGeometry(tos_froms);
