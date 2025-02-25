@@ -25,7 +25,7 @@ export default function CraftersDen() {
    * @param {Object} block - block object to fetch from the api
    */
   async function storeBlock(block) {
-    const response = await fetch(`/api/block/${block.id}`);
+    const response = await fetch(`/api/block/${block._id}`);
     const completeBlockData = await response.json();
     setCurrentBlock(completeBlockData);
   }
