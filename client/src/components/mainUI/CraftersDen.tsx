@@ -77,42 +77,17 @@ export default function CraftersDen() {
     // TODO: add cleanup function in case the toSave is spammed
   }, [toSave, email]);
 
-  if(!isViewMode)
-    {
-      return (
-        <>
-          <div id="main-ui">
-            <BuildPlane 
-            sceneState={scene}
-            progressPicture={progressPicture} 
-            setToSave={onSaveChanged} 
-            isViewMode={isViewMode}/>
-            <BlockSelection blockList={blockList}/>
-            <ButtonPanel/>
-          </div>
-          <button type="button" onClick={() => setIsViewMode(!isViewMode)}>
-                Toggle Mode
-          </button>
-        </>
-      );
-    }
-    else
-    {
-      return (
-        <>
-          <div id="main-ui">
-            <BuildPlane 
-              sceneState={scene} 
-              progressPicture={progressPicture} 
-              setToSave={onSaveChanged} 
-              isViewMode={isViewMode}
-            />
-          </div>
-          <ButtonPanel/>
-          <button type="button" onClick={() => setIsViewMode(!isViewMode)}>
-            Toggle Mode
-          </button>
-        </>
-      );
-    }
+    return (
+      <>
+        <div id="main-ui">
+          <BuildPlane 
+          sceneState={scene}
+          progressPicture={progressPicture} 
+          setToSave={onSaveChanged} 
+          isViewMode={isViewMode}/>
+          {!isViewMode && <BlockSelection blockList={blockList}/>}
+          <ButtonPanel setIsViewMode={setIsViewMode} isViewMode={isViewMode}/>
+        </div>
+      </>
+    );
 }
