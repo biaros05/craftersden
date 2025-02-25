@@ -1,9 +1,10 @@
 import * as THREE from 'three';
 import { createMesh } from '../../utils/building_plane_utils.mjs';
-import { Component, useEffect, useRef } from 'react';
+import { Component, useEffect, useRef, useContext } from 'react';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import grassTop from '../../assets/grass_top.png';
 import {curScene} from './scene';
+import { CurrentBlockContext } from '../../context/CurrentBlockContext';
 
 /* ==== STAIRS ==== */
 const tosFroms = [
@@ -26,8 +27,22 @@ const tosFroms = [
 export default function BuildPlane({sceneState, setToSave, progressPicture}) {
   //use ref is a react hok that lets you refernce a value that's not needed for rendering
   const refContainer = useRef(null);
+  const {currentBlock} = useContext(CurrentBlockContext);
+  
   useEffect(() => {
-    const currentGeometry = createMesh(tosFroms);
+    const currentTexture = new THREE.TextureLoader().load(grassTop, function(texture) {
+      texture.colorSpace = THREE.SRGBColorSpace; 
+    });
+    const currentMaterial = new THREE.MeshBasicMaterial({
+
+    });
+    let currentGeometry;
+    if (currentBlock) {
+      currentGeometry = createMesh(currentBlock.cuboids, currentMaterial);
+    } else {
+      currentGeometry = createMesh(tosFroms, currentMaterial);
+    }
+    console.log(currentGeometry);
     const container = refContainer.current;
     const width = container.clientWidth;
     const height = container.clientHeight;
@@ -189,7 +204,7 @@ export default function BuildPlane({sceneState, setToSave, progressPicture}) {
     
     renderer.setAnimationLoop(animate);
 
-  }, [sceneState, setToSave, progressPicture]);
+  }, [sceneState, setToSave, progressPicture, currentBlock]);
   return(
     <div id="build-plane" ref={refContainer}></div>
   );

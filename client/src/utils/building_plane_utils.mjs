@@ -8,6 +8,7 @@ import * as BufferGeometryUtils from "three/examples/jsm/utils/BufferGeometryUti
  * @returns {THREE.BoxGeometry} Merged geometry built from cuboids
  */
 function createGeometry(tos_froms) {
+  console.log(tos_froms);
   const geos = tos_froms.map(tf => {
     const to = new THREE.Vector3(...tf.to);
     const from = new THREE.Vector3(...tf.from);
