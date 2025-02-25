@@ -30,7 +30,6 @@ export default function CraftersDen() {
   const scene = useRef({});
   const progressPicture = useRef('');
   const {email} = useAuth() ?? {};
-  const [isViewMode, setIsViewMode] = useState(false);
 
   // PLEASE CHANGE!!!!!!
   const curBuildId = null;
@@ -78,6 +77,8 @@ export default function CraftersDen() {
     // TODO: add cleanup function in case the toSave is spammed
   }, [toSave, email]);
 
+  const [isViewMode, setIsViewMode] = useState(false);
+  
   if(!isViewMode)
     {
       return (
@@ -87,7 +88,7 @@ export default function CraftersDen() {
             <BlockSelection blockList={blockList}/>
             <ButtonPanel/>
           </div>
-          <button type="button" onClick={() => setIsViewMode(!isViewMode)}>
+          <button id="toggle" type="button" onClick={() => setIsViewMode(!isViewMode)}>
                 Toggle Mode
           </button>
         </>
@@ -101,7 +102,7 @@ export default function CraftersDen() {
             <BuildPlane sceneState={scene} progressPicture={progressPicture} setToSave={onSaveChanged} isViewMode={isViewMode}/>
           </div>
           <ButtonPanel/>
-          <button type="button" onClick={() => setIsViewMode(!isViewMode)}>
+          <button type="button" id="toggle" onClick={() => setIsViewMode(!isViewMode)}>
             Toggle Mode
           </button>
         </>
