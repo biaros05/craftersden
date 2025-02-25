@@ -158,28 +158,30 @@ export default function BuildPlane({sceneState, setToSave, progressPicture}) {
     const objects = [];
 
     window.addEventListener('mousedown', () => {
-      // Keep track of the highest cube at this X, Z
-      let highestY = 0; 
+      // // Keep track of the highest cube at this X, Z
+      // let highestY = 0; 
     
-      // Find all cubes that exist at the same X, Z position
-      objects.forEach((object) => {
-        if (
-          object.position.x === highlightMesh.position.x &&
-          object.position.z === highlightMesh.position.z
-        ) {
-          highestY = Math.max(highestY, object.position.y);
-        }
-      });
+      // // Find all cubes that exist at the same X, Z position
+      // objects.forEach((object) => {
+      //   if (
+      //     object.position.x === highlightMesh.position.x &&
+      //     object.position.z === highlightMesh.position.z
+      //   ) {
+      //     highestY = Math.max(highestY, object.position.y);
+      //   }
+      // });
     
       // Create a new cube and place it one unit above the highest cube found
       const geometryClone = currentGeometry.clone();
+      console.log('geometry clone', geometryClone);
       // xhfj
       geometryClone.position.set(
-        highlightMesh.position.x - 0.5, highestY, 
+        highlightMesh.position.x - 0.5, 0, 
         highlightMesh.position.z - 0.5);
       // cubeClone.position.set(0,0.25,0);
       scene.add(geometryClone);
       objects.push(geometryClone);
+      console.log(scene.children);
     });
 
     /* eslint-disable no-unused-vars */
