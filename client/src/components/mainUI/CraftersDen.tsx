@@ -65,14 +65,12 @@ export default function CraftersDen() {
         };
         const response = await fetch('/api/post/save', requestOptions);
         const json = await response.json();
-        console.log(json);
         setToSave(false);
       } catch (error) {
         console.log(error);
       }
     }
     if (toSave) {
-      //console.log(JSON.stringify(scene));
       savePost();
     }
 
@@ -84,7 +82,11 @@ export default function CraftersDen() {
       return (
         <>
           <div id="main-ui">
-            <BuildPlane sceneState={scene} progressPicture={progressPicture} setToSave={onSaveChanged} isViewMode={isViewMode}/>
+            <BuildPlane 
+            sceneState={scene}
+            progressPicture={progressPicture} 
+            setToSave={onSaveChanged} 
+            isViewMode={isViewMode}/>
             <BlockSelection blockList={blockList}/>
             <ButtonPanel/>
           </div>
@@ -99,7 +101,12 @@ export default function CraftersDen() {
       return (
         <>
           <div id="main-ui">
-            <BuildPlane sceneState={scene} progressPicture={progressPicture} setToSave={onSaveChanged} isViewMode={isViewMode}/>
+            <BuildPlane 
+              sceneState={scene} 
+              progressPicture={progressPicture} 
+              setToSave={onSaveChanged} 
+              isViewMode={isViewMode}
+            />
           </div>
           <ButtonPanel/>
           <button type="button" onClick={() => setIsViewMode(!isViewMode)}>

@@ -3,7 +3,6 @@ import { createMesh } from '../../utils/building_plane_utils.mjs';
 import { Component, useEffect, useRef } from 'react';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import grassTop from '../../assets/grass_top.png';
-import {curScene} from './scene';
 import React from 'react';
 
 /* ==== STAIRS ==== */
@@ -104,10 +103,10 @@ export default function BuildPlane({sceneState, setToSave, progressPicture, isVi
     );
     highlightMesh.rotateX(-Math.PI / 2);
     highlightMesh.position.set(0.5, 0, 0.5);
-    if (!curScene) {
+    if (!sceneState.current || Object.keys(sceneState.current).length == 0) {
       scene.add(plane);
     } else {
-      scene = new THREE.ObjectLoader().parse( JSON.parse( JSON.stringify(curScene.current) ) );
+      scene = new THREE.ObjectLoader().parse( JSON.parse( JSON.stringify(sceneState.current) ) );
     }
     scene.add(gridHelper);
     scene.add(highlightMesh);
@@ -139,7 +138,7 @@ export default function BuildPlane({sceneState, setToSave, progressPicture, isVi
       });
     };
   
-    const onMouseDown = () => {
+    const onMouseDown = (e) => {
       if (isViewMode) return;
       let highestY = 0;
   
@@ -191,14 +190,6 @@ export default function BuildPlane({sceneState, setToSave, progressPicture, isVi
       renderer.render(scene, camera);
     }
     renderer.setAnimationLoop(animate);
-  
-    // console.log(`View mode: ${isViewMode}`);
-  
-    // Cleanup function to remove event listeners properly
-    return () => {
-      window.removeEventListener('mousemove', onMouseMove);
-      window.removeEventListener('mousedown', onMouseDown);
-    };
   
   }, [isViewMode, sceneState, setToSave, progressPicture]); // Depend on `isViewMode` to re-run effect
 
