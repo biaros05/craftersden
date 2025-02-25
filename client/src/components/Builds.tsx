@@ -14,6 +14,7 @@ export default function Builds({builds}) {
             radius="md"
             height={125}
             src={build.progressPicture}
+            onClick={() => console.log(build)}
           />
           })
         }
