@@ -8,6 +8,7 @@ import React from 'react';
 import {toByteArray} from 'base64-js';
 import ErrorPopup from '../Notifications/ErrorPopup';
 import SuccessPopup from '../Notifications/SuccessPopup';
+import BuildPlaneFiber from './BuildPlaneFiber';
 
 const blockList = [
   { name: 'grass', src: 'https://www.filterforge.com/filters/11635.jpg', type: 'overworld' },
@@ -82,11 +83,12 @@ export default function CraftersDen() {
     return (
       <>
         <div id="main-ui">
-          <BuildPlane 
+          {/* <BuildPlane 
           sceneState={scene}
           progressPicture={progressPicture} 
           setToSave={onSaveChanged} 
-          isViewMode={isViewMode}/>
+          isViewMode={isViewMode}/> */}
+          <BuildPlaneFiber />
           {!isViewMode && <BlockSelection blockList={blockList}/>}
           <ButtonPanel setIsViewMode={setIsViewMode} isViewMode={isViewMode}/>
         </div>
