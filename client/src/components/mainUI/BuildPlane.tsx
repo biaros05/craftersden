@@ -30,7 +30,10 @@ export default function BuildPlane({ sceneState, setToSave, progressPicture, isV
   useEffect(() => {
     const currentGeometry = createMesh(tosFroms);
     const container = refContainer.current;
+    const buildPlane = document.getElementById('build-plane');
+
     if (!container) return;
+
 
     const width = container.clientWidth;
     const height = container.clientHeight;
@@ -123,7 +126,6 @@ export default function BuildPlane({ sceneState, setToSave, progressPicture, isV
 
     console.log(`View mode: ${isViewMode}`);
 
-
     /**
  * Finds the height of the highest block in the stack at a given x and z
  * @param {object} highLightPos Object holding the normalized coordinates of the highlight
@@ -162,6 +164,8 @@ export default function BuildPlane({ sceneState, setToSave, progressPicture, isV
       );
       geometryClone.name = 'block';
       objects.push(geometryClone);
+      console.log(objects.length);
+
     }
 
     /**
@@ -181,9 +185,10 @@ export default function BuildPlane({ sceneState, setToSave, progressPicture, isV
       }
     }
 
-    window.addEventListener('mousemove', (e) => {
+    const onMouseMove = (e) => {
       // Get container position
-      if(isViewMode) return;
+      if (isViewMode) return;
+      // console.log("I am inside mouse move")
       const rect = container.getBoundingClientRect();
       mousePosition.x = (e.clientX - rect.left) / rect.width * 2 - 1;
       mousePosition.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
@@ -196,23 +201,34 @@ export default function BuildPlane({ sceneState, setToSave, progressPicture, isV
           highlightMesh.position.set(highlightPos.x, highlightPos.y - 0.5, highlightPos.z);
         }
       });
-    });
+    }
 
-    window.addEventListener('mousedown', (e) => {
-      if(isViewMode) return;
-      console.log(scene.children);
-      const highLightPos = {
-        x: highlightMesh.position.x - 0.5,
-        y: highlightMesh.position.y,
-        z: highlightMesh.position.z - 0.5
-      };
-
-      if (e.button === 2) {
-        placeBlock(highLightPos);
-      } else if (e.button === 0) {
-        removeBlock(highLightPos);
+    const onMouseDown = (e) => {
+      if (isViewMode) return
+      else{
+        // console.log("I am inside mouse down")
+        // console.log(scene.children);
+        const highLightPos = {
+          x: highlightMesh.position.x - 0.5,
+          y: highlightMesh.position.y,
+          z: highlightMesh.position.z - 0.5
+        };
+  
+        if (e.button === 2) {
+          placeBlock(highLightPos);
+        } else if (e.button === 0) {
+          removeBlock(highLightPos);
+        }
       }
-    });
+    };
+
+    if (!isViewMode && buildPlane) {
+      console.log("Adding mouse events on window");
+        buildPlane.addEventListener('mousemove', onMouseMove);
+        buildPlane.addEventListener('mousedown', onMouseDown);
+    }
+
+
 
     /* eslint-disable no-unused-vars */
     document.getElementsByClassName('save-button')[0].addEventListener('click', (e) => {
@@ -227,6 +243,7 @@ export default function BuildPlane({ sceneState, setToSave, progressPicture, isV
       setToSave(true);
     });
 
+
     /**
      * Animation loop to render the scene.
      */
@@ -234,7 +251,15 @@ export default function BuildPlane({ sceneState, setToSave, progressPicture, isV
       renderer.render(scene, camera);
     }
     renderer.setAnimationLoop(animate);
-    console.log("Scene state:", scene);
+
+
+    return () => {
+      if (buildPlane) {
+        console.log("Clean up function: Removing event listeners.");
+        buildPlane.removeEventListener('mousemove', onMouseMove);
+        buildPlane.removeEventListener('mousedown', onMouseDown);
+      }
+    }
 
   }, [isViewMode, sceneState, setToSave, progressPicture]);
 
