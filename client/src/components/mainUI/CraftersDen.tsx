@@ -6,7 +6,8 @@ import './CraftersDen.css';
 import { useEffect, useState, useCallback, useRef } from 'react';
 import React from 'react';
 import {toByteArray} from 'base64-js';
-
+import ErrorPopup from '../Notifications/ErrorPopup';
+import SuccessPopup from '../Notifications/SuccessPopup';
 
 const blockList = [
   { name: 'grass', src: 'https://www.filterforge.com/filters/11635.jpg', type: 'overworld' },
@@ -23,7 +24,7 @@ const blockList = [
 
 /**
  * Crafters den main ui component with build plane and block selecction panel.
- * @returns {Component}A div element with the id 'main-ui' to render the den.
+ * @returns {Component} - A div element with the id 'main-ui' to render the den.
  */
 export default function CraftersDen() {
   const [toSave, setToSave] = useState(false);
@@ -31,6 +32,7 @@ export default function CraftersDen() {
   const progressPicture = useRef('');
   const {email} = useAuth() ?? {};
   const [isViewMode, setIsViewMode] = useState(false);
+  const {error, setError} = useState({});
 
   // PLEASE CHANGE!!!!!!
   const curBuildId = null;
