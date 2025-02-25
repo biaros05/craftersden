@@ -18,6 +18,13 @@
 - **Axel Brochu:** Finished login and now made a ProtectedRoute component to make sure users going to a route are logged in.
 - **Marin Melentii:** Same log from last time. Will work on API route for getting blocks. 
 
+## February 25 2025 
+- **Amy Nguyen:** 
+- **Bianca Rossetti:** Yesterday, worked on seeding builds for user. Fixed the object stored as string, now stored as json. Left note in discord how to query the scene. Refactored front-end for build plane. Added some unit tests for users, require more tests for post. Will work on errors to show on front-end related to save builds.
+- **Axel Brochu:** Yesterday, achieved stacked and removing blocks that touched the plane. Will look more into deleting blocks that are not directly touching the plane. 
+- **Marin Melentii:** Yesterday, added the context for selecting current block. The bug related to the scene prohibits the full functionality of the feature. Require fixing. 
+
+- Notes: The big goal now is to translate the build plane code to use react three fiber.
 
 ### Template 
 - **Amy Nguyen:** 
