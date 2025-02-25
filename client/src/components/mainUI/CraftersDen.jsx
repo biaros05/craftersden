@@ -20,6 +20,16 @@ export default function CraftersDen() {
   const {email} = useAuth() ?? {};
   const [currentBlock, setCurrentBlock] = useState(null);
 
+  /**
+   * Fetches the complete block data from the api, and stores it in CurrentBlockContext.
+   * @param {Object} block - block object to fetch from the api
+   */
+  async function storeBlock(block) {
+    const response = await fetch(`/api/block/${block.id}`);
+    const completeBlockData = await response.json();
+    setCurrentBlock(completeBlockData);
+  }
+
   // PLEASE CHANGE!!!!!!
   const curBuildId = null;
 
@@ -67,7 +77,7 @@ export default function CraftersDen() {
   }, [toSave, email]);
 
   return (
-    <CurrentBlockContext.Provider value={{currentBlock, setCurrentBlock}}>
+    <CurrentBlockContext.Provider value={{currentBlock, storeBlock}}>
       <div id="main-ui">
         <BuildPlane sceneState={scene} progressPicture={progressPicture} setToSave={onSaveChanged}/>
         <BlockSelection/>
