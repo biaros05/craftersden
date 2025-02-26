@@ -69,7 +69,7 @@ export default function BuildPlaneFiber() {
   }
   // On click add block to setBlocks
 
-  return <Canvas camera-rotation={[planeRotation, 0, 0]} >
+  return <Canvas >
     <mesh rotation={[planeRotation, 0, 0]} onPointerDown={addBlock} name='ground' >
       <planeGeometry args={[30, 30]} />
       <meshBasicMaterial args={[{
