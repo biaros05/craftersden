@@ -33,21 +33,42 @@ export default function BuildPlaneFiber() {
   grassTexture.minFilter = THREE.NearestFilter;
 
   function addBlock(e) {
-    if (e.button === 0) {
-      console.log(e.point)
-      const normalizedCoords = e.point.floor();
+    if (e.button === 2) {
+      const normalizedCoords = e.intersections[0].object.name === 'ground' ? e.point.floor() : new THREE.Vector3().copy(e.intersections[0].object.position).add(e.normal);
+      console.log(e)
       if (normalizedCoords.y < 0) {
         normalizedCoords.y = 0;
       }
+
       setBlocks(b => [...b, createMesh(tosFroms, [normalizedCoords.x, normalizedCoords.y, normalizedCoords.z], addBlock)])
+    } else if (e.button === 0) {
+      // const normalizedCoords = e.point.floor();
+      // if (normalizedCoords.y < 0) {
+      //   normalizedCoords.y = 0;
+      // }
+      // setBlocks(b => {
+      //   const toRemove = b.findIndex(block => {
+      //     block.props.position.x === normalizedCoords.x &&
+      //     block.props.position.y === normalizedCoords.y &&
+      //     block.props.position.z === normalizedCoords.z
+      //   });
+
+      //   if (toRemove === -1) {
+      //     return b;
+      //   }
+
+      //   b.splice(toRemove, 1);
+
+      //   return [...b];
+      // });
     }
     e.stopPropagation();
   }
   // On click add block to setBlocks
 
-  return <Canvas>
-    <mesh rotation={[planeRotation, 0, 0]} onPointerDown={addBlock}>
-      <planeGeometry args={[30, 30]} name='ground' />
+  return <Canvas camera-rotation={[planeRotation, 0, 0]} >
+    <mesh rotation={[planeRotation, 0, 0]} onPointerDown={addBlock} name='ground' >
+      <planeGeometry args={[30, 30]} />
       <meshBasicMaterial args={[{
             map: grassTexture,
             color: 0x6f946f,
