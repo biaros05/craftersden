@@ -34,8 +34,11 @@ export default function BuildPlaneFiber() {
 
   function addBlock(e) {
     if (e.button === 2) {
-      const normalizedCoords = e.intersections[0].object.name === 'ground' ? e.point.floor() : new THREE.Vector3().copy(e.intersections[0].object.position).add(e.normal);
-      console.log(e)
+      // If the user clicks on the plane use the coordinates of the click, if they click on a block use block pos
+      const normalizedCoords = e.intersections[0].object.name === 'ground' ? 
+        e.point.floor() : 
+        new THREE.Vector3().copy(e.intersections[0].object.position).add(e.normal);
+
       if (normalizedCoords.y < 0) {
         normalizedCoords.y = 0;
       }
