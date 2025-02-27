@@ -70,9 +70,8 @@ function Block(props: ThreeElements['mesh']) {
       onClick={(e) => {console.log('check button and remove block')}}
       onPointerOver={() => setIsHovering(true)}
       onPointerOut={() => setIsHovering(false)}>
-
     </mesh>
   )
 }
 
-export { createMesh, Cuboid };
+export { createMesh, createGeometry, Cuboid, Block };
