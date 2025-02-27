@@ -8,7 +8,6 @@ import React from 'react';
 import {toByteArray} from 'base64-js';
 import ErrorPopup from '../Notifications/ErrorPopup';
 import SuccessPopup from '../Notifications/SuccessPopup';
-import BuildPlaneFiber from './BuildPlaneFiber';
 
 const blockList = [
   { name: 'grass', src: 'https://www.filterforge.com/filters/11635.jpg', type: 'overworld' },
