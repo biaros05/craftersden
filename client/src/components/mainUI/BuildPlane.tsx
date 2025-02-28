@@ -1,6 +1,6 @@
 import { Canvas, ThreeEvent } from '@react-three/fiber';
 import * as THREE from 'three';
-import { OrbitControls } from '@react-three/drei';
+import { OrbitControls, Stats } from '@react-three/drei';
 import React, { useEffect, useState } from 'react';
 import { Block } from './Block';
 import { Cuboid, createGeometry } from '../../utils/building_plane_utils';
@@ -197,5 +197,6 @@ export default function BuildPlane() {
                             </Block>
                           )}
     <OrbitControls />
+    {!import.meta.env.PROD && <Stats />}
   </Canvas>;
 }
