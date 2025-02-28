@@ -172,6 +172,8 @@ export default function BuildPlane() {
             side: THREE.DoubleSide,
           }]} />
     </mesh>
+    {/* Grid */}
+    <gridHelper args={[30, 30]} />
 
     {/* Highlight */}
     {
