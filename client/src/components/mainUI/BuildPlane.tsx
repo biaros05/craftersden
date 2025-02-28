@@ -148,7 +148,7 @@ export default function BuildPlane() {
     return blocks.find(b => b.position.every((val, i) => val === position[i]));
   }
 
-  return <Canvas>
+  return <Canvas camera={{position: [15,15,15]}} id='build-plane' >
     <mesh rotation={[planeRotation, 0, 0]} onPointerDown={addBlockOnPlane} name='ground' >
       <planeGeometry args={[30, 30]} />
       <meshBasicMaterial args={[{
