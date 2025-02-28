@@ -1,15 +1,23 @@
-import { IconX, IconCheck } from '@tabler/icons-react';
-import { Notification } from '@mantine/core';
+import { IconInfoCircle } from '@tabler/icons-react';
+import { Alert } from '@mantine/core';
 import React from 'react';
+import './Popup.css'; 
 
-function SuccessPopup({message, title}) {
-  const checkIcon = <IconCheck size={20} />;
+export default function SuccessPopup({message, title}) {
+  const icon = <IconInfoCircle />;
 
   return (
     <>
-      <Notification icon={checkIcon} color="teal" title={title} mt="md">
+      <Alert 
+      className="float" 
+      variant="light" 
+      withCloseButton 
+      color="teal" 
+      title={title} 
+      icon={icon}
+      >
         {message}
-      </Notification>
+      </Alert>
     </>
   );
 }
