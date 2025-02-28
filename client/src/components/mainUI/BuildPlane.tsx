@@ -35,6 +35,7 @@ type BlockType = {
 export default function BuildPlane() {
   const [blocks, setBlocks] = useState<BlockType[]>([]);
   const [geometries, setGeometries] = useState<object>({});
+  const [highlighted, setHighlighted] = useState<THREE.Vector3 | null>(null);
   // sample data
   const selectedBlock = {
     parent: 'block',
@@ -147,9 +148,13 @@ export default function BuildPlane() {
   function blockExists(position: [number, number, number]): BlockType | undefined {
     return blocks.find(b => b.position.every((val, i) => val === position[i]));
   }
-
+  console.log(highlighted)
   return <Canvas camera={{position: [15,15,15]}} id='build-plane' >
-    <mesh rotation={[planeRotation, 0, 0]} onPointerDown={addBlockOnPlane} name='ground' >
+    <mesh rotation={[planeRotation, 0, 0]} onPointerDown={addBlockOnPlane} onPointerMove={(e: ThreeEvent<PointerEvent>) => {
+        const planePosition = e.point.floor().addScalar(0.5);
+        planePosition.setY(-0.5);
+        setHighlighted(planePosition)
+       }} name='ground' >
       <planeGeometry args={[30, 30]} />
       <meshBasicMaterial args={[{
             map: grassTexture,
@@ -157,9 +162,23 @@ export default function BuildPlane() {
             side: THREE.DoubleSide,
           }]} />
     </mesh>
+    {
+    highlighted && 
+      <mesh position={highlighted} >
+        <meshBasicMaterial color={"#BFBFBF"} opacity={0.2} transparent />
+        <boxGeometry args={[1.1, highlighted[1] === 0 ? 0.1 : 1.1, 1.1]} />
+      </mesh>
+    }
     {blocks.map(b => <Block position={b.position}
                             geometry={b.geometry} 
-                            onPointerDown={(e: ThreeEvent<PointerEvent>) => addBlock(e, b.id, b.position)}
+                            onPointerDown={(e: ThreeEvent<PointerEvent>) => {
+                              e.stopPropagation();
+                              addBlock(e, b.id, b.position);
+                            }}
+                            onPointerMove={(e: ThreeEvent<PointerEvent>) => {
+                              e.stopPropagation();
+                              setHighlighted(new THREE.Vector3(...b.position).addScalar(0.5));
+                            }}
                             >
                               <meshBasicMaterial args={[{map: b.texture}]} />
                             </Block>
