@@ -82,11 +82,7 @@ export default function CraftersDen() {
     return (
       <>
         <div id="main-ui">
-          <BuildPlane 
-          sceneState={scene}
-          progressPicture={progressPicture} 
-          setToSave={onSaveChanged} 
-          isViewMode={isViewMode}/>
+          <BuildPlane />
           {!isViewMode && <BlockSelection blockList={blockList}/>}
           <ButtonPanel setIsViewMode={setIsViewMode} isViewMode={isViewMode}/>
         </div>
