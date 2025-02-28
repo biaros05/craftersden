@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import {Button} from '@mantine/core';
+import '../../styles/ButtonPanel.css';
 export default function ButtonPanel({setIsViewMode, isViewMode}) {
 
   return (

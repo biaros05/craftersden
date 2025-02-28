@@ -32,7 +32,7 @@ export default function CraftersDen() {
   const progressPicture = useRef('');
   const {email} = useAuth() ?? {};
   const [isViewMode, setIsViewMode] = useState(false);
-  const {error, setError} = useState({});
+  const [error, setError] = useState({});
 
   // PLEASE CHANGE!!!!!!
   const curBuildId = null;
@@ -65,11 +65,18 @@ export default function CraftersDen() {
           body: data
           // use ID to find pre-existing build if it exists, if not leave it null.
         };
-        const response = await fetch('/api/post/save', requestOptions);
+        const response = await fetch('/api/post/saves', requestOptions);
         const json = await response.json();
+
+        if (!response.ok) {
+          const err = new Error(`${json.message}`);
+          error.status = json.status
+          throw err;
+        }
+
         setToSave(false);
-      } catch (error) {
-        console.log(error);
+      } catch (e) {
+        setError({'message': e.message, 'status': error.status});
       }
     }
     if (toSave) {
@@ -82,12 +89,15 @@ export default function CraftersDen() {
     return (
       <>
         <div id="main-ui">
-          <BuildPlane 
-          sceneState={scene}
-          progressPicture={progressPicture} 
-          setToSave={onSaveChanged} 
-          isViewMode={isViewMode}/>
-          {!isViewMode && <BlockSelection blockList={blockList}/>}
+          {Object.keys(error).length && <ErrorPopup setError={setError} message={error.message} title={error.status}/>}
+          <section className="build-tools">
+            <BuildPlane 
+            sceneState={scene}
+            progressPicture={progressPicture} 
+            setToSave={onSaveChanged} 
+            isViewMode={isViewMode}/>
+            {!isViewMode && <BlockSelection blockList={blockList}/>}
+          </section>
           <ButtonPanel setIsViewMode={setIsViewMode} isViewMode={isViewMode}/>
         </div>
       </>

@@ -43,6 +43,14 @@ app.use(session({
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+//middleware to verify if the request accepts html
+function html(req, res, next) {
+  if (req.accepts('html')) {
+    return next();
+  }
+  return next('route');
+}
+
 app.use(express.static(path.join(__dirname, '../client/dist')));
 
 
@@ -62,17 +70,24 @@ app.use('/api/user', userRouter);
 
 app.use('/api/post', postRouter);
 
-// Serve index.html for all other routes
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+// not found middleware
+app.use((req, res, next) => {
+  res.status(404).json({message: 'not found'});
+  return;
 });
-
 
 app.use(function (err, req, res, next) {
   console.error(err);
   const error = app.get('env') !== 'production' ? err.message : {};
   res.status(err.status || 500);
-  res.json({ error: error });
+  res.json({ message: error });
+  return;
+});
+
+// Serve index.html for all other routes
+app.get('*', html, (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+  return;
 });
 
 export default app;
