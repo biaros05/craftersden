@@ -1,7 +1,7 @@
 import { Canvas, ThreeEvent } from '@react-three/fiber';
 import * as THREE from 'three';
 import { OrbitControls } from '@react-three/drei';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Block } from './Block';
 import { Cuboid, createGeometry } from '../../utils/building_plane_utils';
 import { nanoid } from 'nanoid';
@@ -36,6 +36,7 @@ export default function BuildPlane() {
   const [blocks, setBlocks] = useState<BlockType[]>([]);
   const [geometries, setGeometries] = useState<object>({});
   const [highlighted, setHighlighted] = useState<THREE.Vector3 | null>(null);
+  const [grassTexture, setGrassTexture] = useState<THREE.Texture>();
   // sample data
   const selectedBlock = {
     parent: 'block',
@@ -43,15 +44,23 @@ export default function BuildPlane() {
     texture: oakPlanks
   };
 
-  const grassTexture = new THREE.TextureLoader().load(grassTop, function (texture) {
-    texture.colorSpace = THREE.SRGBColorSpace;
-  });
+  useEffect(() => {
+    async function loadGrass() {
+      const grassTexture = new THREE.TextureLoader().load(grassTop, function (texture) {
+        texture.colorSpace = THREE.SRGBColorSpace;
+      });
+    
+      grassTexture.wrapS = THREE.RepeatWrapping;
+      grassTexture.wrapT = THREE.RepeatWrapping;
+      grassTexture.repeat.set(30, 30);
+      grassTexture.magFilter = THREE.NearestFilter;
+      grassTexture.minFilter = THREE.NearestFilter;
+  
+      setGrassTexture(grassTexture);
+    }
 
-  grassTexture.wrapS = THREE.RepeatWrapping;
-  grassTexture.wrapT = THREE.RepeatWrapping;
-  grassTexture.repeat.set(30, 30);
-  grassTexture.magFilter = THREE.NearestFilter;
-  grassTexture.minFilter = THREE.NearestFilter;
+    loadGrass();
+  }, [setGrassTexture]);  
 
   /**
    * EventHandler for onPointerDown event that places a block
@@ -150,6 +159,7 @@ export default function BuildPlane() {
   }
   console.log(highlighted)
   return <Canvas camera={{position: [15,15,15]}} id='build-plane' >
+    {/* Plane */}
     <mesh rotation={[planeRotation, 0, 0]} onPointerDown={addBlockOnPlane} onPointerMove={(e: ThreeEvent<PointerEvent>) => {
         const planePosition = e.point.floor().addScalar(0.5);
         planePosition.setY(-0.5);
@@ -162,6 +172,8 @@ export default function BuildPlane() {
             side: THREE.DoubleSide,
           }]} />
     </mesh>
+
+    {/* Highlight */}
     {
     highlighted && 
       <mesh position={highlighted} >
@@ -169,6 +181,7 @@ export default function BuildPlane() {
         <boxGeometry args={[1.1, highlighted[1] === 0 ? 0.1 : 1.1, 1.1]} />
       </mesh>
     }
+    {/* Blocks */}
     {blocks.map(b => <Block position={b.position}
                             geometry={b.geometry} 
                             onPointerDown={(e: ThreeEvent<PointerEvent>) => {
