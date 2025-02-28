@@ -10,6 +10,8 @@ import * as THREE from 'three';
 import {encode} from '@msgpack/msgpack'; 
 import {scene} from './scene';
 import { successMessage, errorMessage } from '../../utils/notification_utils';
+import { BlockType, SerializedBlockType } from '../../utils/building_plane_utils';
+
 
 // TODO remove console.logs
 
@@ -26,22 +28,6 @@ import { successMessage, errorMessage } from '../../utils/notification_utils';
 //   { name: 'glass', src: 'https://www.filterforge.com/filters/11643.jpg' },
 //   { name: 'brick', src: 'https://www.filterforge.com/filters/11644.jpg' }
 // ];
-
-export type BlockType = {
-  id: string,
-  position: [number, number, number],
-  geometry: THREE.BufferGeometry,
-  texture: THREE.Texture,
-  textureURL: string
-}
-
-export type SerializedBlockType = {
-  id: string,
-  position: [number, number, number],
-  geometry: object,
-  texture: object,
-  textureURL: string
-}
 
 /**
  * Takes an array of objects and takes care of serializing their THREE objects

@@ -12,7 +12,7 @@ export default [
   { ignores: ['dist'] },
   jsdoc.configs['flat/recommended-error'],
   {
-    files: ['**/*.{js,jsx,ts,tsx}'],
+    files: ['**.*{js,jsx,ts,tsx}'],
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,

@@ -27,12 +27,15 @@ import '@mantine/core/styles.css';
 import { MantineProvider, createTheme } from '@mantine/core';
 import React from 'react';
 
+/**
+ *
+ */
 function Main() {
   return <>
     <Header />
     <Outlet />
     <Footer />
-  </>
+  </>;
 }
 
 const router = createBrowserRouter([
@@ -74,7 +77,7 @@ const theme = createTheme({
   primaryShade: 7,
 });
 
-createRoot(document.getElementById('root')!!).
+createRoot(document.getElementById('root')!).
   render(
     <StrictMode>
       <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>

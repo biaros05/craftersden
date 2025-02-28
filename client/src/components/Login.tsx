@@ -4,7 +4,12 @@ import { useAuth } from '../hooks/useAuth';
 import React from 'react';
 import '../styles/login.css';
 
-export default function Login() {
+/**
+ * Login page that allows user to login with
+ * google.
+ * @returns {React.ReactNode} Login page.
+ */
+export default function Login(): React.ReactNode {
   const {loading, login} = useAuth() ?? {};
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -19,7 +24,7 @@ export default function Login() {
 
   return (
     <div className="login">
-      <section className='login-box'>
+      <section className="login-box">
         <h2>Login</h2>
         <p className="error">{errorMessage}</p>
         <GoogleLogin

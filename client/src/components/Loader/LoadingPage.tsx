@@ -13,6 +13,9 @@ const theme = createTheme({
   },
 });
 
+/**
+ *
+ */
 export default function LoadingPage() {
   return (
     <MantineThemeProvider theme={theme}>

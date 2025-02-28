@@ -3,10 +3,8 @@ import {Button} from '@mantine/core';
 import '../../styles/ButtonPanel.css';
 
 type ButtonPanelProps = { 
-  // eslint-disable-next-line no-unused-vars
   setIsViewMode: (arg0: boolean) => void,
   canvas: React.RefObject<null>,
-  // eslint-disable-next-line no-unused-vars
   savePost: (arg0: string) => void,
   isViewMode: boolean 
 }
@@ -20,7 +18,7 @@ type ButtonPanelProps = {
  * @param {boolean} props.isViewMode isViewMode state.
  * @returns {React.ReactNode} Button panel section with buttons
  */
-function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode}: ButtonPanelProps) {
+function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode}: ButtonPanelProps): React.ReactNode {
 
   return (
     <section className="button-panel">
@@ -29,7 +27,7 @@ function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode}: ButtonPanelP
         color="green" radius="md" 
         className="save-button"
         onClick={() => {
-          savePost(canvas.current.toDataURL('image/png'));
+          savePost(canvas.current!.toDataURL('image/png'));
         }}
       >
         Save

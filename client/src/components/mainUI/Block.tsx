@@ -15,7 +15,7 @@ function Block(props: ThreeElements['mesh']) {
       onPointerOver={() => setIsHovering(true)}
       onPointerOut={() => setIsHovering(false)}>
     </mesh>
-  )
+  );
 }
 
 export { Block };
