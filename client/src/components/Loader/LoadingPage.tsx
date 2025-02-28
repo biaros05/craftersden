@@ -14,9 +14,10 @@ const theme = createTheme({
 });
 
 /**
- *
+ * Loading page component that renders a loader
+ * @returns {React.ReactNode} Loader
  */
-export default function LoadingPage() {
+export default function LoadingPage(): React.ReactNode {
   return (
     <MantineThemeProvider theme={theme}>
       <Loader />

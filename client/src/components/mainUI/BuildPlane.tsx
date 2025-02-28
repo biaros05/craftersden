@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import { OrbitControls, Stats } from '@react-three/drei';
 import React, { useEffect, useState } from 'react';
 import { Block } from './Block';
-import { Cuboid, blockExists, getTexture, BlockType, getGeometry } from '../../utils/building_plane_utils';
+import { Cuboid, blockExists, getTexture, BlockType, getGeometry, SelectedBlock } from '../../utils/building_plane_utils';
 import { loadGround } from '../../utils/building_plane_utils';
 import grassTop from '../../assets/grass_top.png';
 import oakPlanks from '../../assets/oak_planks.png';
@@ -38,7 +38,8 @@ export default function BuildPlane(): React.ReactNode {
   const [highlighted, setHighlighted] = useState<THREE.Vector3 | null>(null);
   const [grassTexture, setGrassTexture] = useState<THREE.Texture>();
   // sample data
-  const selectedBlock = {
+  const selectedBlock: SelectedBlock = {
+    name: 'oak_planks',
     parent: 'block',
     cuboids: tosFroms,
     texture: oakPlanks
@@ -50,11 +51,8 @@ export default function BuildPlane(): React.ReactNode {
    * Event handler to be used with onPointDown. Places a block 
    * where the mouse was clicked.
    * @param {ThreeEvent<PointerEvent>} e Event object of pointerDown
-   * @param {string} texture url or path to texture
-   * @param {BlockType[]} blocks in the build plane.
-   * @param {Function} setBlocks callback to set blocks in the plane
    */
-  function addBlockOnPlane(e: ThreeEvent<PointerEvent>, texture: string, blocks: BlockType[], setBlocks: React.Dispatch<React.SetStateAction<BlockType[]>>) {
+  function addBlockOnPlane(e: ThreeEvent<PointerEvent>) {
     if (e.button === 2) {
     const normalizedCoords = e.point.floor();
 
@@ -67,8 +65,8 @@ export default function BuildPlane(): React.ReactNode {
       id: nanoid(),
       position: position,
       geometry: geometry,
-      texture: getTexture(texture),
-      textureURL: texture,
+      texture: getTexture(selectedBlock.texture),
+      textureURL: selectedBlock.texture
     };
 
     setBlocks([...blocks, newBlock]);

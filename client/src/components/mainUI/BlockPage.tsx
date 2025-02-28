@@ -3,16 +3,17 @@ import { SimpleGrid, Loader, Notification } from '@mantine/core';
 import { IconX } from '@tabler/icons-react';
 import BlockImage from './BlockImage';
 import useSWR from 'swr';
-import { BlockType } from '../../../server/models/BlockType';
+import { BlockType } from '../../../../server/models/BlockType';
 
 const errorIcon = <IconX size="md" />;
 
 /**
- *
- * @param root0
- * @param root0.index
+ * Paginated view for block panel component
+ * @param {object} props - React props
+ * @param {number} props.index Page number
+ * @returns {React.ReactNode} Page of blocks
  */
-export default function BlockPage({ index }) {
+export default function BlockPage({ index }: { index: number; }): React.ReactNode {
   
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
 

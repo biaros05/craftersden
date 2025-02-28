@@ -7,8 +7,10 @@ type Cuboid = {
 };
 
 type SelectedBlock = {
+  name: string,
   parent: string,
-  cuboids: Cuboid[]
+  cuboids: Cuboid[],
+  texture: string
 };
 
 /**
@@ -118,4 +120,4 @@ function getGeometry(selectedBlock: SelectedBlock, geometries: object, setGeomet
   return geometry;
 }
 
-export {Cuboid, createGeometry, loadGround, blockExists, getTexture, getGeometry, BlockType, SerializedBlockType};
+export {Cuboid, createGeometry, loadGround, blockExists, getTexture, getGeometry, BlockType, SerializedBlockType, SelectedBlock};

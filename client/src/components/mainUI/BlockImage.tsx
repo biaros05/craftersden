@@ -5,11 +5,10 @@ import { IconPlus } from '@tabler/icons-react';
 
 /**
  * Displays an image with an action icon.
- * @param src.src
- * @param src image source
- * @param alt image alt text
- * @param src.alt
- * @returns React.JSX.Element
+ * @param {object} props - React props
+ * @param {string} props.src image source
+ * @param {string} props.alt image alt text
+ * @returns {React.ReactNode} Image of block with action button
  */
 export default function BlockImage({ src = null, alt = undefined }: { src?: string | null; alt?: string | undefined}) {
 

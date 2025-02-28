@@ -1,5 +1,4 @@
 import { createRoot } from 'react-dom/client';
-import App from './App.jsx';
 import './index.css';
 import { StrictMode } from 'react';
 import {
@@ -28,9 +27,12 @@ import { MantineProvider, createTheme } from '@mantine/core';
 import React from 'react';
 
 /**
- *
+ * Main layout of the app. Renders header
+ * and Footer with reactrouter children in
+ * between
+ * @returns {React.ReactNode} Page parent
  */
-function Main() {
+function Main(): React.ReactNode {
   return <>
     <Header />
     <Outlet />
