@@ -6,12 +6,6 @@ type Cuboid = {
   to: [number, number, number]
 }
 
-type Coordinates = {
-  x: number,
-  y: number,
-  z: number
-}
-
 /**
  * Creates an array of cuboids that get merged into a
  * single geometry.
@@ -40,25 +34,4 @@ function createGeometry(tos_froms: Cuboid[]): THREE.BufferGeometry {
   return geo;
 }
 
-
-/**
- * Function to create a mesh from an array of cuboids.
- * @param {Cuboid[]} tos_froms - Array of objects that contain a to and from for each cuboid
- * @param {THREE.MeshStandardMaterial} material - Material to apply to the mesh
- * @returns {THREE.Mesh} Material mesh.
- */
-function createMesh(tos_froms: Cuboid[], material: THREE.MeshStandardMaterial | undefined = undefined): THREE.Mesh {
-  const geometry = createGeometry(tos_froms);
-  
-  if (!material){
-    material = new THREE.MeshStandardMaterial({ color: 0x8B5A2B, wireframe: false });
-  }
-
-  const mesh = new THREE.Mesh(geometry, material);
-  
-  return mesh;
-}
-
-
-export { createMesh, Cuboid, Coordinates };
-
+export {Cuboid, createGeometry}

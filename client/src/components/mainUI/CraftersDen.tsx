@@ -89,15 +89,8 @@ export default function CraftersDen() {
     return (
       <>
         <div id="main-ui">
-          {Object.keys(error).length && <ErrorPopup setError={setError} message={error.message} title={error.status}/>}
-          <section className="build-tools">
-            <BuildPlane 
-            sceneState={scene}
-            progressPicture={progressPicture} 
-            setToSave={onSaveChanged} 
-            isViewMode={isViewMode}/>
-            {!isViewMode && <BlockSelection blockList={blockList}/>}
-          </section>
+          <BuildPlane />
+          {!isViewMode && <BlockSelection blockList={blockList}/>}
           <ButtonPanel setIsViewMode={setIsViewMode} isViewMode={isViewMode}/>
         </div>
       </>
