@@ -1,7 +1,26 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {Button} from '@mantine/core';
 import '../../styles/ButtonPanel.css';
-export default function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode}) {
+
+type ButtonPanelProps = { 
+  // eslint-disable-next-line no-unused-vars
+  setIsViewMode: (arg0: boolean) => void,
+  canvas: React.RefObject<null>,
+  // eslint-disable-next-line no-unused-vars
+  savePost: (arg0: string) => void,
+  isViewMode: boolean 
+}
+
+/**
+ * Displays Save and Toggle view mode buttons
+ * @param {object} props React props
+ * @param {React.RefObject} props.canvas React ref to canvas element
+ * @param {Function} props.setIsViewMode Callback to set isViewModel state 
+ * @param {Function} props.savePost thumbnail url
+ * @param {boolean} props.isViewMode isViewMode state.
+ * @returns {React.ReactNode} Button panel section with buttons
+ */
+function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode}: ButtonPanelProps) {
 
   return (
     <section className="button-panel">
@@ -26,3 +45,5 @@ export default function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode
     </section>
   );
 }
+
+export default ButtonPanel;

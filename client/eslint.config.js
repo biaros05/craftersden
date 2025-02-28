@@ -4,13 +4,15 @@ import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import jsdoc from 'eslint-plugin-jsdoc';
+import tseslint from 'typescript-eslint';
 import { ReactThreeFiber } from '@react-three/fiber';
 
 export default [
+  ...tseslint.configs.recommended,
   { ignores: ['dist'] },
   jsdoc.configs['flat/recommended-error'],
   {
-    files: ['**/*.{js,jsx}'],
+    files: ['**/*.{js,jsx,ts,tsx}'],
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,
