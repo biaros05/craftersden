@@ -8,6 +8,7 @@ import React from 'react';
 import {toByteArray} from 'base64-js';
 import ErrorPopup from '../Notifications/ErrorPopup';
 import SuccessPopup from '../Notifications/SuccessPopup';
+import * as THREE from 'three';
 
 const blockList = [
   { name: 'grass', src: 'https://www.filterforge.com/filters/11635.jpg', type: 'overworld' },
@@ -22,6 +23,26 @@ const blockList = [
   { name: 'brick', src: 'https://www.filterforge.com/filters/11644.jpg' }
 ];
 
+export type BlockType = {
+  id: string,
+  position: [number,number,number],
+  geometry: THREE.BufferGeometry,
+  texture: THREE.Texture
+}
+
+function serializeBlocks(blocks: Array<BlockType>) {
+  blocks.map(block => {
+    const geomJSON = block.geometry.toNonIndexed().toJSON();
+    const textureJSON = block.texture.toJSON();
+    return {
+      id: block.id,
+      position: block.position,
+      geometry: geomJSON,
+      texture: textureJSON
+    }
+  })
+}
+
 /**
  * Crafters den main ui component with build plane and block selecction panel.
  * @returns {Component} - A div element with the id 'main-ui' to render the den.
@@ -29,10 +50,11 @@ const blockList = [
 export default function CraftersDen() {
   const [toSave, setToSave] = useState(false);
   const scene = useRef({});
-  const progressPicture = useRef('');
+  const canvas = useRef(null);
   const {email} = useAuth() ?? {};
   const [isViewMode, setIsViewMode] = useState(false);
   const [error, setError] = useState({});
+  const [blocks, setBlocks] = useState<BlockType[]>([]);
 
   // PLEASE CHANGE!!!!!!
   const curBuildId = null;
@@ -42,13 +64,13 @@ export default function CraftersDen() {
       setToSave(newState);
     }, [setToSave]);
 
-  useEffect(() => {
     /**
      * Saves the current build in the db
      */
-    async function savePost() {
+    async function savePost(progressPicture) {
       // fetch dataURL to get the blob
-      try{
+      const serializedBlocks = serializeBlocks(blocks);
+      try {
         console.log(progressPicture);
         const base64Data = progressPicture.current.split(',')[1];
         const byteArray = toByteArray(base64Data);
@@ -56,7 +78,7 @@ export default function CraftersDen() {
         const data = new FormData();
         console.log(scene);
         data.append('file', blob, 'blob.png');
-        data.append('build', JSON.stringify(scene));
+        data.append('build', serializedBlocks);
         data.append('buildId', curBuildId);
         data.append('email', email);
         const requestOptions = {
@@ -79,19 +101,15 @@ export default function CraftersDen() {
         setError({'message': e.message, 'status': error.status});
       }
     }
-    if (toSave) {
-      savePost();
-    }
-
-    // TODO: add cleanup function in case the toSave is spammed
-  }, [toSave, email]);
 
     return (
       <>
         <div id="main-ui">
-          <BuildPlane />
-          {!isViewMode && <BlockSelection blockList={blockList}/>}
-          <ButtonPanel setIsViewMode={setIsViewMode} isViewMode={isViewMode}/>
+          <section className="build-tools">
+            <BuildPlane canvasRef={canvas} blocks={blocks} setBlocks={setBlocks}/>
+            {!isViewMode && <BlockSelection blockList={blockList}/>}
+          </section>
+          <ButtonPanel setIsViewMode={setIsViewMode} canvas={canvas} savePost={savePost} isViewMode={isViewMode}/>
         </div>
       </>
     );

@@ -7,6 +7,7 @@ import { Cuboid, createGeometry } from '../../utils/building_plane_utils';
 import { nanoid } from 'nanoid';
 import grassTop from '../../assets/grass_top.png';
 import oakPlanks from '../../assets/oak_planks.png';
+import { BlockType } from './CraftersDen';
 
 const planeRotation = -0.5 * Math.PI;
 
@@ -25,15 +26,7 @@ const tosFroms: Cuboid[] = [
   }
 ];  
 
-type BlockType = {
-  id: string,
-  position: [number,number,number],
-  geometry: THREE.BufferGeometry,
-  texture: THREE.Texture
-}
-
-export default function BuildPlane() {
-  const [blocks, setBlocks] = useState<BlockType[]>([]);
+export default function BuildPlane({canvasRef, blocks, setBlocks}) {
   const [geometries, setGeometries] = useState<object>({});
   const [highlighted, setHighlighted] = useState<THREE.Vector3 | null>(null);
   const [grassTexture, setGrassTexture] = useState<THREE.Texture>();
@@ -158,7 +151,13 @@ export default function BuildPlane() {
     return blocks.find(b => b.position.every((val, i) => val === position[i]));
   }
   console.log(highlighted)
-  return <Canvas  camera={{position: [15,15,15]}} id='build-plane' >
+
+  return <Canvas 
+      gl={{ preserveDrawingBuffer: true }}  
+      camera={{position: [15,15,15]}} 
+      id='build-plane' 
+      ref={canvasRef}
+      >
     {/* Plane */}
     <mesh rotation={[planeRotation, 0, 0]} onPointerDown={addBlockOnPlane} onPointerMove={(e: ThreeEvent<PointerEvent>) => {
         const planePosition = e.point.floor().addScalar(0.5);
