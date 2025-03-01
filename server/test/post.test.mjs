@@ -32,6 +32,26 @@ const testPost = {
   'buildJSON': [{}],
   'isPublished': false,
   'thumnails': [],
+  'progressPicture': '',
+};
+
+const testPostWithURL = {
+  '_id': 5678,
+  'description': 'This is a test build',
+  'user': 'newPost',
+  'buildJSON': [{}],
+  'isPublished': false,
+  'thumnails': [],
+  'progressPicture': BlobServiceProvider.blobPublicUrl + 'image',
+};
+
+const preExistingPost = {
+  '_id': 1234,
+  'description': 'This is a test build',
+  'user': 'preExisting',
+  'buildJSON': [{}],
+  'isPublished': false,
+  'thumnails': [],
   'progressPicture': BlobServiceProvider.blobPublicUrl + 'image',
 };
 
@@ -44,21 +64,44 @@ describe('Post endpoints', () => {
     saveStub.resolves();
 
 
+    findOneAndUpdateStub.resolves(preExistingPost);
+
     findOneAndUpdateStub.callsFake(async (filter, params) => {
 
+      if (filter._id === '1234') {
+        return preExistingPost;
+      }
+
+      // give it an ID (like 'creating' it)
       const post = {
-        ...filter,
-        ...params
+        _id: 5678,
+        ...testPostWithURL
       };
       
       return post;
     });
+
     
     findUserStub = Sinon.stub(mongoose.Model, 'findOne');
-    findUserStub.resolves(initialTestUser);
+    findUserStub.callsFake(async (filter, params) => {
+
+      if (filter.email === 'user@test.com') {
+        return {_id: 'newUser'};
+      } 
+
+      return {_id: 'oldUser'};
+    });
 
     findPostStub = Sinon.stub(mongoose.Model, 'find');
-    findPostStub.resolves([testPost]);
+    findPostStub.callsFake(async (filter, params) => {
+
+      if (filter.user === 'newUser') {
+        return [testPostWithURL];
+      } 
+
+      return [preExistingPost];
+    });
+    
 
 
     OAuthClientCreateClientStub = Sinon.stub(OAuthService.prototype, 'createClient');
@@ -83,7 +126,7 @@ describe('Post endpoints', () => {
       post('/api/post/save').      
       attach('png', Buffer.from('somebits'), {filename: 'image.png', contentType: 'image/png'}).
       attach('blocks', blocksBuffer, {filename: 'blob.json'}).
-      field('email', 'tester').
+      field('email', 'user@test.com').
       field('buildId', 'null').
       set('Cookie', cookie);
 
@@ -92,7 +135,34 @@ describe('Post endpoints', () => {
       get('/api/user/user@test.com/builds').
       set('Cookie', cookie);
     
-    expect(query.body.builds).to.deep.equal([testPost]);
+    expect(query.body.builds).to.deep.equal([testPostWithURL]);
+    expect(response.status).to.equal(200);
+    expect(query.body.message).to.equal('Builds retrieved!');
+    return;
+  });
+
+  it('should save existing post with url', async () => {
+    const loginResp = await request(app).post('/api/auth').
+      send({token: 'faketoken'});
+    cookie = loginResp.headers['set-cookie'][0].split(';')[0];
+
+    const arrayBufferBlocks  = encode([{}]);
+    const blocksBuffer = Buffer.from(await new Blob([arrayBufferBlocks]).arrayBuffer());
+    
+    const response = await request(app).
+      post('/api/post/save').      
+      attach('png', Buffer.from('somebits'), {filename: 'image.png', contentType: 'image/png'}).
+      attach('blocks', blocksBuffer, {filename: 'blob.json'}).
+      field('email', 'old@test.com').
+      field('buildId', '1234').
+      set('Cookie', cookie);
+
+
+    const query = await request(app).
+      get('/api/user/old@test.com/builds').
+      set('Cookie', cookie);
+    
+    expect(query.body.builds).to.deep.equal([preExistingPost]);
     expect(response.status).to.equal(200);
     expect(query.body.message).to.equal('Builds retrieved!');
     return;
