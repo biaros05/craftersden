@@ -31,6 +31,13 @@ export type BlockType = {
   textureURL: string
 }
 
+/**
+ * Takes an array of objects and takes care of serializing their THREE objects
+ * into JSON, which is readable and storable by the database. It converts this new array
+ * to a buffer to be sent through the fetch request.
+ * @param blocks - array of blocks with THREE objects.
+ * @returns - a buffer containing the newly serialized blocks. 
+ */
 function serializeBlocks(blocks: Array<BlockType>) {
   return encode(blocks.map(block => {
     const geomJSON = block.geometry.toNonIndexed().toJSON();
@@ -45,6 +52,12 @@ function serializeBlocks(blocks: Array<BlockType>) {
   }));
 }
 
+/**
+ * Takes an array of blocks which has JSON objects for Geometry and Textures and converts
+ * them back to proper THREE objects so they are usable by the BuildPlane
+ * @param blocks - array of blocks fetched from the database
+ * @returns - Array of blocks which contain THREE objects
+ */
 function deserializeBlocks(blocks) {
   return blocks.map(block => {
     console.log(block.texture);
