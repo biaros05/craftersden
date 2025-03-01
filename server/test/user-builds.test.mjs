@@ -46,7 +46,7 @@ describe('Test the /api/user/builds endpoint', () => {
     const response = await request(app).get('/api/user/no@gmail.com/builds');
     
     expect(response.status).to.equal(404);
-    expect(response.body).to.deep.equal({error: 'this user does not exist'});
+    expect(response.body).to.deep.equal({message: 'this user does not exist'});
   });
 
   after(() => {
