@@ -9,6 +9,7 @@ import {toByteArray} from 'base64-js';
 import ErrorPopup from '../Notifications/ErrorPopup';
 import SuccessPopup from '../Notifications/SuccessPopup';
 import * as THREE from 'three';
+import {encode} from "@msgpack/msgpack"; 
 
 const blockList = [
   { name: 'grass', src: 'https://www.filterforge.com/filters/11635.jpg', type: 'overworld' },
@@ -31,25 +32,24 @@ export type BlockType = {
 }
 
 function serializeBlocks(blocks: Array<BlockType>) {
-  return blocks.map(block => {
+  return encode(blocks.map(block => {
     const geomJSON = block.geometry.toNonIndexed().toJSON();
     const textureJSON = block.texture.toJSON();
-    return JSON.stringify({
+    return {
       id: block.id,
       position: block.position,
       geometry: geomJSON,
       texture: textureJSON
-    })
-  })
+    };
+  }));
 }
+
 
 /**
  * Crafters den main ui component with build plane and block selecction panel.
  * @returns {Component} - A div element with the id 'main-ui' to render the den.
  */
 export default function CraftersDen() {
-  const [toSave, setToSave] = useState(false);
-  const scene = useRef({});
   const canvas = useRef(null);
   const {email} = useAuth() ?? {};
   const [isViewMode, setIsViewMode] = useState(false);
@@ -59,59 +59,52 @@ export default function CraftersDen() {
   // PLEASE CHANGE!!!!!!
   const curBuildId = null;
 
-  const onSaveChanged = useCallback(
-    (newState) => {
-      setToSave(newState);
-    }, [setToSave]);
+  /**
+   * Saves the current build in the db
+   */
+  async function savePost(progressPicture) {
+    // fetch dataURL to get the blob
+    const arrayBufferBlocks = serializeBlocks(blocks);
+    const serializedBlocks = new Blob([arrayBufferBlocks], { type: "application/octet-stream" });
+    try {
+      console.log(progressPicture);
+      const base64Data = progressPicture.split(',')[1];
+      const byteArray = toByteArray(base64Data);
+      const blob = new Blob([byteArray], { type: 'image/png' });
+      const data = new FormData();
+      data.append('png', blob, 'blob.png');
+      data.append('blocks', serializedBlocks, 'build.json');
+      data.append('buildId', curBuildId);
+      data.append('email', email);
+      const requestOptions = {
+        method: 'POST',
+        // TODO: change id to be not null if the build exists!!!
+        body: data
+        // use ID to find pre-existing build if it exists, if not leave it null.
+      };
+      const response = await fetch('/api/post/save', requestOptions);
+      const json = await response.json();
 
-    /**
-     * Saves the current build in the db
-     */
-    async function savePost(progressPicture) {
-      // fetch dataURL to get the blob
-      const serializedBlocks = serializeBlocks(blocks);
-      try {
-        console.log(progressPicture);
-        const base64Data = progressPicture.split(',')[1];
-        const byteArray = toByteArray(base64Data);
-        const blob = new Blob([byteArray], { type: 'image/png' });
-        const data = new FormData();
-        console.log(scene);
-        data.append('file', blob, 'blob.png');
-        data.append('build', JSON.stringify({blocks: serializedBlocks}));
-        data.append('buildId', curBuildId);
-        data.append('email', email);
-        const requestOptions = {
-          method: 'POST',
-          // TODO: change id to be not null if the build exists!!!
-          body: data
-          // use ID to find pre-existing build if it exists, if not leave it null.
-        };
-        const response = await fetch('/api/post/save', requestOptions);
-        const json = await response.json();
-
-        if (!response.ok) {
-          const err = new Error(`${json.message}`);
-          error.status = json.status
-          throw err;
-        }
-
-        setToSave(false);
-      } catch (e) {
-        console.error(e);
-        setError({'message': e.message, 'status': error.status});
+      if (!response.ok) {
+        const err = new Error(`${json.message}`);
+        error.status = json.status
+        throw err;
       }
+    } catch (e) {
+      console.error(e);
+      setError({'message': e.message, 'status': error.status});
     }
+  }
 
-    return (
-      <>
-        <div id="main-ui">
-          <section className="build-tools">
-            <BuildPlane canvasRef={canvas} blocks={blocks} setBlocks={setBlocks}/>
-            {!isViewMode && <BlockSelection blockList={blockList}/>}
-          </section>
-          <ButtonPanel setIsViewMode={setIsViewMode} canvas={canvas} savePost={savePost} isViewMode={isViewMode}/>
-        </div>
-      </>
-    );
+  return (
+    <>
+      <div id="main-ui">
+        <section className="build-tools">
+          <BuildPlane canvasRef={canvas} blocks={blocks} setBlocks={setBlocks}/>
+          {!isViewMode && <BlockSelection blockList={blockList}/>}
+        </section>
+        <ButtonPanel setIsViewMode={setIsViewMode} canvas={canvas} savePost={savePost} isViewMode={isViewMode}/>
+      </div>
+    </>
+  );
 }

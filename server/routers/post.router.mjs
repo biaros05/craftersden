@@ -18,14 +18,14 @@ const upload = multer({
 
 const imageFormValidation = [
   body().custom((_, { req }) => {
-    if (!req.file) {
+    if (!req.files['png'] || !req.files['blocks']) {
       throw new Error('File is required');
     }
 
-    const extension = path.extname(req.file.originalname).toLowerCase();
-    if (!['.jpg', '.jpeg', '.png'].includes(extension)) {
-      throw new Error('Invalid file format. Only JPG, JPEG, and PNG are allowed.');
-    }
+    // const extension = path.extname(req.file.originalname).toLowerCase();
+    // if (!['.jpg', '.jpeg', '.png'].includes(extension)) {
+    //   throw new Error('Invalid file format. Only JPG, JPEG, and PNG are allowed.');
+    // }
 
     return true;
   }),
@@ -35,12 +35,15 @@ const imageFormValidation = [
 
 const postRouter = express.Router();
 
-postRouter.post('/save', upload.single('file'), 
-  imageFormValidation, 
-  uploadValidation, 
-  saveBuild, 
-  uploadImage,
-  updatePostPicture
+postRouter.post('/save', upload.fields([
+  { name: 'png', maxCount: 1 },
+  { name: 'blocks', maxCount: 1 }
+]),
+imageFormValidation, 
+uploadValidation, 
+saveBuild, 
+uploadImage,
+updatePostPicture
 );
 
 export default postRouter;
