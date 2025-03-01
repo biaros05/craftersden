@@ -21,7 +21,7 @@ import Forum from './components/Forum.tsx';
 import '@mantine/core/styles.css';
 import '@mantine/carousel/styles.css';
 import CraftersDen from './components/mainUI/CraftersDen.jsx';
-
+import { ToastContainer, Slide } from 'react-toastify';
 import '@mantine/core/styles.css';
 
 import { MantineProvider, createTheme } from '@mantine/core';
@@ -84,5 +84,18 @@ createRoot(document.getElementById('root')!!).
           </AuthProvider>
         </MantineProvider>
       </GoogleOAuthProvider>
+      <ToastContainer
+        position="bottom-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+        transition={Slide}
+        />
     </StrictMode>
   );

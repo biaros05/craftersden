@@ -9,6 +9,7 @@ import {toByteArray} from 'base64-js';
 import * as THREE from 'three';
 import {encode} from "@msgpack/msgpack"; 
 import {scene} from './scene';
+import { successMessage, errorMessage } from '../../utils/notification_utils';
 
 const blockList = [
   { name: 'grass', src: 'https://www.filterforge.com/filters/11635.jpg', type: 'overworld' },
@@ -114,15 +115,17 @@ export default function CraftersDen() {
       };
       const response = await fetch('/api/post/save', requestOptions);
       const json = await response.json();
-
+      
       if (!response.ok) {
         const err = new Error(`${json.message}`);
         error.status = json.status
         throw err;
       }
+
+      successMessage(json.message);
     } catch (e) {
       console.error(e);
-      setError({'message': e.message, 'status': error.status});
+      errorMessage(e.message);
     }
   }
 
