@@ -51,7 +51,6 @@ async function saveBuild(req, res, next) {
   const encoded = req.files['blocks'][0];
   const buffer = Buffer.from(encoded.buffer, encoded.byteOffset, encoded.byteLength); ;
   const blocks = decode(buffer);
-  console.log(blocks);
   const email = req.body.email;
   try {
     if (req.body.buildId !== 'null' && req.body.buildId !== undefined) {
@@ -81,17 +80,6 @@ async function saveBuild(req, res, next) {
     e.status = 500;
     next(e);
   }
-}
-
-/**
- * De-serializes the array of JSON strings into plain JSON to store in the DB
- * @param {Array<string>} blocks - array of blocks to deserialize
- * @returns {Array<JSON>} - deserialized array of blocks
- */
-function deserializeJSON(blocks) {
-  return blocks.map((block) => {
-    return JSON.parse(block);
-  });
 }
 
 /**

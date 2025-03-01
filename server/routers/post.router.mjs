@@ -22,10 +22,10 @@ const imageFormValidation = [
       throw new Error('File is required');
     }
 
-    // const extension = path.extname(req.file.originalname).toLowerCase();
-    // if (!['.jpg', '.jpeg', '.png'].includes(extension)) {
-    //   throw new Error('Invalid file format. Only JPG, JPEG, and PNG are allowed.');
-    // }
+    const extension = path.extname(req.files['png'][0].originalname).toLowerCase();
+    if (!['.jpg', '.jpeg', '.png'].includes(extension)) {
+      throw new Error('Invalid file format. Only JPG, JPEG, and PNG are allowed.');
+    }
 
     return true;
   }),
