@@ -150,7 +150,6 @@ export default function BuildPlane({canvasRef, blocks, setBlocks}) {
   function blockExists(position: [number, number, number]): BlockType | undefined {
     return blocks.find(b => b.position.every((val, i) => val === position[i]));
   }
-  console.log(highlighted)
 
   return <Canvas 
       gl={{ preserveDrawingBuffer: true }}  

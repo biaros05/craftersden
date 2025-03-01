@@ -47,7 +47,8 @@ function uploadValidation(req, res, next) {
  * @returns {JSON} - JSON with status code
  */
 async function saveBuild(req, res, next) {
-  const build = JSON.parse(req.body.build);
+  const build = deserializeJSON(JSON.parse(req.body.build).blocks);
+  console.log(build);
   const email = req.body.email;
   try {
     if (req.body.buildId !== 'null' && req.body.buildId !== undefined) {
@@ -77,6 +78,17 @@ async function saveBuild(req, res, next) {
     e.status = 500;
     next(e);
   }
+}
+
+/**
+ * De-serializes the array of JSON strings into plain JSON to store in the DB
+ * @param {Array<string>} blocks - array of blocks to deserialize
+ * @returns {Array<JSON>} - deserialized array of blocks
+ */
+function deserializeJSON(blocks) {
+  return blocks.map((block) => {
+    return JSON.parse(block);
+  });
 }
 
 /**

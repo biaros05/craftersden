@@ -31,15 +31,15 @@ export type BlockType = {
 }
 
 function serializeBlocks(blocks: Array<BlockType>) {
-  blocks.map(block => {
+  return blocks.map(block => {
     const geomJSON = block.geometry.toNonIndexed().toJSON();
     const textureJSON = block.texture.toJSON();
-    return {
+    return JSON.stringify({
       id: block.id,
       position: block.position,
       geometry: geomJSON,
       texture: textureJSON
-    }
+    })
   })
 }
 
@@ -72,13 +72,13 @@ export default function CraftersDen() {
       const serializedBlocks = serializeBlocks(blocks);
       try {
         console.log(progressPicture);
-        const base64Data = progressPicture.current.split(',')[1];
+        const base64Data = progressPicture.split(',')[1];
         const byteArray = toByteArray(base64Data);
         const blob = new Blob([byteArray], { type: 'image/png' });
         const data = new FormData();
         console.log(scene);
         data.append('file', blob, 'blob.png');
-        data.append('build', serializedBlocks);
+        data.append('build', JSON.stringify({blocks: serializedBlocks}));
         data.append('buildId', curBuildId);
         data.append('email', email);
         const requestOptions = {
@@ -87,7 +87,7 @@ export default function CraftersDen() {
           body: data
           // use ID to find pre-existing build if it exists, if not leave it null.
         };
-        const response = await fetch('/api/post/saves', requestOptions);
+        const response = await fetch('/api/post/save', requestOptions);
         const json = await response.json();
 
         if (!response.ok) {
@@ -98,6 +98,7 @@ export default function CraftersDen() {
 
         setToSave(false);
       } catch (e) {
+        console.error(e);
         setError({'message': e.message, 'status': error.status});
       }
     }
