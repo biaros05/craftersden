@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import {Button} from '@mantine/core';
-export default function ButtonPanel({setIsViewMode, isViewMode}) {
+import '../../styles/ButtonPanel.css';
+export default function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode}) {
 
   return (
     <section className="button-panel">
@@ -8,6 +9,9 @@ export default function ButtonPanel({setIsViewMode, isViewMode}) {
         variant="outline" 
         color="green" radius="md" 
         className="save-button"
+        onClick={() => {
+          savePost(canvas.current.toDataURL('image/png'));
+        }}
       >
         Save
       </Button>
