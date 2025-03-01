@@ -5,7 +5,6 @@ import { useDisclosure } from '@mantine/hooks';
 import { IconEdit } from '@tabler/icons-react';
 import '../styles/profile.css';
 import Builds from './Builds';
-// TODO remove console logs
 
 /**
  * Profile page component that displays list of users
@@ -17,23 +16,27 @@ export default function Profile(): React.ReactNode {
   const [opened, {open, close}] = useDisclosure(false);
   const [builds, setBuilds] = useState([]);
 
-    useEffect(() => {
-      async function getBuilds() {
-        const response = await fetch(`/api/user/${email}/builds`);
-        const json = await response.json();
-        setBuilds(json.builds);
-      }
-      getBuilds();
-    },[]);
+  useEffect(() => {
+    /**
+     * Fetches all builds for a user and updates
+     * builds state
+     */
+    async function getBuilds() {
+      const response = await fetch(`/api/user/${email}/builds`);
+      const json = await response.json();
+      setBuilds(json.builds);
+    }
+    getBuilds();
+  }, [email]);
 
-    const onSubmitHandler: FormEventHandler = async (event: FormEvent) => {
-      event.preventDefault();
-      const target = event.target as HTMLFormElement;
-      const formData = new FormData(target);
-      await fetch('/api/user/', { method: 'PUT', body: formData});
-      window.location.reload();
-      close();
-    };
+  const onSubmitHandler: FormEventHandler = async (event: FormEvent) => {
+    event.preventDefault();
+    const target = event.target as HTMLFormElement;
+    const formData = new FormData(target);
+    await fetch('/api/user/', { method: 'PUT', body: formData});
+    window.location.reload();
+    close();
+  };
 
   return <div className="profile-page container">
     <Modal 

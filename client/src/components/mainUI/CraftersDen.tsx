@@ -13,7 +13,6 @@ import { successMessage, errorMessage } from '../../utils/notification_utils';
 import { BlockType, SerializedBlockType } from '../../utils/building_plane_utils';
 
 
-// TODO remove console.logs
 
 // TODO verify if we still need this
 // const blockList = [
