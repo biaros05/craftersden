@@ -5,7 +5,11 @@ import '../styles/builds.css';
 
 // TODO update type to reflect what is stored.
 type Build = {
-  progressPicture: string
+  progressPicture: string,
+  description: String,
+  buildJSON: {},
+  isPublished: Boolean,
+  thumnails: [],
 }
 
 /**

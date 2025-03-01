@@ -11,7 +11,9 @@ import {encode} from '@msgpack/msgpack';
 import {scene} from './scene';
 import { successMessage, errorMessage } from '../../utils/notification_utils';
 import { BlockType, SerializedBlockType } from '../../utils/building_plane_utils';
-
+// TODO verify if we still need this
+// import ErrorPopup from '../Notifications/ErrorPopup';
+// import SuccessPopup from '../Notifications/SuccessPopup';
 
 
 // TODO verify if we still need this
