@@ -51,6 +51,7 @@ async function saveBuild(req, res, next) {
   const encoded = req.files['blocks'][0];
   const buffer = Buffer.from(encoded.buffer, encoded.byteOffset, encoded.byteLength); ;
   const blocks = decode(buffer);
+  console.log(JSON.stringify(blocks));
   const email = req.body.email;
   try {
     if (req.body.buildId !== 'null' && req.body.buildId !== undefined) {

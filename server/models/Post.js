@@ -4,7 +4,8 @@ const blockBuildSchema = new Schema({
   id: String,
   position: [Number, Number, Number],
   geometry: {},
-  texture: {}
+  texture: {},
+  textureURL: String
 });
 
 // Define a schema

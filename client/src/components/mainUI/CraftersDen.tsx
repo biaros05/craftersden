@@ -6,10 +6,9 @@ import './CraftersDen.css';
 import { useEffect, useState, useCallback, useRef } from 'react';
 import React from 'react';
 import {toByteArray} from 'base64-js';
-import ErrorPopup from '../Notifications/ErrorPopup';
-import SuccessPopup from '../Notifications/SuccessPopup';
 import * as THREE from 'three';
 import {encode} from "@msgpack/msgpack"; 
+import {scene} from './scene';
 
 const blockList = [
   { name: 'grass', src: 'https://www.filterforge.com/filters/11635.jpg', type: 'overworld' },
@@ -28,7 +27,8 @@ export type BlockType = {
   id: string,
   position: [number,number,number],
   geometry: THREE.BufferGeometry,
-  texture: THREE.Texture
+  texture: THREE.Texture,
+  textureURL: string
 }
 
 function serializeBlocks(blocks: Array<BlockType>) {
@@ -39,11 +39,24 @@ function serializeBlocks(blocks: Array<BlockType>) {
       id: block.id,
       position: block.position,
       geometry: geomJSON,
-      texture: textureJSON
+      texture: textureJSON,
+      textureURL: block.textureURL
     };
   }));
 }
 
+function deserializeBlocks(blocks) {
+  return blocks.map(block => {
+    console.log(block.texture);
+    return {
+      id: block.id,
+      position: block.position,
+      geometry: new THREE.BufferGeometryLoader().parse(block.geometry),
+      texture: new THREE.TextureLoader().load(block.textureURL),
+      textureURL: block.textureURL
+    }
+  })
+}
 
 /**
  * Crafters den main ui component with build plane and block selecction panel.
@@ -55,6 +68,10 @@ export default function CraftersDen() {
   const [isViewMode, setIsViewMode] = useState(false);
   const [error, setError] = useState({});
   const [blocks, setBlocks] = useState<BlockType[]>([]);
+
+  useEffect(() => {
+    setBlocks(deserializeBlocks(scene));
+  }, []);
 
   // PLEASE CHANGE!!!!!!
   const curBuildId = null;

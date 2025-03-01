@@ -75,7 +75,8 @@ export default function BuildPlane({canvasRef, blocks, setBlocks}) {
         id: nanoid(),
         position: newPosition,
         geometry: geometry,
-        texture: getTexture(oakPlanks)
+        texture: getTexture(oakPlanks),
+        textureURL: oakPlanks
       };
 
       setBlocks(b => [...b, newBlock]);
@@ -135,7 +136,8 @@ export default function BuildPlane({canvasRef, blocks, setBlocks}) {
         id: nanoid(),
         position: position,
         geometry: geometry,
-        texture: getTexture(oakPlanks)
+        texture: getTexture(oakPlanks),
+        textureURL: oakPlanks
       };
 
       setBlocks([...blocks, newBlock])
