@@ -2,20 +2,12 @@ import Post from '../models/Post.js';
 import User from '../models/User.mjs';
 import dotenv from 'dotenv';
 import { validationResult } from 'express-validator';
-import { BlobServiceClient} from '@azure/storage-blob';
 import {decode} from '@msgpack/msgpack';
+import BlobServiceProvider from '../utils/BlobService.mjs';
 
 dotenv.config();
 
-const sasToken = process.env.AZURE_SAS;
-const containerName = process.env.AZURE_BLOB_CONTAINER || 'imageblob';
-const storageAccountName = process.env.AZURE_STORAGE_ACCOUNT || 'nameofyourstorageaccount';
-const blobPublicUrl = `https://${storageAccountName}.blob.core.windows.net/${containerName}/`;
-
-const blobService = new BlobServiceClient(
-  `https://${storageAccountName}.blob.core.windows.net/?${sasToken}`
-);
-const containerClient = blobService.getContainerClient(containerName);
+const blobService = new BlobServiceProvider();
 
 /**
  * Calls validationResult method to ensure all validation has passed. Throws an error 
@@ -49,7 +41,7 @@ function uploadValidation(req, res, next) {
  */
 async function saveBuild(req, res, next) {
   const encoded = req.files['blocks'][0];
-  const buffer = Buffer.from(encoded.buffer, encoded.byteOffset, encoded.byteLength); ;
+  const buffer = Buffer.from(encoded.buffer, encoded.byteOffset, encoded.byteLength);
   const blocks = decode(buffer);
   const email = req.body.email;
   try {
@@ -96,11 +88,7 @@ async function uploadImage(req, res, next) {
   const blobName = `${req.post._id}.png`;
 
   try {
-    const blobClient = containerClient.getBlockBlobClient(blobName);
-    // set mimetype as determined from browser with file upload control
-    const options = { blobHTTPHeaders: { blobContentType: file.mimetype }, overwrite: true };
-    await blobClient.uploadData(file.buffer, options);
-    const fullUrl = blobPublicUrl + blobName;
+    const fullUrl = await blobService.overrideFile(file, blobName);
     req.url = fullUrl;
     next();
   } catch (e){

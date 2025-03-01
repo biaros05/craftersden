@@ -45,6 +45,14 @@ class BlobServiceProvider {
 
     return fullUrl;
   }
+
+  async overrideFile(file, blobName) {
+    const blobClient = this.#containerClient.getBlockBlobClient(blobName);
+    const options = { blobHTTPHeaders: { blobContentType: file.mimetype }, overwrite: true };
+    await blobClient.uploadData(file.buffer, options);
+    const fullUrl = BlobServiceProvider.blobPublicUrl + blobName;
+    return fullUrl;
+  }
 }
 
 export default BlobServiceProvider;
