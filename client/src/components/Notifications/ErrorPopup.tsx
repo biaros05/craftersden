@@ -1,15 +1,15 @@
-import { IconX, IconCheck } from '@tabler/icons-react';
-import { Notification } from '@mantine/core';
+import { IconX, IconInfoCircle } from '@tabler/icons-react';
+import { Alert } from '@mantine/core';
 import React from 'react';
+import './Popup.css';
 
-function ErrorPopup({message, title}) {
-  const xIcon = <IconX size={20} />;
-
+export default function ErrorPopup({message, title, setError}) {
+  const icon = <IconInfoCircle />;
   return (
     <>
-      <Notification icon={xIcon} color="red" title={title}>
+      <Alert variant="light" className="float" withCloseButton color="green" title={title} icon={icon} onClose={() => setError({})}>
         {message}
-      </Notification>
+      </Alert>
     </>
   );
 }

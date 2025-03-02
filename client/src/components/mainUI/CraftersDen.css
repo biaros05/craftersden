@@ -1,5 +1,6 @@
 #main-ui {
   display: flex;
+  flex-direction: column;
   justify-content: center; 
   align-items: center; 
   height: 100vh; 
@@ -21,4 +22,11 @@
   padding: 10px; 
   background: white; 
   border-left: 2px solid #ddd; 
+}
+
+.build-tools {
+  display: flex;
+  justify-content: center; 
+  align-items: center; 
+  height: 100vh; 
 }
