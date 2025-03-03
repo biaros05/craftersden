@@ -3,6 +3,7 @@ import User from '../models/User.mjs';
 import dotenv from 'dotenv';
 import { validationResult } from 'express-validator';
 import { BlobServiceClient} from '@azure/storage-blob';
+import {decode} from '@msgpack/msgpack';
 
 dotenv.config();
 
@@ -47,20 +48,23 @@ function uploadValidation(req, res, next) {
  * @returns {JSON} - JSON with status code
  */
 async function saveBuild(req, res, next) {
-  const build = req.body.build;
+  const encoded = req.files['blocks'][0];
+  const buffer = Buffer.from(encoded.buffer, encoded.byteOffset, encoded.byteLength); ;
+  const blocks = decode(buffer);
+  console.log(JSON.stringify(blocks));
   const email = req.body.email;
   try {
     if (req.body.buildId !== 'null' && req.body.buildId !== undefined) {
       req.post = await Post.findOneAndUpdate(
         {_id: req.body.buildId}, 
-        {buildJSON: build},
+        {buildJSON: blocks},
         {returnDocument: 'after'}
       );
 
     } else {
       const user = await User.findOne({email: email});
       const post = new Post({
-        buildJSON: build, 
+        buildJSON: blocks, 
         user: user._id, 
         description: '',
         thumbnails: [],
@@ -88,7 +92,7 @@ async function saveBuild(req, res, next) {
  */
 async function uploadImage(req, res, next) {
   // set as single file upload in router
-  const file = req.file; 
+  const file = req.files['png'][0]; 
   //moves the file to the current folder
   const blobName = `${req.post._id}.png`;
 
@@ -119,7 +123,7 @@ async function updatePostPicture(req, res, next) {
       {progressPicture: req.url}
     );
 
-    res.status(200).json({status : 'success'});
+    res.status(200).json({status : 'Build successfully saved!'});
     return;
   } catch (e){
     e.status = 500;

@@ -1,14 +1,18 @@
 import * as THREE from 'three';
 import * as BufferGeometryUtils from "three/examples/jsm/utils/BufferGeometryUtils.js";
 
+type Cuboid = {
+  from: [number, number, number],
+  to: [number, number, number]
+}
+
 /**
  * Creates an array of cuboids that get merged into a
  * single geometry.
- * @param {object[]} tos_froms Array of objects that contain a to and from for each cuboid
- * @returns {THREE.BoxGeometry} Merged geometry built from cuboids
+ * @param {tos_froms[]} tos_froms Array of objects that contain a to and from for each cuboid
+ * @returns {THREE.BufferGeometry} Merged geometry built from cuboids
  */
-function createGeometry(tos_froms) {
-  console.log(tos_froms);
+function createGeometry(tos_froms: Cuboid[]): THREE.BufferGeometry {
   const geos = tos_froms.map(tf => {
     const to = new THREE.Vector3(...tf.to);
     const from = new THREE.Vector3(...tf.from);
@@ -52,3 +56,4 @@ function createMesh(tos_froms, material) {
 
 export { createMesh };
 
+export {Cuboid, createGeometry}

@@ -15,7 +15,6 @@ export default function Profile() {
       async function getBuilds() {
         const response = await fetch(`/api/user/${email}/builds`);
         const json = await response.json();
-        console.log(json);
         setBuilds(json.builds);
       }
       getBuilds();
@@ -25,7 +24,6 @@ export default function Profile() {
       event.preventDefault();
       const target = event.target as HTMLFormElement;
       const formData = new FormData(target);
-      console.log(formData)
       await fetch('/api/user/', { method: 'PUT', body: formData});
       window.location.reload();
       close();
