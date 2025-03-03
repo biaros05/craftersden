@@ -71,7 +71,8 @@ export default function BuildPlane({canvasRef, blocks, setBlocks, style}) {
         id: nanoid(),
         position: newPosition,
         geometry: geometry,
-        texture: getTexture(oakPlanks),
+        texture: new THREE.Texture(),
+        materials: getMaterials(),
         textureURL: oakPlanks
       };
 
@@ -87,12 +88,21 @@ export default function BuildPlane({canvasRef, blocks, setBlocks, style}) {
   /**
    * Takes a texture url and creates a THREE texture with it.
    * @param {string} url to the texture image.
-   * @returns {THREE.Texture} corresponding to given url.
+   * @returns {THREE.Material[]} corresponding to given url.
    */
-  function getTexture(url: string): THREE.Texture {
-    const texture = new THREE.TextureLoader().load(url);
-    
-    return texture;
+  function getMaterials(): THREE.Material[] {
+    console.log(currentBlock);
+    const loader = new THREE.TextureLoader();
+    loader.crossOrigin = '';
+    const faces = currentBlock.cuboids[0].faces;
+    console.log(Object.keys(faces));
+    const materials = Object.keys(faces).map(direction => {
+      const textureURL = faces[direction].texture;
+      const texture = loader.load(textureURL);
+      return new THREE.MeshLambertMaterial({ map: texture})
+    });
+    console.log(materials);
+    return materials;
   }
 
   /**
@@ -132,7 +142,8 @@ export default function BuildPlane({canvasRef, blocks, setBlocks, style}) {
         id: nanoid(),
         position: position,
         geometry: geometry,
-        texture: getTexture(oakPlanks),
+        texture: new THREE.Texture(),
+        materials: getMaterials(),
         textureURL: oakPlanks
       };
 
@@ -192,6 +203,7 @@ export default function BuildPlane({canvasRef, blocks, setBlocks, style}) {
                               setHighlighted(new THREE.Vector3(...b.position).addScalar(0.5));
                             }}
                             key={index}
+                            material={b.materials}
                             >
                               <meshBasicMaterial args={[{map: b.texture}]} />
                             </Block>

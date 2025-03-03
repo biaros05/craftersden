@@ -17,6 +17,7 @@ export type BlockType = {
   position: [number,number,number],
   geometry: THREE.BufferGeometry,
   texture: THREE.Texture,
+  materials: THREE.Material[],
   textureURL: string
 }
 
