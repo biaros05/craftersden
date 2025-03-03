@@ -9,19 +9,8 @@ import {toByteArray} from 'base64-js';
 import * as THREE from 'three';
 import {encode} from "@msgpack/msgpack"; 
 import {scene} from './scene';
+import { CurrentBlockContext } from '../../context/currentBlockContext';
 
-const blockList = [
-  { name: 'grass', src: 'https://www.filterforge.com/filters/11635.jpg', type: 'overworld' },
-  { name: 'dirt', src: 'https://www.filterforge.com/filters/11636.jpg', type: 'overworld' },
-  { name: 'stone', src: 'https://www.filterforge.com/filters/11637.jpg', type: 'overworld' },
-  { name: 'sand', src: 'https://www.filterforge.com/filters/11638.jpg', type: 'overworld' },
-  { name: 'water', src: 'https://www.filterforge.com/filters/11639.jpg', type: 'overworld' },
-  { name: 'lava', src: 'https://www.filterforge.com/filters/11640.jpg' },
-  { name: 'wood', src: 'https://www.filterforge.com/filters/11641.jpg' },
-  { name: 'leaves', src: 'https://www.filterforge.com/filters/11642.jpg' },
-  { name: 'glass', src: 'https://www.filterforge.com/filters/11643.jpg' },
-  { name: 'brick', src: 'https://www.filterforge.com/filters/11644.jpg' }
-];
 
 export type BlockType = {
   id: string,
@@ -81,6 +70,7 @@ export default function CraftersDen() {
   const [isViewMode, setIsViewMode] = useState(false);
   const [error, setError] = useState({});
   const [blocks, setBlocks] = useState<BlockType[]>([]);
+  const [currentBlock, setCurrentBlock] = useState(null);
 
   useEffect(() => {
     setBlocks(deserializeBlocks(scene));
@@ -88,6 +78,16 @@ export default function CraftersDen() {
 
   // PLEASE CHANGE!!!!!!
   const curBuildId = null;
+
+    /**
+   * Fetches the complete block data from the api, and stores it in CurrentBlockContext.
+   * @param {Object} block - block object to fetch from the api
+   */
+    async function storeBlock(block) {
+      const response = await fetch(`/api/block/${block._id}`);
+      const completeBlockData = await response.json();
+      setCurrentBlock(completeBlockData);
+    }
 
   /**
    * Saves the current build in the db
@@ -127,14 +127,14 @@ export default function CraftersDen() {
   }
 
   return (
-    <>
+    <CurrentBlockContext.Provider value={{currentBlock, storeBlock}}>
       <div id="main-ui">
         <section className="build-tools">
           <BuildPlane canvasRef={canvas} blocks={blocks} setBlocks={setBlocks} style={{ width: "80%" }}/>
-          {!isViewMode && <BlockSelection blockList={blockList}/>}
+          {!isViewMode && <BlockSelection/>}
         </section>
         <ButtonPanel setIsViewMode={setIsViewMode} canvas={canvas} savePost={savePost} isViewMode={isViewMode}/>
       </div>
-    </>
+    </CurrentBlockContext.Provider>
   );
 }
