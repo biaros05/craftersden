@@ -10,7 +10,7 @@ import BlockScrollArea from './BlockScrollArea';
  * ```
  * @returns React.JSX.Element
  */
-export default function BlockSelection({style}) {
+export default function BlockSelection({style = {}}) {
   return (
     <div id="block-selection" style={style}>
     <Tabs defaultValue="all">
