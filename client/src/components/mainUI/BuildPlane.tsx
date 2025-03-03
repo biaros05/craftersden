@@ -27,13 +27,22 @@ const tosFroms: Cuboid[] = [
   }
 ];  
 
+type BuildPlaneProps = {
+  canvasRef: React.RefObject<null>,
+  blocks: BlockType[],
+  setBlocks: React.Dispatch<React.SetStateAction<BlockType[]>>
+}
+
 /**
  * Interactive build plane allowing users to 
  * place blocks and break them.
+ * @param {object} props - React props
+ * @param {React.RefObject<null>} props.canvasRef useRef value for the Canvas
+ * @param {BlockType[]} props.blocks blocks to render on plane
+ * @param {React.Dispatch<React.SetStateAction<BlockType[]>>} props.setBlocks callback to update the blocks array state
  * @returns {React.ReactNode} Build plane
  */
-export default function BuildPlane(): React.ReactNode {
-  const [blocks, setBlocks] = useState<BlockType[]>([]);
+export default function BuildPlane({canvasRef, blocks, setBlocks}: BuildPlaneProps): React.ReactNode {
   const [geometries, setGeometries] = useState<object>({});
   const [highlighted, setHighlighted] = useState<THREE.Vector3 | null>(null);
   const [grassTexture, setGrassTexture] = useState<THREE.Texture>();
@@ -148,6 +157,7 @@ export default function BuildPlane(): React.ReactNode {
         e.stopPropagation();
         setHighlighted(new THREE.Vector3(...b.position).addScalar(0.5));
       }}
+      key={b.id}
     >
       <meshBasicMaterial args={[{map: b.texture}]} />
     </Block>

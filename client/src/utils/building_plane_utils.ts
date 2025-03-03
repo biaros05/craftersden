@@ -1,6 +1,10 @@
 import * as THREE from 'three';
 import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
+class StatusError extends Error {
+  status: number | undefined;
+}
+
 type Cuboid = {
   from: [number, number, number],
   to: [number, number, number]
@@ -120,4 +124,4 @@ function getGeometry(selectedBlock: SelectedBlock, geometries: object, setGeomet
   return geometry;
 }
 
-export {Cuboid, createGeometry, loadGround, blockExists, getTexture, getGeometry, BlockType, SerializedBlockType, SelectedBlock};
+export {Cuboid, createGeometry, loadGround, blockExists, getTexture, getGeometry, BlockType, SerializedBlockType, SelectedBlock, StatusError};

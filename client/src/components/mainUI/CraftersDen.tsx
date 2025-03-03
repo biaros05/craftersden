@@ -10,25 +10,7 @@ import * as THREE from 'three';
 import {encode} from '@msgpack/msgpack'; 
 import {scene} from './scene';
 import { successMessage, errorMessage } from '../../utils/notification_utils';
-import { BlockType, SerializedBlockType } from '../../utils/building_plane_utils';
-// TODO verify if we still need this
-// import ErrorPopup from '../Notifications/ErrorPopup';
-// import SuccessPopup from '../Notifications/SuccessPopup';
-
-
-// TODO verify if we still need this
-// const blockList = [
-//   { name: 'grass', src: 'https://www.filterforge.com/filters/11635.jpg', type: 'overworld' },
-//   { name: 'dirt', src: 'https://www.filterforge.com/filters/11636.jpg', type: 'overworld' },
-//   { name: 'stone', src: 'https://www.filterforge.com/filters/11637.jpg', type: 'overworld' },
-//   { name: 'sand', src: 'https://www.filterforge.com/filters/11638.jpg', type: 'overworld' },
-//   { name: 'water', src: 'https://www.filterforge.com/filters/11639.jpg', type: 'overworld' },
-//   { name: 'lava', src: 'https://www.filterforge.com/filters/11640.jpg' },
-//   { name: 'wood', src: 'https://www.filterforge.com/filters/11641.jpg' },
-//   { name: 'leaves', src: 'https://www.filterforge.com/filters/11642.jpg' },
-//   { name: 'glass', src: 'https://www.filterforge.com/filters/11643.jpg' },
-//   { name: 'brick', src: 'https://www.filterforge.com/filters/11644.jpg' }
-// ];
+import { BlockType, SerializedBlockType, StatusError } from '../../utils/building_plane_utils';
 
 /**
  * Takes an array of objects and takes care of serializing their THREE objects
@@ -37,7 +19,7 @@ import { BlockType, SerializedBlockType } from '../../utils/building_plane_utils
  * @param {BlockType[]} blocks - array of blocks with THREE objects.
  * @returns {SerializedBlockType[]} - a buffer containing the newly serialized blocks. 
  */
-function serializeBlocks(blocks: BlockType[]): SerializedBlockType[] {
+function serializeBlocks(blocks: BlockType[]): Uint8Array<ArrayBufferLike> {
   return encode(blocks.map(block => {
     const geomJSON = block.geometry.toNonIndexed().toJSON();
     const textureJSON = block.texture.toJSON();
@@ -79,6 +61,8 @@ export default function CraftersDen(): React.ReactNode {
   const canvas = useRef(null);
   const {email} = useAuth() ?? {};
   const [isViewMode, setIsViewMode] = useState(false);
+  // TODO implement toastify to handle error
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [error, setError] = useState({});
   const [blocks, setBlocks] = useState<BlockType[]>([]);
 
@@ -105,8 +89,8 @@ export default function CraftersDen(): React.ReactNode {
       const data = new FormData();
       data.append('png', blob, 'blob.png');
       data.append('blocks', serializedBlocks, 'build.json');
-      data.append('buildId', curBuildId);
-      data.append('email', email);
+      if (curBuildId) { data.append('buildId', curBuildId); }
+      data.append('email', email!);
       const requestOptions = {
         method: 'POST',
         // TODO: change id to be not null if the build exists!!!
@@ -117,8 +101,8 @@ export default function CraftersDen(): React.ReactNode {
       const json = await response.json();
       
       if (!response.ok) {
-        const err = new Error(`${json.message}`);
-        error.status = json.status;
+        const err = new StatusError(`${json.message}`);
+        err.status = json.status;
         throw err;
       }
 
