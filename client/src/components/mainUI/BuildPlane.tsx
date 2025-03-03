@@ -1,7 +1,8 @@
 import { Canvas, ThreeEvent } from '@react-three/fiber';
 import * as THREE from 'three';
 import { OrbitControls, Stats } from '@react-three/drei';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
+import { CurrentBlockContext } from '../../context/currentBlockContext';
 import { Block } from './Block';
 import { Cuboid, createGeometry } from '../../utils/building_plane_utils';
 import { nanoid } from 'nanoid';
@@ -30,12 +31,28 @@ export default function BuildPlane({canvasRef, blocks, setBlocks, style}) {
   const [geometries, setGeometries] = useState<object>({});
   const [highlighted, setHighlighted] = useState<THREE.Vector3 | null>(null);
   const [grassTexture, setGrassTexture] = useState<THREE.Texture>();
-  // sample data
-  const selectedBlock = {
+  const {currentBlock} = useContext(CurrentBlockContext);
+
+  const [selectedBlock, setSelectedBlock] = useState({
+    name: 'initial',
     parent: 'block',
-    cuboids: tosFroms,
+    cuboids: currentBlock?.cuboids ?? tosFroms,
     texture: oakPlanks
-  };
+  });
+
+
+  useEffect(() => {
+    console.log("updated selected block, ", currentBlock );
+    setSelectedBlock({
+      name: currentBlock?.name ?? '',
+      parent: 'block',
+      cuboids: currentBlock?.cuboids ?? tosFroms,
+      texture: oakPlanks
+    })
+  }, [currentBlock]);
+
+  // sample data
+  
 
   useEffect(() => {
     async function loadGrass() {
@@ -105,12 +122,12 @@ export default function BuildPlane({canvasRef, blocks, setBlocks, style}) {
    * @returns {THREE.BufferGeometry} geometry for the selected block.
    */
   function getGeometry(): THREE.BufferGeometry {
-    let geometry = geometries[selectedBlock.parent];
+    let geometry = geometries[selectedBlock.name];
 
     if (!geometry) {
       geometry = createGeometry(selectedBlock.cuboids);
 
-      geometries[selectedBlock.parent] = geometry;
+      geometries[selectedBlock.name] = geometry;
 
       setGeometries({...geometries})
     }
@@ -185,7 +202,7 @@ export default function BuildPlane({canvasRef, blocks, setBlocks, style}) {
       </mesh>
     }
     {/* Blocks */}
-    {blocks.map(b => <Block position={b.position}
+    {blocks.map((b, index) => <Block position={b.position}
                             geometry={b.geometry} 
                             onPointerDown={(e: ThreeEvent<PointerEvent>) => {
                               e.stopPropagation();
@@ -195,6 +212,7 @@ export default function BuildPlane({canvasRef, blocks, setBlocks, style}) {
                               e.stopPropagation();
                               setHighlighted(new THREE.Vector3(...b.position).addScalar(0.5));
                             }}
+                            key={index}
                             >
                               <meshBasicMaterial args={[{map: b.texture}]} />
                             </Block>
