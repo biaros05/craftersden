@@ -26,25 +26,17 @@ function createGeometry(tos_froms: Cuboid[]): THREE.BufferGeometry {
     // Create first box and translate it
     const boxGeom = new THREE.BoxGeometry(size.x, size.y, size.z);
 
-    const uvAttr = new Float32Array([
-      // UVs for each face in correct order
-      5/16,  6/16,  11/16, 6/16,  11/16, 10/16,  5/16, 10/16,  // Down
-      5/16,  6/16,  11/16, 6/16,  11/16, 10/16,  5/16, 10/16,  // Up
-      5/16, 14/16,  11/16, 14/16,  11/16, 15/16,  5/16, 15/16,  // North
-      5/16, 14/16,  11/16, 14/16,  11/16, 15/16,  5/16, 15/16,  // South
-      5/16, 14/16,  11/16, 14/16,  11/16, 15/16,  5/16, 15/16,  // West
-      5/16, 14/16,  11/16, 14/16,  11/16, 15/16,  5/16, 15/16,  // East
-    ]);
-
-    boxGeom.setAttribute('uv', new THREE.BufferAttribute(uvAttr, 2)); // Apply UVs
-
-    
     boxGeom.translate(center.x, center.y, center.z); // Apply translation
     
     return boxGeom;
   });
   
   const geo = BufferGeometryUtils.mergeGeometries(geos);
+
+  for (let i = 0; i < 6; i++) {
+    geo.addGroup(i * 6, 6, i);
+  }
+  console.log(geo.groups);
   return geo;
 }
 
