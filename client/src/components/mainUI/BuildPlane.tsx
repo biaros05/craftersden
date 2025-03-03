@@ -91,17 +91,14 @@ export default function BuildPlane({canvasRef, blocks, setBlocks, style}) {
    * @returns {THREE.Material[]} corresponding to given url.
    */
   function getMaterials(): THREE.Material[] {
-    console.log(currentBlock);
     const loader = new THREE.TextureLoader();
-    loader.crossOrigin = '';
     const faces = currentBlock.cuboids[0].faces;
-    console.log(Object.keys(faces));
     const materials = Object.keys(faces).map(direction => {
-      const textureURL = faces[direction].texture;
+      // const textureURL = faces[direction].texture;
+      const textureURL = oakPlanks;
       const texture = loader.load(textureURL);
-      return new THREE.MeshLambertMaterial({ map: texture})
+      return new THREE.MeshStandardMaterial({ map: texture})
     });
-    console.log(materials);
     return materials;
   }
 
@@ -192,22 +189,22 @@ export default function BuildPlane({canvasRef, blocks, setBlocks, style}) {
       </mesh>
     }
     {/* Blocks */}
-    {blocks.map((b, index) => <Block position={b.position}
-                            geometry={b.geometry} 
-                            onPointerDown={(e: ThreeEvent<PointerEvent>) => {
-                              e.stopPropagation();
-                              addBlock(e, b.id, b.position);
-                            }}
-                            onPointerMove={(e: ThreeEvent<PointerEvent>) => {
-                              e.stopPropagation();
-                              setHighlighted(new THREE.Vector3(...b.position).addScalar(0.5));
-                            }}
-                            key={index}
-                            material={b.materials}
-                            >
-                              <meshBasicMaterial args={[{map: b.texture}]} />
-                            </Block>
-                          )}
+    {blocks.map((b, index) => 
+      <Block 
+        position={b.position}
+        geometry={b.geometry} 
+        onPointerDown={(e: ThreeEvent<PointerEvent>) => {
+          e.stopPropagation();
+          addBlock(e, b.id, b.position);
+        }}
+        onPointerMove={(e: ThreeEvent<PointerEvent>) => {
+          e.stopPropagation();
+          setHighlighted(new THREE.Vector3(...b.position).addScalar(0.5));
+        }}
+        key={index}
+        material={b.materials}
+        />
+      )}
     <OrbitControls />
     {!import.meta.env.PROD && <Stats />}
   </Canvas>;

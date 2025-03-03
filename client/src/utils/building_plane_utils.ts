@@ -34,7 +34,6 @@ function createGeometry(tos_froms: Cuboid[]): THREE.BufferGeometry {
   return geo;
 }
 
-
 /**
  * Function to create a mesh from an array of cuboids.
  * @param {object[]} tos_froms - Array of objects that contain a to and from for each cuboid
