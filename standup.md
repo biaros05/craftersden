@@ -19,12 +19,18 @@
 - **Marin Melentii:** Same log from last time. Will work on API route for getting blocks. 
 
 ## February 25 2025 
-- **Amy Nguyen:** 
+- **Amy Nguyen:** Toggle mouse implementation works so what, need translation to rid of bug with scene duplicating on rerender.
 - **Bianca Rossetti:** Yesterday, worked on seeding builds for user. Fixed the object stored as string, now stored as json. Left note in discord how to query the scene. Refactored front-end for build plane. Added some unit tests for users, require more tests for post. Will work on errors to show on front-end related to save builds.
 - **Axel Brochu:** Yesterday, achieved stacked and removing blocks that touched the plane. Will look more into deleting blocks that are not directly touching the plane. 
 - **Marin Melentii:** Yesterday, added the context for selecting current block. The bug related to the scene prohibits the full functionality of the feature. Require fixing. 
 
 - Notes: The big goal now is to translate the build plane code to use react three fiber.
+
+## March 03 2025
+- **Amy Nguyen:** Discovered bug in production, crashes on refresh when save build, or edit profile. Working on click to contine build, and publish.
+- **Bianca Rossetti:** Finish save feature with new react three fiber implementation. Trying to figure out production bug. 
+- **Axel Brochu:** Fixing the conflicts to merge the eslint fixes. Probably going to need new issue to group the react three fiber plane implementations because that got rid of alot of other issues.
+- **Marin Melentii:** Worked on selecting blocks, issue with block textures. React three fiber + the textures are not compatible. Cube works fine, but when there are more than 6 sides, it looks weird. 
 
 ### Template 
 - **Amy Nguyen:** 
