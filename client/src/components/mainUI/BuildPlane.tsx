@@ -203,7 +203,9 @@ export default function BuildPlane({canvasRef, blocks, setBlocks, style}) {
         }}
         key={index}
         material={b.materials}
-        />
+        >
+          <meshBasicMaterial args={[{map: b.texture}]} />
+        </Block>
       )}
     <OrbitControls />
     {!import.meta.env.PROD && <Stats />}
