@@ -8,6 +8,8 @@ import { Cuboid, createGeometry } from '../../utils/building_plane_utils';
 import { nanoid } from 'nanoid';
 import grassTop from '../../assets/grass_top.png';
 import oakPlanks from '../../assets/oak_planks.png';
+import acacia_log from '../../assets/acacia_log.png'
+import acacia_log_top from '../../assets/acacia_log_top.png'
 import { BlockType } from './CraftersDen';
 
 const planeRotation = -0.5 * Math.PI;
@@ -92,10 +94,29 @@ export default function BuildPlane({canvasRef, blocks, setBlocks, style}) {
   function getTextures(): THREE.Texture[] {
     const textureCache : { [url: string]: THREE.Texture} = {};
     const loader = new THREE.TextureLoader();
-    const faces = currentBlock.cuboids[0].faces;
+    // const faces = currentBlock.cuboids[0].faces;
+    const faces = {
+      down: {
+        texture: acacia_log_top
+      },
+      up: {
+        texture: acacia_log_top
+      },
+      north: {
+        texture: acacia_log
+      },
+      south: {
+        texture: acacia_log
+      },
+      west: {
+        texture: acacia_log
+      },
+      east: {
+        texture: acacia_log
+      },
+    }
     const materials = Object.keys(faces).map(direction => {
-      // const textureURL = faces[direction].texture;
-      const textureURL = oakPlanks;
+      const textureURL = faces[direction].texture;
       if  (!textureCache[textureURL]) {
         textureCache[textureURL] =  loader.load(textureURL);
       }
@@ -205,7 +226,7 @@ export default function BuildPlane({canvasRef, blocks, setBlocks, style}) {
         key={index}
         >
           {b.textures?.map((texture, index) =>
-            <meshBasicMaterial key={texture.id} attach={`material-${index}`} map={texture}/>
+            <meshBasicMaterial key={index} attach={`material-${index}`} map={texture}/>
           )}
         </Block>
       )}
