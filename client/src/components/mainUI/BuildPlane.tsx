@@ -90,13 +90,16 @@ export default function BuildPlane({canvasRef, blocks, setBlocks, style}) {
    * @returns {THREE.Texture[]} corresponding to given url.
    */
   function getTextures(): THREE.Texture[] {
+    const textureCache : { [url: string]: THREE.Texture} = {};
     const loader = new THREE.TextureLoader();
     const faces = currentBlock.cuboids[0].faces;
     const materials = Object.keys(faces).map(direction => {
       // const textureURL = faces[direction].texture;
       const textureURL = oakPlanks;
-      const texture = loader.load(textureURL);
-      return texture;
+      if  (!textureCache[textureURL]) {
+        textureCache[textureURL] =  loader.load(textureURL);
+      }
+      return textureCache[textureURL];
     });
     return materials;
   }
