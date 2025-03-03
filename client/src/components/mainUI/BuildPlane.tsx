@@ -13,18 +13,18 @@ import { nanoid } from 'nanoid';
 const planeRotation = -0.5 * Math.PI;
 
 const tosFroms: Cuboid[] = [
-  // {
-  //   from: [0, 0, 0],
-  //   to: [1, 0.5, 1],
-  // },
-  // {
-  //   from: [0.5, 0.5, 0],
-  //   to: [1, 1, 1],
-  // }
   {
     from: [0, 0, 0],
-    to: [1, 1, 1]
+    to: [1, 0.5, 1],
+  },
+  {
+    from: [0.5, 0.5, 0],
+    to: [1, 1, 1],
   }
+  // {
+  //   from: [0,0,0],
+  //   to: [1,1,1]
+  // }
 ];  
 
 type BuildPlaneProps = {
@@ -45,6 +45,7 @@ type BuildPlaneProps = {
 export default function BuildPlane({canvasRef, blocks, setBlocks}: BuildPlaneProps): React.ReactNode {
   const [geometries, setGeometries] = useState<object>({});
   const [highlighted, setHighlighted] = useState<THREE.Vector3 | null>(null);
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [grassTexture, setGrassTexture] = useState<THREE.Texture>();
   // sample data
   const selectedBlock: SelectedBlock = {
@@ -115,11 +116,24 @@ export default function BuildPlane({canvasRef, blocks, setBlocks}: BuildPlanePro
     e.stopPropagation();
   }
 
+  function rotateBlock(e): void {
+    if (e.key === 'r') {
+      const b = blocks.find(b => b.id === hoveredId);
+      if (!b.rotation) {
+        b.rotation = [0, 0, 0]
+      }
+      b.rotation = [0, 0, b.rotation[2] + Math.PI / 2]      
+      setBlocks([...blocks]);
+    }
+  }
+
   return <Canvas 
       gl={{ preserveDrawingBuffer: true }}  
       camera={{position: [15,15,15]}} 
       id='build-plane' 
       ref={canvasRef}
+      onKeyDown={rotateBlock}
+      tabIndex={0}
       >
     {/* Plane */}
     <mesh rotation={[planeRotation, 0, 0]} onPointerDown={addBlockOnPlane} onPointerMove={(e: ThreeEvent<PointerEvent>) => {
@@ -148,20 +162,27 @@ export default function BuildPlane({canvasRef, blocks, setBlocks}: BuildPlanePro
 
     {/* Blocks */}
     {blocks.map(b => <Block position={b.position}
-      geometry={b.geometry} 
-      onPointerDown={(e: ThreeEvent<PointerEvent>) => {
-        e.stopPropagation();
-        addBlock(e, b.id, b.position);
-      }}
-      onPointerMove={(e: ThreeEvent<PointerEvent>) => {
-        e.stopPropagation();
-        setHighlighted(new THREE.Vector3(...b.position).addScalar(0.5));
-      }}
-      key={b.id}
-    >
-      <meshBasicMaterial args={[{map: b.texture}]} />
-    </Block>
-    )}
+                            geometry={b.geometry} 
+                            rotation={b.rotation}
+                            onPointerDown={(e: ThreeEvent<PointerEvent>) => {
+                              e.stopPropagation();
+                              addBlock(e, b.id, b.position);
+                            }}
+                            onPointerMove={(e: ThreeEvent<PointerEvent>) => {
+                              e.stopPropagation();
+                              setHighlighted(new THREE.Vector3(...b.position).addScalar(0.5));
+                              setHoveredId(b.id);
+                            }}
+                            onPointerEnter={(e: ThreeEvent<PointerEvent>) => {
+                              e.stopPropagation();
+                              setHighlighted(new THREE.Vector3(...b.position).addScalar(0.5));
+                              setHoveredId(b.id);
+                            }}
+                            key={b.id}
+                            >
+                              <meshBasicMaterial args={[{map: b.texture}]} />
+                            </Block>
+                          )}
     <OrbitControls />
     {!import.meta.env.PROD && <Stats />}
   </Canvas>;
