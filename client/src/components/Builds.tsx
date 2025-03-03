@@ -3,13 +3,11 @@ import '../styles/welcome.css';
 import { Image } from '@mantine/core';
 import '../styles/builds.css';
 
-// TODO update type to reflect what is stored.
-/* typescript-eslint-disable @typescript-eslint/no-wrapper-object-types */
 type Build = {
   progressPicture: string,
-  description: string,
-  buildJSON: {}, // eslint-disable-line @typescript-eslint/no-empty-object-type
-  isPublished: boolean,
+  description: String,
+  buildJSON: {},
+  isPublished: Boolean,
   thumnails: [],
 }
 
