@@ -23,7 +23,7 @@ import '@mantine/carousel/styles.css';
 import CraftersDen from './components/mainUI/CraftersDen.jsx';
 import { ToastContainer, Slide } from 'react-toastify';
 import '@mantine/core/styles.css';
-
+import CustomNotification from './components/mainUI/CustomNotification.tsx';
 import { MantineProvider, createTheme } from '@mantine/core';
 import React from 'react';
 
@@ -32,6 +32,19 @@ function Main() {
     <Header />
     <Outlet />
     <Footer />
+    <ToastContainer
+    position="bottom-right"
+    autoClose={5000}
+    hideProgressBar={false}
+    newestOnTop={false}
+    closeOnClick
+    rtl={false}
+    pauseOnFocusLoss
+    draggable
+    pauseOnHover
+    theme="colored"
+    transition={Slide}
+    />
   </>
 }
 
@@ -69,7 +82,7 @@ const router = createBrowserRouter([
   }
 ]);
 
-const theme = createTheme({
+export const theme = createTheme({
   primaryColor: 'green',
   primaryShade: 7,
 });
@@ -77,25 +90,14 @@ const theme = createTheme({
 createRoot(document.getElementById('root')!!).
   render(
     <StrictMode>
+      <AuthProvider >
       <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
         <MantineProvider theme={theme}>
-          <AuthProvider >
+          {/* <AuthProvider > */}
             <RouterProvider router={router} />
-          </AuthProvider>
+          {/* </AuthProvider> */}
         </MantineProvider>
       </GoogleOAuthProvider>
-      <ToastContainer
-        position="bottom-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="colored"
-        transition={Slide}
-        />
+      </AuthProvider>
     </StrictMode>
   );

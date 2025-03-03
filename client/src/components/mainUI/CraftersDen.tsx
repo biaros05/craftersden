@@ -137,7 +137,12 @@ export default function CraftersDen() {
           <BuildPlane canvasRef={canvas} blocks={blocks} setBlocks={setBlocks}/>
           {!isViewMode && <BlockSelection blockList={blockList}/>}
         </section>
-        <ButtonPanel setIsViewMode={setIsViewMode} canvas={canvas} savePost={savePost} isViewMode={isViewMode}/>
+        <ButtonPanel 
+        setIsViewMode={setIsViewMode} 
+        canvas={canvas} 
+        savePost={savePost} 
+        isViewMode={isViewMode}
+        email={email}/>
       </div>
     </>
   );
