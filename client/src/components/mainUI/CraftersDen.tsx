@@ -62,6 +62,7 @@ function serializeBlocks(blocks: Array<BlockType>) {
 function deserializeBlocks(blocks) {
   return blocks.map(block => {
     console.log(block.texture);
+    block.texture.image = block.textureURL
     return {
       id: block.id,
       position: block.position,
