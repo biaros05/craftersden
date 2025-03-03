@@ -70,6 +70,12 @@ app.use('/api/user', userRouter);
 
 app.use('/api/post', postRouter);
 
+// Serve index.html for all other routes
+app.get('*', html, (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+  return;
+});
+
 // not found middleware
 app.use((req, res, next) => {
   res.status(404).json({message: 'not found'});
@@ -81,12 +87,6 @@ app.use(function (err, req, res, next) {
   const error = app.get('env') !== 'production' ? err.message : {};
   res.status(err.status || 500);
   res.json({ message: error });
-  return;
-});
-
-// Serve index.html for all other routes
-app.get('*', html, (req, res) => {
-  res.sendFile(path.join(__dirname, '../client/dist/index.html'));
   return;
 });
 
