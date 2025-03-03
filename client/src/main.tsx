@@ -20,7 +20,7 @@ import Profile from './components/Profile.tsx';
 import Forum from './components/Forum.tsx';
 import '@mantine/core/styles.css';
 import '@mantine/carousel/styles.css';
-import CraftersDen from './components/mainUI/CraftersDen.jsx';
+import CraftersDen from './components/mainUI/CraftersDen.tsx';
 
 import '@mantine/core/styles.css';
 
