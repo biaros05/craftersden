@@ -8,8 +8,7 @@ import BlobServiceProvider from '../utils/BlobService.mjs';
 import { OAuthService } from '../utils/auth.mjs';
 import mongoose from 'mongoose';
 import Post from '../models/Post.js';
-import User from '../models/User.mjs';
-import {encode} from "@msgpack/msgpack"; 
+import {encode} from '@msgpack/msgpack'; 
 
 let blobServiceConstructorStub;
 let findUserStub;
@@ -24,15 +23,6 @@ const initialTestUser = {
   username: 'tester',
   email: 'user@test.com',
   avatar: 'testurl.com'
-};
-
-const testPost = {
-  'description': 'This is a test build',
-  'user': 'userID',
-  'buildJSON': [{}],
-  'isPublished': false,
-  'thumnails': [],
-  'progressPicture': '',
 };
 
 const testPostWithURL = {
@@ -66,6 +56,7 @@ describe('Post endpoints', () => {
 
     findOneAndUpdateStub.resolves(preExistingPost);
 
+    /* eslint-disable-next-line no-unused-vars */
     findOneAndUpdateStub.callsFake(async (filter, params) => {
 
       if (filter._id === '1234') {
@@ -83,6 +74,8 @@ describe('Post endpoints', () => {
 
     
     findUserStub = Sinon.stub(mongoose.Model, 'findOne');
+
+    /* eslint-disable-next-line no-unused-vars */
     findUserStub.callsFake(async (filter, params) => {
 
       if (filter.email === 'user@test.com') {
@@ -93,6 +86,8 @@ describe('Post endpoints', () => {
     });
 
     findPostStub = Sinon.stub(mongoose.Model, 'find');
+
+    /* eslint-disable-next-line no-unused-vars */
     findPostStub.callsFake(async (filter, params) => {
 
       if (filter.user === 'newUser') {
@@ -167,45 +162,6 @@ describe('Post endpoints', () => {
     expect(query.body.message).to.equal('Builds retrieved!');
     return;
   });
-
-  // it('should update user picture and name in db', async () => {
-  //   const loginResp = await request(app).post('/api/auth').
-  //     send({token: 'faketoken'});
-  //   cookie = loginResp.headers['set-cookie'][0].split(';')[0];
-
-  //   const response = await request(app).
-  //     put('/api/user').
-  //     field('username', 'newname').
-  //     attach('avatar', Buffer.from('somebits'), {filename: 'image.png', contentType: 'image/png'}).
-  //     set('Cookie', cookie);
-
-  //   const query = await request(app).
-  //     get('/api/query').
-  //     set('Cookie', cookie);
-    
-  //   expect(query.body.user).to.deep.equal(finalTestuser);
-  //   expect(response.status).to.equal(200);
-  // });
-
-  // it('should update user picture in db', async () => {
-  //   const loginResp = await request(app).post('/api/auth').
-  //     send({token: 'faketoken'});
-  //   cookie = loginResp.headers['set-cookie'][0].split(';')[0];
-
-  //   const response = await request(app).
-  //     put('/api/user').      
-  //     attach('avatar', Buffer.from('somebits'), {filename: 'image.png', contentType: 'image/png'}).
-  //     set('Cookie', cookie);
-
-  //   const query = await request(app).
-  //     get('/api/query').
-  //     set('Cookie', cookie);
-    
-  //   const expectedUser = {...finalTestuser};
-  //   expectedUser.username = initialTestUser.username;
-  //   expect(query.body.user).to.deep.equal(expectedUser);
-  //   expect(response.status).to.equal(200);
-  // });
 
   it('should fail when user not logged in', async () => {
     const response = await request(app).
