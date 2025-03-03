@@ -33,11 +33,35 @@ function createGeometry(tos_froms: Cuboid[]): THREE.BufferGeometry {
   
   const geo = BufferGeometryUtils.mergeGeometries(geos);
 
-  for (let i = 0; i < 6; i++) {
-    geo.addGroup(i * 6, 6, i);
-  }
-  console.log(geo.groups);
+  addMaterialGroups(geo, tos_froms.length);
+
   return geo;
+}
+
+/**
+ * Add the correctly indexed material groups to the geometry. They are missing
+ * when creating a new BufferGeometry.
+ * @param {THREE.BufferGeometry} geometry The geometry to add the groups to
+ * @param {number} cuboidCount The number of cuboids in the geometry
+ * @returns {void}
+ */
+function addMaterialGroups(geometry: THREE.BufferGeometry, cuboidCount: number): void {
+  
+  // TODO - this effectively makes each cuboid have the same material groups, which will probably not work
+  // in long run
+
+
+  // A cuboid always 6 faces, and a block concists of multiple cuboids
+  const faceCount = 6;
+  const indecieCountPerFace = 6;
+
+  for (let i = 0, start = 0; i < cuboidCount; i++, start+=faceCount*faceCount) {
+    for (let i = 0; i < faceCount; i++) {
+      // each face consists of 2 triangles, so 6 indices
+      geometry.addGroup(i * indecieCountPerFace + start, indecieCountPerFace, i);
+    }
+  }
+  console.log(geometry.groups);
 }
 
 export {Cuboid, createGeometry}
