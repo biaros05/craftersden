@@ -130,7 +130,7 @@ export default function CraftersDen() {
     <>
       <div id="main-ui">
         <section className="build-tools">
-          <BuildPlane canvasRef={canvas} blocks={blocks} setBlocks={setBlocks}/>
+          <BuildPlane canvasRef={canvas} blocks={blocks} setBlocks={setBlocks} style={{ width: "80%" }}/>
           {!isViewMode && <BlockSelection blockList={blockList}/>}
         </section>
         <ButtonPanel setIsViewMode={setIsViewMode} canvas={canvas} savePost={savePost} isViewMode={isViewMode}/>

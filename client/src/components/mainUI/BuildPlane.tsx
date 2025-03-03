@@ -26,7 +26,7 @@ const tosFroms: Cuboid[] = [
   }
 ];  
 
-export default function BuildPlane({canvasRef, blocks, setBlocks}) {
+export default function BuildPlane({canvasRef, blocks, setBlocks, style}) {
   const [geometries, setGeometries] = useState<object>({});
   const [highlighted, setHighlighted] = useState<THREE.Vector3 | null>(null);
   const [grassTexture, setGrassTexture] = useState<THREE.Texture>();
@@ -158,6 +158,7 @@ export default function BuildPlane({canvasRef, blocks, setBlocks}) {
       camera={{position: [15,15,15]}} 
       id='build-plane' 
       ref={canvasRef}
+      style={style}
       >
     {/* Plane */}
     <mesh rotation={[planeRotation, 0, 0]} onPointerDown={addBlockOnPlane} onPointerMove={(e: ThreeEvent<PointerEvent>) => {
