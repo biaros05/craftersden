@@ -38,7 +38,7 @@ const userUpdateValidation = [
 userRouter.put('/', isAuthenticated,
   upload.single('avatar'), userUpdateValidation, uploadValidation, uploadImage, storeImageWithName);
 
-userRouter.get('/:email/builds', 
+userRouter.get('/:email/builds', isAuthenticated,
   upload.none(), getUsersSavedBuilds);
 
 export default userRouter;
