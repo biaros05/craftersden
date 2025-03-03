@@ -33,27 +33,6 @@ export default function BuildPlane({canvasRef, blocks, setBlocks, style}) {
   const [grassTexture, setGrassTexture] = useState<THREE.Texture>();
   const {currentBlock} = useContext(CurrentBlockContext);
 
-  const [selectedBlock, setSelectedBlock] = useState({
-    name: 'initial',
-    parent: 'block',
-    cuboids: currentBlock?.cuboids ?? tosFroms,
-    texture: oakPlanks
-  });
-
-
-  useEffect(() => {
-    console.log("updated selected block, ", currentBlock );
-    setSelectedBlock({
-      name: currentBlock?.name ?? '',
-      parent: 'block',
-      cuboids: currentBlock?.cuboids ?? tosFroms,
-      texture: oakPlanks
-    })
-  }, [currentBlock]);
-
-  // sample data
-  
-
   useEffect(() => {
     async function loadGrass() {
       const grassTexture = new THREE.TextureLoader().load(grassTop, function (texture) {
@@ -122,12 +101,12 @@ export default function BuildPlane({canvasRef, blocks, setBlocks, style}) {
    * @returns {THREE.BufferGeometry} geometry for the selected block.
    */
   function getGeometry(): THREE.BufferGeometry {
-    let geometry = geometries[selectedBlock.name];
+    let geometry = geometries[currentBlock.name];
 
     if (!geometry) {
-      geometry = createGeometry(selectedBlock.cuboids);
+      geometry = createGeometry(currentBlock.cuboids);
 
-      geometries[selectedBlock.name] = geometry;
+      geometries[currentBlock.name] = geometry;
 
       setGeometries({...geometries})
     }
