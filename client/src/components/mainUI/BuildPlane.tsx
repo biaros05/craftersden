@@ -71,8 +71,7 @@ export default function BuildPlane({canvasRef, blocks, setBlocks, style}) {
         id: nanoid(),
         position: newPosition,
         geometry: geometry,
-        texture: new THREE.Texture(),
-        materials: getMaterials(),
+        textures: getTextures(),
         textureURL: oakPlanks
       };
 
@@ -88,16 +87,16 @@ export default function BuildPlane({canvasRef, blocks, setBlocks, style}) {
   /**
    * Takes a texture url and creates a THREE texture with it.
    * @param {string} url to the texture image.
-   * @returns {THREE.Material[]} corresponding to given url.
+   * @returns {THREE.Texture[]} corresponding to given url.
    */
-  function getMaterials(): THREE.Material[] {
+  function getTextures(): THREE.Texture[] {
     const loader = new THREE.TextureLoader();
     const faces = currentBlock.cuboids[0].faces;
     const materials = Object.keys(faces).map(direction => {
       // const textureURL = faces[direction].texture;
       const textureURL = oakPlanks;
       const texture = loader.load(textureURL);
-      return new THREE.MeshStandardMaterial({ map: texture})
+      return texture;
     });
     return materials;
   }
@@ -139,8 +138,7 @@ export default function BuildPlane({canvasRef, blocks, setBlocks, style}) {
         id: nanoid(),
         position: position,
         geometry: geometry,
-        texture: new THREE.Texture(),
-        materials: getMaterials(),
+        textures: getTextures(),
         textureURL: oakPlanks
       };
 
@@ -202,9 +200,10 @@ export default function BuildPlane({canvasRef, blocks, setBlocks, style}) {
           setHighlighted(new THREE.Vector3(...b.position).addScalar(0.5));
         }}
         key={index}
-        material={b.materials}
         >
-          <meshBasicMaterial args={[{map: b.texture}]} />
+          {b.textures?.map((texture, index) =>
+            <meshBasicMaterial key={texture.id} attach={`material-${index}`} map={texture}/>
+          )}
         </Block>
       )}
     <OrbitControls />
