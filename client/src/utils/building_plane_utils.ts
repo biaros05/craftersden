@@ -9,13 +9,13 @@ type Cuboid = {
 /**
  * Creates an array of cuboids that get merged into a
  * single geometry.
- * @param {tos_froms[]} tos_froms Array of objects that contain a to and from for each cuboid
+ * @param {Cuboid[]} cuboids Array of objects that contain a to and from for each cuboid
  * @returns {THREE.BufferGeometry} Merged geometry built from cuboids
  */
-function createGeometry(tos_froms: Cuboid[]): THREE.BufferGeometry {
-  const geos = tos_froms.map(tf => {
-    const to = new THREE.Vector3(...tf.to);
-    const from = new THREE.Vector3(...tf.from);
+function createGeometry(cuboids: Cuboid[]): THREE.BufferGeometry {
+  const geos = cuboids.map(cuboid => {
+    const to = new THREE.Vector3(...cuboid.to);
+    const from = new THREE.Vector3(...cuboid.from);
 
     // Calculate size
     const size = new THREE.Vector3().subVectors(to, from);
@@ -26,14 +26,23 @@ function createGeometry(tos_froms: Cuboid[]): THREE.BufferGeometry {
     // Create first box and translate it
     const boxGeom = new THREE.BoxGeometry(size.x, size.y, size.z);
 
+    for (let i = 0; i < 6; i++) {
+      boxGeom.addGroup(i * 6, 6, i);
+    }
     boxGeom.translate(center.x, center.y, center.z); // Apply translation
-    
-    return boxGeom;
+
+    const materials = getMaterials(cuboid);
+
+    const mesh = new THREE.Mesh(boxGeom, materials);
+
+    return mesh.geometry;
   });
   
   const geo = BufferGeometryUtils.mergeGeometries(geos);
 
-  addMaterialGroups(geo, tos_froms.length);
+  // addMaterialGroups(geo, cuboids.length);
+
+  console.log('geo after merege groups ', geo.groups);
 
   return geo;
 }
@@ -61,7 +70,22 @@ function addMaterialGroups(geometry: THREE.BufferGeometry, cuboidCount: number):
       geometry.addGroup(i * indecieCountPerFace + start, indecieCountPerFace, i);
     }
   }
-  console.log(geometry.groups);
 }
+
+
+  function getMaterials(cuboid): THREE.Material[] {
+    const textureCache : { [url: string]: THREE.Texture} = {};
+    const loader = new THREE.TextureLoader();
+    const faces = cuboid.faces;
+    const materials = Object.keys(faces).map(direction => {
+      const textureURL = faces[direction].texture;
+      if  (!textureCache[textureURL]) {
+        textureCache[textureURL] =  loader.load(textureURL);
+      }
+      return new THREE.MeshBasicMaterial({map: textureCache[textureURL]});
+    });
+    return materials;
+  }
+
 
 export {Cuboid, createGeometry}
