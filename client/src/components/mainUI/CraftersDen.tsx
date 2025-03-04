@@ -60,7 +60,6 @@ function serializeBlocks(blocks: Array<BlockType>) {
  * @returns - Array of blocks which contain THREE objects
  */
 function deserializeBlocks(blocks) {
-  console.log(blocks);
   return blocks.map(block => {
     return {
       id: block.id,
@@ -86,7 +85,6 @@ export default function CraftersDen() {
   const build = useBuild();
 
   useEffect(() => {
-    console.log(build.build);
     if(build.build!==undefined){
       setBlocks(deserializeBlocks(build.build.buildJSON));
     }
