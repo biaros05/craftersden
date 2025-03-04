@@ -71,6 +71,7 @@ export default function BuildPlane({canvasRef, blocks, setBlocks, style}) {
 
       const newBlock: BlockType = {
         id: nanoid(),
+        name: currentBlock.name,
         position: newPosition,
         geometry: geometry,
         textures: getTextures(),
@@ -145,6 +146,7 @@ export default function BuildPlane({canvasRef, blocks, setBlocks, style}) {
 
       const newBlock: BlockType = {
         id: nanoid(),
+        name: currentBlock.name,
         position: position,
         geometry: geometry,
         textures: getTextures(),
@@ -210,8 +212,13 @@ export default function BuildPlane({canvasRef, blocks, setBlocks, style}) {
         }}
         key={index}
         >
-          {b.textures?.map((texture, index) =>
-            <meshBasicMaterial key={index} attach={`material-${index}`} map={texture}/>
+          {b.textures?.map((texture, index) => {
+            if (b.name?.includes('glass')) {
+              return <meshBasicMaterial key={index} attach={`material-${index}`} map={texture} transparent={true} opacity={0.7}/>
+            } else {
+              return <meshBasicMaterial key={index} attach={`material-${index}`} map={texture}/>
+            }
+          }
           )}
         </Block>
       )}
