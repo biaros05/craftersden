@@ -116,7 +116,13 @@ export default function BuildPlane({canvasRef, blocks, setBlocks}: BuildPlanePro
     e.stopPropagation();
   }
 
-  function rotateBlock(e): void {
+  /**
+   * Rotates block being hovered and computes the
+   * world position to offset the rotation
+   * @param {KeyboardEvent} e event object
+   * @returns {void}
+   */
+  function rotateBlock(e: KeyboardEvent): void {
     if (e.key === 'r') {
       const b = blocks.find(b => b.id === hoveredId);
       if (!b) return;
