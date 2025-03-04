@@ -82,7 +82,8 @@ type BlockType = {
   geometry: THREE.BufferGeometry,
   texture: THREE.Texture,
   textureURL: string,
-  rotation?: [number, number, number] | undefined
+  rotation?: [number, number, number] | undefined,
+  rotationIndex?: number | undefined
 }
 
 type SerializedBlockType = {

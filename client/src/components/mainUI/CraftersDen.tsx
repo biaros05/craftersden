@@ -113,9 +113,48 @@ export default function CraftersDen(): React.ReactNode {
     }
   }
 
+  function blockClickX() {
+    if (!blocks[1].rotation) {
+      blocks[1].rotation = [0, 0, 0];
+    }
+
+    blocks[1].rotation = [blocks[1].rotation![0] + Math.PI / 2, blocks[1].rotation[1], blocks[1].rotation[2]];
+    setBlocks([...blocks])
+    console.log(blocks[1].rotation);
+  }
+
+  function blockClickY() {
+    if (!blocks[1].rotation) {
+      blocks[1].rotation = [0, 0, 0];
+    }
+
+    blocks[1].rotation = [blocks[1].rotation![0], blocks[1].rotation[1] + Math.PI / 2, blocks[1].rotation[2]];
+    setBlocks([...blocks])
+    console.log(blocks[1].rotation);
+  }
+
+  function blockClickZ() {
+    if (!blocks[1].rotation) {
+      blocks[1].rotation = [0, 0, 0];
+    }
+
+    blocks[1].rotation = [blocks[1].rotation![0], blocks[1].rotation[1], blocks[1].rotation[2] + Math.PI / 2];
+    setBlocks([...blocks])
+    console.log(blocks[1].rotation);
+  }
+
+  function resetBlock() {
+    blocks[1].rotation = [0,0,0];
+    setBlocks([...blocks]);
+  }
+
   return (
     <>
       <div id="main-ui">
+        <button onClick={blockClickX}>X</button>
+        <button onClick={blockClickY}>Y</button>
+        <button onClick={blockClickZ}>Z</button>
+        <button onClick={resetBlock}>Reset</button>
         <section className="build-tools">
           <BuildPlane canvasRef={canvas} blocks={blocks} setBlocks={setBlocks}/>
           {!isViewMode && <BlockSelection />}
