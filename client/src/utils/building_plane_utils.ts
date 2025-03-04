@@ -40,7 +40,7 @@ function createGeometry(cuboids: Cuboid[]): THREE.BufferGeometry {
   
   const geo = BufferGeometryUtils.mergeGeometries(geos);
 
-  // addMaterialGroups(geo, cuboids.length);
+  addMaterialGroups(geo, cuboids.length);
 
   console.log('geo after merege groups ', geo.groups);
 
@@ -65,9 +65,9 @@ function addMaterialGroups(geometry: THREE.BufferGeometry, cuboidCount: number):
   const indecieCountPerFace = 6;
 
   for (let i = 0, start = 0; i < cuboidCount; i++, start+=faceCount*faceCount) {
-    for (let i = 0; i < faceCount; i++) {
+    for (let j = 0; j < faceCount; j++) {
       // each face consists of 2 triangles, so 6 indices
-      geometry.addGroup(i * indecieCountPerFace + start, indecieCountPerFace, i);
+      geometry.addGroup(start + j*faceCount, indecieCountPerFace, j + i * faceCount);
     }
   }
 }
