@@ -22,7 +22,7 @@ type ButtonPanelProps = {
 function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode}: ButtonPanelProps): React.ReactNode {
 
   const navigate = useNavigate();
-  
+
   return (
     <section className="button-panel">
       <Button 
@@ -31,7 +31,6 @@ function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode}: ButtonPanelP
         className="save-button"
         onClick={() => {
           savePost(canvas.current!.toDataURL('image/png'));
-          navigate('/profile');
         }}
       >
         Save

@@ -79,7 +79,7 @@ export default function CraftersDen(): React.ReactNode {
 
   useEffect(() => {
     console.log(build);
-    if(build.build!==undefined){
+    if(build.build!==undefined && build.build!==null){
       setBlocks(deserializeBlocks(build.build.buildJSON));
     }
     else{
@@ -87,9 +87,13 @@ export default function CraftersDen(): React.ReactNode {
     }
   }, []);
 
+  let curBuildId = null;
 
-  console.log(`setting id to be: ${build?.build._id}`);
-  const curBuildId = build?.build._id;
+  if(build.build !== undefined && build.build !== null){
+    console.log(build.build)
+    console.log(build)
+    curBuildId = build.build._id;
+  }
 
   /**
    * Saves the current build in the db
