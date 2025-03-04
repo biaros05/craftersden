@@ -120,9 +120,53 @@ export default function BuildPlane({canvasRef, blocks, setBlocks}: BuildPlanePro
     if (e.key === 'r') {
       const b = blocks.find(b => b.id === hoveredId);
       if (!b.rotation) {
-        b.rotation = [0, 0, 0]
+        b.rotation = [0, 0, 0];
+        b.rotationIndex = 0;
       }
-      b.rotation = [0, 0, b.rotation[2] + Math.PI / 2]      
+      
+      // b.rotation = [b.rotation[0] + Math.PI / 2, 0, 0]      
+      const ra = Math.PI / 2;
+      const rotations = [
+        [ra, ra, 0],  
+        [ra, 0, ra],  
+        [0, ra, ra],  
+        [ra, -ra, 0],  
+        [ra, 0, -ra],  
+        [0, ra, -ra],  
+        [-ra, ra, 0],  
+        [-ra, 0, ra],  
+        [0, -ra, ra],  
+        [-ra, -ra, 0],  
+        [-ra, 0, -ra],  
+        [0, -ra, -ra],  
+        [2*ra, 2*ra, 0],  
+        [2*ra, 0, 2*ra],  
+        [0, 2*ra, 2*ra],  
+        [2*ra, -2*ra, 0],  
+        [2*ra, 0, -2*ra],  
+        [0, 2*ra, -2*ra],  
+        [-2*ra, 2*ra, 0],  
+        [-2*ra, 0, 2*ra],  
+        [0, -2*ra, 2*ra],  
+        [-2*ra, -2*ra, 0],  
+        [-2*ra, 0, -2*ra],  
+        [0, -2*ra, -2*ra],  
+        [3*ra, ra, 0],  
+        [3*ra, 0, ra],  
+        [0, 3*ra, ra],  
+        [3*ra, -ra, 0],  
+        [3*ra, 0, -ra],  
+        [0, 3*ra, -ra],  
+        [-3*ra, ra, 0],  
+        [-3*ra, 0, ra],  
+        [0, -3*ra, ra],  
+        [-3*ra, -ra, 0],  
+        [-3*ra, 0, -ra],  
+        [0, -3*ra, -ra],  
+      ];
+      
+      b.rotation = rotations[b.rotationIndex];
+      b.rotationIndex += (b.rotationIndex + 1) % rotations.length;
       setBlocks([...blocks]);
     }
   }
