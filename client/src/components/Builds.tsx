@@ -5,9 +5,9 @@ import '../styles/builds.css';
 
 type Build = {
   progressPicture: string,
-  description: String,
-  buildJSON: {},
-  isPublished: Boolean,
+  description: string,
+  buildJSON: object,
+  isPublished: boolean,
   thumnails: [],
 }
 
