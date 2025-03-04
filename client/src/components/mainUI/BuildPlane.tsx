@@ -212,9 +212,14 @@ export default function BuildPlane({canvasRef, blocks, setBlocks, style}) {
         }}
         key={index}
         >
+          {/* There are supposed to be one texture for each face of each cuboid */}
           {b.textures?.map((texture, index) => {
             if (b.name?.includes('glass')) {
               return <meshBasicMaterial key={index} attach={`material-${index}`} map={texture} transparent={true} opacity={0.7}/>
+            } else if (b.textures.length !== b.geometry.groups.length) {
+              // Three implicitly uses the same logic as above, but in cases where there
+              // are not enough materials, it uses the last used material. Fallback case, gets rid off invalid side errors.
+              return <meshBasicMaterial key={index} map={texture}/>
             } else {
               return <meshBasicMaterial key={index} attach={`material-${index}`} map={texture}/>
             }
