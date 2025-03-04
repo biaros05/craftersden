@@ -21,6 +21,7 @@ import Forum from './components/Forum.tsx';
 import '@mantine/core/styles.css';
 import '@mantine/carousel/styles.css';
 import CraftersDen from './components/mainUI/CraftersDen.jsx';
+import { BuildProvider } from './hooks/BuildContext.tsx';
 
 import '@mantine/core/styles.css';
 
@@ -80,7 +81,9 @@ createRoot(document.getElementById('root')!!).
       <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
         <MantineProvider theme={theme}>
           <AuthProvider >
-            <RouterProvider router={router} />
+            <BuildProvider>
+              <RouterProvider router={router} />
+            </BuildProvider>
           </AuthProvider>
         </MantineProvider>
       </GoogleOAuthProvider>

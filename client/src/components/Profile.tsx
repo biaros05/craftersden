@@ -5,11 +5,15 @@ import { useDisclosure } from "@mantine/hooks";
 import { IconEdit } from "@tabler/icons-react";
 import '../styles/profile.css'
 import Builds from './Builds';
+import { useBuild, useBuildUpdate } from "../hooks/BuildContext";
 
 export default function Profile() {
     const {username, email, avatar} = useAuth() ?? {};
     const [opened, {open, close}] = useDisclosure(false);
     const [builds, setBuilds] = useState([]);
+
+    const buildContext = useBuild();
+    const pickBuild = useBuildUpdate();
 
     useEffect(() => {
       async function getBuilds() {
