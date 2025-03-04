@@ -121,24 +121,24 @@ export default function BuildPlane({canvasRef, blocks, setBlocks}: BuildPlanePro
       const b = blocks.find(b => b.id === hoveredId);
       if (!b) return;
       if (!b.rotation) {
-        b.rotation = [0, 0, 0];
-        b.rotationIndex = 0;
+        b.rotationIndex = 1;
       }
       
-      // b.rotation = [b.rotation[0] + Math.PI / 2, 0, 0]      
       const ra = Math.PI / 2;
-      const rotations: [number, number, number][] = [
-        [ra, ra, 0],  
-        [0, ra, ra],
-        [-ra, 0, -ra],
-        [3*ra, 0, -ra],
-        [-3*ra, ra, 0],
-        [0, -3*ra, ra], 
+      const transformations: {rotation: [number,number,number], translate?: [number,number,number]}[] = [
+        {rotation: [0, 0, 0], translate: undefined},
+        {rotation: [0, ra, 0], translate: [0, 0, 1]},
+        {rotation: [0, 2 * ra, 0], translate: [1, 0, 1]},
+        {rotation: [0, 3 * ra, 0], translate: [1, 0, 0]},
+        {rotation: [2 * ra, 0, 0], translate: [0, 1, 1]},
+        {rotation: [2 * ra, ra, 0], translate: [0, 1, 0]},
+        {rotation: [2 * ra, 2 * ra, 0], translate: [1, 1, 0]},
+        {rotation: [2 * ra, 3 * ra, 0], translate: [1, 1, 1]},
       ];
       
-      b.rotation = rotations[b.rotationIndex!];
-      console.log(b.rotationIndex, rotations.length)
-      b.rotationIndex! = (b.rotationIndex! + 1) % rotations.length;
+      b.rotation = transformations[b.rotationIndex!].rotation;
+      b.translate = transformations[b.rotationIndex!].translate;
+      b.rotationIndex! = (b.rotationIndex! + 1) % transformations.length;
       setBlocks([...blocks]);
     }
   }
@@ -164,6 +164,7 @@ export default function BuildPlane({canvasRef, blocks, setBlocks}: BuildPlanePro
         side: THREE.DoubleSide,
       }]} />
     </mesh>
+
     {/* Grid */}
     <gridHelper args={[30, 30]} />
 
@@ -177,7 +178,7 @@ export default function BuildPlane({canvasRef, blocks, setBlocks}: BuildPlanePro
     }
 
     {/* Blocks */}
-    {blocks.map(b => <Block position={b.position}
+    {blocks.map(b => <Block position={b.translate ? b.position.map((pos, i) => pos + b.translate![i]) as [number,number,number] : b.position}
                             geometry={b.geometry} 
                             rotation={b.rotation}
                             onPointerDown={(e: ThreeEvent<PointerEvent>) => {
