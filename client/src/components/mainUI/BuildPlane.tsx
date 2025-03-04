@@ -122,7 +122,7 @@ export default function BuildPlane({canvasRef, blocks, setBlocks}: BuildPlanePro
    * @param {KeyboardEvent} e event object
    * @returns {void}
    */
-  function rotateBlock(e: KeyboardEvent): void {
+  function rotateBlock(e: React.KeyboardEvent<HTMLDivElement>): void {
     console.log(e.key, e.shiftKey)
     if (e.key.toLowerCase() === 'r') {
       const b = blocks.find(b => b.id === hoveredId);
