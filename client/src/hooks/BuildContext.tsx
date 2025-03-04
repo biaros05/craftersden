@@ -17,9 +17,14 @@ export function useBuild(){
   return useContext(BuildContext);
 }
 
-export function useBuildUpdate(){
-  return useContext(BuildUpdateContext);
+export function useBuildUpdate() {
+  const context = useContext(BuildUpdateContext);
+  if (!context) {
+    throw new Error("useBuildUpdate must be used within a BuildProvider");
+  }
+  return context;
 }
+
 
 export function BuildProvider({ children }) {
 

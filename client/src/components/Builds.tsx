@@ -8,7 +8,7 @@ import '../styles/builds.css';
 import { useBuildUpdate } from "../hooks/BuildContext";
 
 export default function Builds({ builds }) {
-
+  const navigate = useNavigate();
   const { setBuild } = useBuildUpdate();
 
   return (
@@ -19,7 +19,10 @@ export default function Builds({ builds }) {
             radius="md"
             height={125}
             src={build.progressPicture}
-            onClick={() => setBuild(build.buildJSON)}
+            onClick={() => {
+              setBuild(build);
+              navigate('/den');
+            }}
           />
         })
       }

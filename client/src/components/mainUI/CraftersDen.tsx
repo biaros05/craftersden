@@ -9,6 +9,7 @@ import {toByteArray} from 'base64-js';
 import * as THREE from 'three';
 import {encode} from "@msgpack/msgpack"; 
 import {scene} from './scene';
+import { useBuild } from '../../hooks/BuildContext';
 
 const blockList = [
   { name: 'grass', src: 'https://www.filterforge.com/filters/11635.jpg', type: 'overworld' },
@@ -59,14 +60,15 @@ function serializeBlocks(blocks: Array<BlockType>) {
  * @returns - Array of blocks which contain THREE objects
  */
 function deserializeBlocks(blocks) {
+  console.log(blocks);
   return blocks.map(block => {
-    console.log(block.texture);
+    const curBlock = block[0];
     return {
-      id: block.id,
-      position: block.position,
-      geometry: new THREE.BufferGeometryLoader().parse(block.geometry),
-      texture: new THREE.TextureLoader().load(block.textureURL),
-      textureURL: block.textureURL
+      id: curBlock.id,
+      position: curBlock.position,
+      geometry: new THREE.BufferGeometryLoader().parse(curBlock.geometry),
+      texture: new THREE.TextureLoader().load(curBlock.textureURL),
+      textureURL: curBlock.textureURL
     }
   })
 }
@@ -82,8 +84,17 @@ export default function CraftersDen() {
   const [error, setError] = useState({});
   const [blocks, setBlocks] = useState<BlockType[]>([]);
 
+  const build = useBuild();
+
   useEffect(() => {
-    setBlocks(deserializeBlocks(scene));
+    console.log(build);
+    console.log(build.build);
+    if(build){
+      setBlocks(deserializeBlocks(build.build.buildJSON));
+    }
+    else{
+      setBlocks(deserializeBlocks(scene));
+    }
   }, []);
 
   // PLEASE CHANGE!!!!!!
