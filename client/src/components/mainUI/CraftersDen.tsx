@@ -62,13 +62,12 @@ function serializeBlocks(blocks: Array<BlockType>) {
 function deserializeBlocks(blocks) {
   console.log(blocks);
   return blocks.map(block => {
-    const curBlock = block[0];
     return {
-      id: curBlock.id,
-      position: curBlock.position,
-      geometry: new THREE.BufferGeometryLoader().parse(curBlock.geometry),
-      texture: new THREE.TextureLoader().load(curBlock.textureURL),
-      textureURL: curBlock.textureURL
+      id: block.id,
+      position: block.position,
+      geometry: new THREE.BufferGeometryLoader().parse(block.geometry),
+      texture: new THREE.TextureLoader().load(block.textureURL),
+      textureURL: block.textureURL
     }
   })
 }
@@ -87,9 +86,8 @@ export default function CraftersDen() {
   const build = useBuild();
 
   useEffect(() => {
-    console.log(build);
     console.log(build.build);
-    if(build){
+    if(build.build!==undefined){
       setBlocks(deserializeBlocks(build.build.buildJSON));
     }
     else{
