@@ -79,7 +79,7 @@ function getTexture(url: string): THREE.Texture {
 type BlockType = {
   id: string,
   position: [number, number, number],
-  translate?: [number, number, number] | undefined,
+  worldPosition?: [number, number, number] | undefined,
   geometry: THREE.BufferGeometry,
   texture: THREE.Texture,
   textureURL: string,

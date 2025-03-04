@@ -137,7 +137,7 @@ export default function BuildPlane({canvasRef, blocks, setBlocks}: BuildPlanePro
       ];
       
       b.rotation = transformations[b.rotationIndex!].rotation;
-      b.translate = transformations[b.rotationIndex!].translate;
+      b.worldPosition = transformations[b.rotationIndex!].translate ? b.position.map((pos, i) => pos + transformations[b.rotationIndex!].translate![i]) as [number,number,number] : undefined;
       b.rotationIndex! = (b.rotationIndex! + 1) % transformations.length;
       setBlocks([...blocks]);
     }
@@ -178,7 +178,7 @@ export default function BuildPlane({canvasRef, blocks, setBlocks}: BuildPlanePro
     }
 
     {/* Blocks */}
-    {blocks.map(b => <Block position={b.translate ? b.position.map((pos, i) => pos + b.translate![i]) as [number,number,number] : b.position}
+    {blocks.map(b => <Block position={b.worldPosition ?? b.position}
                             geometry={b.geometry} 
                             rotation={b.rotation}
                             onPointerDown={(e: ThreeEvent<PointerEvent>) => {
