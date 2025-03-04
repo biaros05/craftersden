@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import Link from "./Navigation/Link";
 import { Button } from "@mantine/core";
 import '../styles/welcome.css'
 import placeholder from '../assets/placeholder.png';
@@ -14,12 +14,12 @@ export default function Welcome() {
                 Lorem ipsum dolor sit amet consectetur, adipisicing elit. Error reprehenderit quos neque ipsum voluptatum aperiam sed consectetur magnam vero asperiores ipsam, laborum perspiciatis laudantium excepturi dolorum sequi possimus doloribus dicta?
             </p>
             <div className="buttons">
-                <Link to='/login'>
+                <Link to='/login' state={{canGoBack: false}}>
                     <Button variant='filled'>
                         Login
                     </Button>
                 </Link>
-                <Link to='/login'>
+                <Link to='/login' state={{canGoBack: false}}>
                     <Button variant='outline'>
                         Sign up
                     </Button>

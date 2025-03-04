@@ -4,7 +4,12 @@ import { useAuth } from '../hooks/useAuth';
 import React from 'react';
 import '../styles/login.css';
 
+import { useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
+import useGoBack from './Navigation/useGoBack.tsx';
+
 export default function Login() {
+  const goBack = useGoBack('/');
   const {loading, login} = useAuth() ?? {};
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -23,7 +28,9 @@ export default function Login() {
         <h2>Login</h2>
         <p className="error">{errorMessage}</p>
         <GoogleLogin
-          onSuccess={login}
+          onSuccess={(creds) => {
+            login(creds, goBack);
+          }}
           onError={handleError} />
       </section>
     </div>

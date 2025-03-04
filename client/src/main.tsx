@@ -60,19 +60,19 @@ const router = createBrowserRouter([
       },
       {
         path: 'login',
-        element: <ProtectedRoute to={'/'} authed={false} ><Login /></ProtectedRoute>
+        element: <ProtectedRoute authed={false} ><Login /></ProtectedRoute>
       },
       {
         path: 'logout',
-        element: <ProtectedRoute to={'/'} authed={true} ><Logout /></ProtectedRoute>
+        element: <ProtectedRoute authed={true} ><Logout /></ProtectedRoute>
       },
       {
         path: 'forum',
-        element: <ProtectedRoute to={'/forum'} authed={true} ><Forum /></ProtectedRoute>
+        element: <ProtectedRoute  authed={true} ><Forum /></ProtectedRoute>
       },
       {
         path: 'profile',
-        element: <ProtectedRoute to={'/login'} authed={true} ><Profile /></ProtectedRoute>
+        element: <ProtectedRoute authed={true} ><Profile /></ProtectedRoute>
       },
       {
         path: 'den',

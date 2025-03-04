@@ -1,6 +1,8 @@
 import React from "react";
 import { Avatar, Button } from "@mantine/core";
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import Link from "./Navigation/Link";
+
 import { useAuth } from "../hooks/useAuth";
 import '../styles/header.css';
 
@@ -14,11 +16,11 @@ export default function Header() {
     }
 
     return <header id="site-header">
-        <Link to='/profile'>
+        <Link to='/profile' state={{canGoBack: true}}>
             <Avatar src={avatar} />
         </Link>
         <h2>
-            <Link to={isDen ? `/den` : `/forum`}>
+            <Link to={isDen ? `/den` : `/forum`} state={{canGoBack: true}} >
                 {isDen ? `Crafter's Den` : `Crafter's Forum`}
             </Link>
         </h2>

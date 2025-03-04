@@ -1,10 +1,9 @@
 import React from 'react';
 import {Button} from '@mantine/core';
-import { Link, useNavigate } from "react-router-dom";
+import Link from '../Navigation/Link.tsx';
+import useNavigate from '../Navigation/useNavigate.tsx';
 import '../../styles/ButtonPanel.css';
-import { ToastContentProps, toast } from 'react-toastify';
-import cx from 'clsx';
-import { MantineProvider, createTheme } from '@mantine/core';
+import { toast } from 'react-toastify';
 import {theme} from '../../main.tsx';
 import CustomNotification from './CustomNotification.tsx'
 

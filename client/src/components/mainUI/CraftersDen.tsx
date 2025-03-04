@@ -81,7 +81,6 @@ export default function CraftersDen() {
   const canvas = useRef(null);
   const {email} = useAuth() ?? {};
   const [isViewMode, setIsViewMode] = useState(false);
-  const [error, setError] = useState({});
   const [blocks, setBlocks] = useState<BlockType[]>([]);
 
   useEffect(() => {
@@ -119,13 +118,12 @@ export default function CraftersDen() {
       
       if (!response.ok) {
         const err = new Error(`${json.message}`);
-        error.status = json.status
+        err.status = json.status
         throw err;
       }
 
       successMessage(json.message);
     } catch (e) {
-      console.error(e);
       errorMessage(e.message);
     }
   }

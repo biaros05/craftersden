@@ -4,7 +4,7 @@ import {theme} from '../../main.tsx';
 import React, {useState} from 'react';
 import cx from 'clsx';
 import {Button} from '@mantine/core';
-import { Navigate } from "react-router-dom";
+import Navigate from '../Navigation/Navigate';
 
 type CustomNotificationProps = ToastContentProps<{
   redirect: (arg0: string) => void,

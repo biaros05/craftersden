@@ -11,7 +11,7 @@ type AuthContextType = {
     email: string,
     avatar: string,
     loading: boolean, 
-    login: (googleCredentials: CredentialResponse) => void,
+    login: (googleCredentials: CredentialResponse, goBack: () => void) => void,
     logout: () => void
 };
 
@@ -44,7 +44,7 @@ export const AuthProvider = ({ children }: ContextProviderProps) => {
     query();
   }, []);
 
-  const login = async (googleData: CredentialResponse) => {
+  const login = async (googleData: CredentialResponse, goBack: () => void) => {
     let data: {user: {username: string, email: string, avatar: string}};
     try {
       const res = await fetch('/api/auth', {
@@ -67,6 +67,7 @@ export const AuthProvider = ({ children }: ContextProviderProps) => {
     setUsername(data.user.username);
     setEmail(data.user.email);
     setAvatar(data.user.avatar);
+    // goBack();
   };
 
   const logout = async () => {

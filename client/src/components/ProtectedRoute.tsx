@@ -1,7 +1,7 @@
 import React from "react";
-import { Navigate } from "react-router-dom";
+import Navigate from "./Navigation/Navigate";
 import { useAuth } from "./../hooks/useAuth";
-
+import useGoBack from './Navigation/useGoBack';
 /**
  * Checks if a user is logged in or not and if they should be. If they
  * aren't the user is redirected to the given route.
@@ -12,16 +12,18 @@ import { useAuth } from "./../hooks/useAuth";
  * @param {React.ReactNode} props.children Component to protect
  * @returns Renders the component if the user is allowed to view the route
  */
-export default function ProtectedRoute({ authed, to, children }: {authed: boolean, to: string, children: React.ReactNode}) {
+export default function ProtectedRoute({ authed, children }: {authed: boolean, children: React.ReactNode}) {
   const { username, loading } = useAuth() ?? {};
+
+  const goBack = useGoBack('/')
 
   if (loading) {
     return <h2>Loading...</h2>
   }
 
   if (username && !authed || !username && authed) {
-    return <Navigate to={to} />;
-  } 
+    goBack();
+  }
   
   return children;
 };
