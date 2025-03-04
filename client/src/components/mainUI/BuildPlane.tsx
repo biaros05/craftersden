@@ -94,35 +94,20 @@ export default function BuildPlane({canvasRef, blocks, setBlocks, style}) {
   function getTextures(): THREE.Texture[] {
     const textureCache : { [url: string]: THREE.Texture} = {};
     const loader = new THREE.TextureLoader();
-    // const faces = currentBlock.cuboids[0].faces;
-    const faces = {
-      down: {
-        texture: acacia_log_top
-      },
-      up: {
-        texture: acacia_log_top
-      },
-      north: {
-        texture: acacia_log
-      },
-      south: {
-        texture: acacia_log
-      },
-      west: {
-        texture: acacia_log
-      },
-      east: {
-        texture: acacia_log
-      },
-    }
-    const materials = Object.keys(faces).map(direction => {
-      const textureURL = faces[direction].texture;
-      if  (!textureCache[textureURL]) {
-        textureCache[textureURL] =  loader.load(textureURL);
-      }
-      return textureCache[textureURL];
+    const cuboids = currentBlock.cuboids;
+    const textureList: THREE.Texture[] = [];
+
+    cuboids.forEach(cuboid => {
+      const faces = cuboid.faces;
+      Object.keys(faces).forEach(direction => {
+        const textureURL = faces[direction].texture;
+        if  (!textureCache[textureURL]) {
+          textureCache[textureURL] =  loader.load(textureURL);
+        }
+        textureList.push(textureCache[textureURL]);
+      });
     });
-    return materials;
+    return textureList;
   }
 
   /**
