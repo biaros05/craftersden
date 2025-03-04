@@ -14,6 +14,7 @@ import { CurrentBlockContext } from '../../context/currentBlockContext';
 
 export type BlockType = {
   id: string,
+  name: string,
   position: [number,number,number],
   geometry: THREE.BufferGeometry,
   textures: THREE.Texture[],
