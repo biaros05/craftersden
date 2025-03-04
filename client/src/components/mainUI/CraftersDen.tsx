@@ -92,9 +92,8 @@ export default function CraftersDen() {
       setBlocks(deserializeBlocks(scene));
     }
   }, []);
-
-  // PLEASE CHANGE!!!!!!
-  const curBuildId = null;
+  console.log(`setting id to be: ${build?.build._id}`);
+  const curBuildId = build?.build._id;
 
   /**
    * Saves the current build in the db
