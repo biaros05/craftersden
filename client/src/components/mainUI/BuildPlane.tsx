@@ -123,7 +123,6 @@ export default function BuildPlane({canvasRef, blocks, setBlocks}: BuildPlanePro
    * @returns {void}
    */
   function rotateBlock(e: React.KeyboardEvent<HTMLDivElement>): void {
-    console.log(e.key, e.shiftKey)
     if (e.key.toLowerCase() === 'r') {
       const b = blocks.find(b => b.id === hoveredId);
       if (!b) return;
@@ -148,7 +147,6 @@ export default function BuildPlane({canvasRef, blocks, setBlocks}: BuildPlanePro
         if (b.rotationIndex! < 0) {
           b.rotationIndex = transformations.length - 1;
         }
-        console.log(b.rotationIndex);
       } else {
         b.rotationIndex! = (b.rotationIndex! + 1) % transformations.length;
       }
