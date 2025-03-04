@@ -8,6 +8,7 @@ import {
 import multer from 'multer';
 import { body } from 'express-validator';
 import path from 'path';
+import { isAuthenticated } from '../utils/auth.mjs';
 
 const upload = multer({
   limits: {
@@ -35,7 +36,7 @@ const imageFormValidation = [
 
 const postRouter = express.Router();
 
-postRouter.post('/save', upload.fields([
+postRouter.post('/save', isAuthenticated, upload.fields([
   { name: 'png', maxCount: 1 },
   { name: 'blocks', maxCount: 1 }
 ]),

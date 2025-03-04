@@ -1,5 +1,4 @@
 import { createRoot } from 'react-dom/client';
-import App from './App.jsx';
 import './index.css';
 import { StrictMode } from 'react';
 import {
@@ -22,18 +21,24 @@ import '@mantine/core/styles.css';
 import '@mantine/carousel/styles.css';
 import CraftersDen from './components/mainUI/CraftersDen.jsx';
 import { BuildProvider } from './hooks/BuildContext.tsx';
-
+import { ToastContainer, Slide } from 'react-toastify';
 import '@mantine/core/styles.css';
 
 import { MantineProvider, createTheme } from '@mantine/core';
 import React from 'react';
 
-function Main() {
+/**
+ * Main layout of the app. Renders header
+ * and Footer with reactrouter children in
+ * between
+ * @returns {React.ReactNode} Page parent
+ */
+function Main(): React.ReactNode {
   return <>
     <Header />
     <Outlet />
     <Footer />
-  </>
+  </>;
 }
 
 const router = createBrowserRouter([
@@ -75,7 +80,7 @@ const theme = createTheme({
   primaryShade: 7,
 });
 
-createRoot(document.getElementById('root')!!).
+createRoot(document.getElementById('root')!).
   render(
     <StrictMode>
       <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
@@ -87,5 +92,18 @@ createRoot(document.getElementById('root')!!).
           </AuthProvider>
         </MantineProvider>
       </GoogleOAuthProvider>
+      <ToastContainer
+        position="bottom-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+        transition={Slide}
+        />
     </StrictMode>
   );

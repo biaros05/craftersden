@@ -1,14 +1,20 @@
-import React from "react";
-import { Avatar, Button } from "@mantine/core";
-import { Link, useLocation } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
+import React from 'react';
+import { Avatar, Button } from '@mantine/core';
+import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 import '../styles/header.css';
 import { useBuildUpdate } from "../hooks/BuildContext";
 
+/**
+ * Header component that allows users to visit
+ * /profile, /den and /forum. Changes based on
+ * the current page.
+ * @returns {React.ReactNode} Header component
+ */
 export default function Header() {
-    const {avatar, loading} = useAuth() ?? {};
-    const location = useLocation();
-    const isDen = location.pathname === '/den';
+  const {avatar, loading} = useAuth() ?? {};
+  const location = useLocation();
+  const isDen = location.pathname === '/den';
 
     const { setBuild } = useBuildUpdate();
 

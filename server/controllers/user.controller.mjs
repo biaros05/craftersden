@@ -97,7 +97,7 @@ async function getUsersSavedBuilds(req, res, next) {
     
     const builds = await Post.find({user: user._id});
 
-    res.status(200).json({status : 'success', builds: builds});
+    res.status(200).json({message : 'Builds retrieved!', builds: builds});
     return;
   } catch (e){
     e.status = 500;
