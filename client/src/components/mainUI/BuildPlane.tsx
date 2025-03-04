@@ -123,11 +123,12 @@ export default function BuildPlane({canvasRef, blocks, setBlocks}: BuildPlanePro
    * @returns {void}
    */
   function rotateBlock(e: KeyboardEvent): void {
-    if (e.key === 'r') {
+    console.log(e.key, e.shiftKey)
+    if (e.key.toLowerCase() === 'r') {
       const b = blocks.find(b => b.id === hoveredId);
       if (!b) return;
       if (!b.rotation) {
-        b.rotationIndex = 1;
+        b.rotationIndex = 0;
       }
       
       const ra = Math.PI / 2;
@@ -141,10 +142,19 @@ export default function BuildPlane({canvasRef, blocks, setBlocks}: BuildPlanePro
         {rotation: [2 * ra, 2 * ra, 0], translate: [1, 1, 0]},
         {rotation: [2 * ra, 3 * ra, 0], translate: [1, 1, 1]},
       ];
-      
+
+      if (e.shiftKey) {
+        b.rotationIndex!--;
+        if (b.rotationIndex! < 0) {
+          b.rotationIndex = transformations.length - 1;
+        }
+        console.log(b.rotationIndex);
+      } else {
+        b.rotationIndex! = (b.rotationIndex! + 1) % transformations.length;
+      }
+
       b.rotation = transformations[b.rotationIndex!].rotation;
       b.worldPosition = transformations[b.rotationIndex!].translate ? b.position.map((pos, i) => pos + transformations[b.rotationIndex!].translate![i]) as [number,number,number] : undefined;
-      b.rotationIndex! = (b.rotationIndex! + 1) % transformations.length;
       setBlocks([...blocks]);
     }
   }

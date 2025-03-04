@@ -1,7 +1,7 @@
 {
-  "name": "comments-app",
+  "name": "cube-app",
   "version": "1.0.0",
-  "description": "Proof of concept which lets users comment",
+  "description": "Webapp that allows users to build on a plane and share their builds",
   "scripts": {
     "start": "cd server && node bin/www",
     "build": "cd client && npm install && npm run build && cd ../server && npm install",
