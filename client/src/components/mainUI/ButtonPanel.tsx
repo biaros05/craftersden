@@ -1,6 +1,7 @@
 import React from 'react';
 import {Button} from '@mantine/core';
 import '../../styles/ButtonPanel.css';
+import { useNavigate } from 'react-router-dom';
 
 type ButtonPanelProps = { 
   setIsViewMode: (arg0: boolean) => void,
@@ -20,6 +21,8 @@ type ButtonPanelProps = {
  */
 function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode}: ButtonPanelProps): React.ReactNode {
 
+  const navigate = useNavigate();
+  
   return (
     <section className="button-panel">
       <Button 

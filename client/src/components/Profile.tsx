@@ -5,6 +5,7 @@ import { useDisclosure } from '@mantine/hooks';
 import { IconEdit } from '@tabler/icons-react';
 import '../styles/profile.css';
 import Builds from './Builds';
+import { useBuild } from '../hooks/BuildContext.tsx';
 
 /**
  * Profile page component that displays list of users
@@ -16,6 +17,8 @@ export default function Profile(): React.ReactNode {
   const [opened, {open, close}] = useDisclosure(false);
   const [builds, setBuilds] = useState([]);
 
+  const build = useBuild();
+
   useEffect(() => {
     /**
      * Fetches all builds for a user and updates
@@ -24,10 +27,11 @@ export default function Profile(): React.ReactNode {
     async function getBuilds() {
       const response = await fetch(`/api/user/${email}/builds`);
       const json = await response.json();
+      console.log(json.builds);
       setBuilds(json.builds);
     }
     getBuilds();
-  }, [email]);
+  }, [email, build]);
 
   const onSubmitHandler: FormEventHandler = async (event: FormEvent) => {
     event.preventDefault();

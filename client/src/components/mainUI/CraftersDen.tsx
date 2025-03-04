@@ -78,6 +78,7 @@ export default function CraftersDen(): React.ReactNode {
   const build = useBuild();
 
   useEffect(() => {
+    console.log(build);
     if(build.build!==undefined){
       setBlocks(deserializeBlocks(build.build.buildJSON));
     }
@@ -85,6 +86,8 @@ export default function CraftersDen(): React.ReactNode {
       setBlocks(deserializeBlocks(scene));
     }
   }, []);
+
+
   console.log(`setting id to be: ${build?.build._id}`);
   const curBuildId = build?.build._id;
 

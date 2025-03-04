@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom"
 import '../styles/welcome.css';
 import { Image } from '@mantine/core';
 import '../styles/builds.css';
+import { useBuildUpdate } from '../hooks/BuildContext.tsx';
 
 type Build = {
   progressPicture: string,
@@ -26,6 +27,7 @@ export default function Builds({builds}: { builds: Build[]; }): React.ReactNode 
     <section className="posts">
       {
         builds.map((build, i) => {
+          console.log(build.progressPicture);
           return <Image
             key={`build-${i}`}
             radius="md"
