@@ -10,6 +10,7 @@ import * as THREE from 'three';
 import {encode} from '@msgpack/msgpack'; 
 import {scene} from './scene';
 import { CurrentBlockContext } from '../../context/currentBlockContext';
+import { useBuild } from '../../hooks/BuildContext';
 import { successMessage, errorMessage } from '../../utils/notification_utils';
 import { BlockType, SerializedBlockType, StatusError } from '../../utils/building_plane_utils';
 
