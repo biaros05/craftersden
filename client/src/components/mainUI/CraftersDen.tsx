@@ -9,6 +9,15 @@ import {toByteArray} from 'base64-js';
 import * as THREE from 'three';
 import {encode} from '@msgpack/msgpack'; 
 import {scene} from './scene';
+import { useBuild } from '../../hooks/BuildContext';
+
+export type BlockType = {
+  id: string,
+  position: [number,number,number],
+  geometry: THREE.BufferGeometry,
+  texture: THREE.Texture,
+  textureURL: string
+}
 import { successMessage, errorMessage } from '../../utils/notification_utils';
 import { BlockType, SerializedBlockType, StatusError } from '../../utils/building_plane_utils';
 
@@ -66,12 +75,25 @@ export default function CraftersDen(): React.ReactNode {
   const [error, setError] = useState({});
   const [blocks, setBlocks] = useState<BlockType[]>([]);
 
+  const build = useBuild();
+
   useEffect(() => {
-    setBlocks(deserializeBlocks(scene));
+    console.log(build);
+    if(build.build!==undefined && build.build!==null){
+      setBlocks(deserializeBlocks(build.build.buildJSON));
+    }
+    else{
+      setBlocks(deserializeBlocks(scene));
+    }
   }, []);
 
-  // PLEASE CHANGE!!!!!!
-  const curBuildId = null;
+  let curBuildId = null;
+
+  if(build.build !== undefined && build.build !== null){
+    console.log(build.build)
+    console.log(build)
+    curBuildId = build.build._id;
+  }
 
   /**
    * Saves the current build in the db
