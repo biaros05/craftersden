@@ -12,7 +12,7 @@ const blockBuildSchema = new Schema({
 const PostSchema = new Schema({
   description: String,
   user: { type: Schema.Types.ObjectId, ref: 'User' },
-  buildJSON: [[blockBuildSchema]],
+  buildJSON: [blockBuildSchema],
   isPublished: Boolean,
   thumnails: [],
   progressPicture: String

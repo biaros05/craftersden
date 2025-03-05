@@ -1,10 +1,13 @@
 import React, { FormEvent, FormEventHandler, useEffect, useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { Tabs, ActionIcon, Button, Modal } from '@mantine/core';
+// import { useLocation } from 'react-router-dom';
 import { useDisclosure } from '@mantine/hooks';
 import { IconEdit } from '@tabler/icons-react';
 import '../styles/profile.css';
 import Builds from './Builds';
+import { useBuild } from '../hooks/BuildContext.tsx';
+import { useLocation } from 'react-router-dom';
 
 /**
  * Profile page component that displays list of users
@@ -12,9 +15,13 @@ import Builds from './Builds';
  * @returns {React.ReactNode} Profile Page
  */
 export default function Profile(): React.ReactNode {
+  // Detects route changes
+  // const location = useLocation(); 
   const {username, email, avatar} = useAuth() ?? {};
   const [opened, {open, close}] = useDisclosure(false);
   const [builds, setBuilds] = useState([]);
+  const location = useLocation(); // Detects route changes
+  const build = useBuild();
 
   useEffect(() => {
     /**
@@ -24,10 +31,12 @@ export default function Profile(): React.ReactNode {
     async function getBuilds() {
       const response = await fetch(`/api/user/${email}/builds`);
       const json = await response.json();
-      setBuilds(json.builds);
+      console.log(json.builds);
+      setBuilds([...json.builds]);
     }
+
     getBuilds();
-  }, [email]);
+  }, [email, build, location.pathname]);
 
   const onSubmitHandler: FormEventHandler = async (event: FormEvent) => {
     event.preventDefault();
