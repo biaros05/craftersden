@@ -68,12 +68,25 @@ export default function CraftersDen(): React.ReactNode {
   const [blocks, setBlocks] = useState<BlockType[]>([]);
   const [currentBlock, setCurrentBlock] = useState(null);
 
+  const build = useBuild();
+
   useEffect(() => {
-    setBlocks(deserializeBlocks(scene));
+    console.log(build);
+    if(build.build!==undefined && build.build!==null){
+      setBlocks(deserializeBlocks(build.build.buildJSON));
+    }
+    else{
+      setBlocks(deserializeBlocks(scene));
+    }
   }, []);
 
-  // PLEASE CHANGE!!!!!!
-  const curBuildId = null;
+  let curBuildId = null;
+
+  if(build.build !== undefined && build.build !== null){
+    console.log(build.build)
+    console.log(build)
+    curBuildId = build.build._id;
+  }
 
     /**
    * Fetches the complete block data from the api, and stores it in CurrentBlockContext.
