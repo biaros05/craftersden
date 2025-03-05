@@ -129,9 +129,11 @@ function getTexture(url: string): THREE.Texture {
 
 type BlockType = {
   id: string,
+  name: string,
   position: [number, number, number],
   geometry: THREE.BufferGeometry,
   texture: THREE.Texture,
+  textures: THREE.Texture[],
   textureURL: string
 }
 
@@ -162,7 +164,7 @@ function blockExists(position: [number, number, number], blocks: BlockType[]): B
  * @returns {THREE.BufferGeometry} geometry for the selected block.
  */
 function getGeometry(selectedBlock: SelectedBlock, geometries: object, setGeometries: React.Dispatch<React.SetStateAction<object>>): THREE.BufferGeometry {
-  let geometry = geometries[selectedBlock.parent];
+  let geometry = geometries[selectedBlock.name];
 
   if (!geometry) {
     geometry = createGeometry(selectedBlock.cuboids);
