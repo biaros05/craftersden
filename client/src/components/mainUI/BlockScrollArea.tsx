@@ -1,6 +1,5 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import { ScrollArea, Pagination } from '@mantine/core';
-import BlockImage from './BlockImage';
 import BlockSearchBar from './BlockSearchBar';
 import BlockPage from './BlockPage';
 import useSWR from 'swr';
@@ -9,13 +8,16 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 /**
  * Scrollable area for displaying grid of BlockImage. Contains BlockSearchBar.
- * @returns React.JSX.Element
+ * @returns {React.ReactNode} Block scroll area component
  */
-export default function BlockScrollArea() {
+export default function BlockScrollArea(): React.ReactNode {
 
   const [pageIndex, setPageIndex] = useState<number>(1);
 
+  // TODO do we still need these errors, remove eslint ignore
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { data: pageCountData, error: pageCountError } = useSWR('/api/blocks/page-count', fetcher);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { data: blockData, error: blockDataError } = useSWR('/api/blocks', fetcher);
 
   const pageCount = pageCountData?.totalPages;

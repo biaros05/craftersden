@@ -1,22 +1,35 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import '../styles/welcome.css'
-import { Carousel } from '@mantine/carousel';
-import { Image, Text, Box, ActionIcon } from '@mantine/core';
+import React from 'react';
+import '../styles/welcome.css';
+import { Image } from '@mantine/core';
 import '../styles/builds.css';
 
-export default function Builds({builds}) {
-    return (
-      <section className="posts">
-        {
-          builds.map(build => {
-            return <Image
+type Build = {
+  progressPicture: string,
+  description: string,
+  buildJSON: object,
+  isPublished: boolean,
+  thumnails: [],
+}
+
+/**
+ * Builds component to show list of builds.
+ * @param {object} props - React Props
+ * @param {Build[]} props.builds List of builds
+ * @returns {React.ReactNode} Builds to display
+ */
+export default function Builds({builds}: { builds: Build[]; }): React.ReactNode {
+  return (
+    <section className="posts">
+      {
+        builds.map((build, i) => {
+          return <Image
+            key={`build-${i}`}
             radius="md"
             height={125}
             src={build.progressPicture}
-          />
-          })
-        }
-      </section>
-    )
+          />;
+        })
+      }
+    </section>
+  );
 }

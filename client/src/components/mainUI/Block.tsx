@@ -1,21 +1,17 @@
 import { ThreeElements } from '@react-three/fiber';
-import React, { useState } from 'react';
+import React from 'react';
 
 /**
  * Creates a mesh with the given props that gets highlighted
  * when hovered.
- * @param props React props to be passed to the mesh
- * @returns A mesh with the given props
+ * @param {ThreeElements['mesh']} props React props to be passed to the mesh
+ * @returns {React.ReactNode} A mesh with the given props
  */
-function Block(props: ThreeElements['mesh']) {
-  const [isHovering, setIsHovering] = useState(false);
-
+function Block(props: ThreeElements['mesh']): React.ReactNode {
   return (
-    <mesh {...props}
-      onPointerOver={() => setIsHovering(true)}
-      onPointerOut={() => setIsHovering(false)}>
+    <mesh {...props} >
     </mesh>
-  )
+  );
 }
 
 export { Block };
