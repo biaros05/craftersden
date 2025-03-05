@@ -2,7 +2,7 @@ import React from "react";
 import Link from "./Navigation/Link";
 import '../styles/footer.css'
 
-export default function Footer() {
+export default function Footer(): React.ReactNode {
     return <footer className="site-footer">
         <ul className="footer-links">
             <h3>Site</h3>

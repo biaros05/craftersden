@@ -7,7 +7,23 @@ import { toast } from 'react-toastify';
 import {theme} from '../../main.tsx';
 import CustomNotification from './CustomNotification.tsx'
 
-export default function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode, email}) {
+type ButtonPanelProps = { 
+  setIsViewMode: (arg0: boolean) => void,
+  canvas: React.RefObject<null>,
+  savePost: (arg0: string) => void,
+  isViewMode: boolean 
+}
+
+/**
+ * Displays Save and Toggle view mode buttons
+ * @param {object} props React props
+ * @param {React.RefObject} props.canvas React ref to canvas element
+ * @param {Function} props.setIsViewMode Callback to set isViewModel state 
+ * @param {Function} props.savePost thumbnail url
+ * @param {boolean} props.isViewMode isViewMode state.
+ * @returns {React.ReactNode} Button panel section with buttons
+ */
+function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode}: ButtonPanelProps): React.ReactNode {
   const navigate = useNavigate();
   return (
     <section className="button-panel">
@@ -45,3 +61,5 @@ export default function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode
     </section>
   );
 }
+
+export default ButtonPanel;

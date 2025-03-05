@@ -3,12 +3,9 @@ import { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import React from 'react';
 import '../styles/login.css';
-
-import { useCallback } from 'react';
-import { useLocation } from 'react-router-dom';
 import useGoBack from './Navigation/useGoBack.tsx';
 
-export default function Login() {
+export default function Login(): React.ReactNode  {
   const goBack = useGoBack('/');
   const {loading, login} = useAuth() ?? {};
   const [errorMessage, setErrorMessage] = useState('');
@@ -24,7 +21,7 @@ export default function Login() {
 
   return (
     <div className="login">
-      <section className='login-box'>
+      <section className="login-box">
         <h2>Login</h2>
         <p className="error">{errorMessage}</p>
         <GoogleLogin

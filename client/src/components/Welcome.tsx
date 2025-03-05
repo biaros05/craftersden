@@ -4,7 +4,7 @@ import { Button } from "@mantine/core";
 import '../styles/welcome.css'
 import placeholder from '../assets/placeholder.png';
 
-export default function Welcome() {
+export default function Welcome(): React.ReactNode {
     return <section id="welcome-page">
         <div id="welcome-left">
             <h1>Welcome!</h1>
@@ -22,12 +22,12 @@ export default function Welcome() {
                 <Link to='/login' state={{canGoBack: false}}>
                     <Button variant='outline'>
                         Sign up
-                    </Button>
-                </Link>
-            </div>
-        </div>
-        <div id="welcome-right">
-            <img src={placeholder} alt="placeholder" />
-        </div>
-    </section>
+          </Button>
+        </Link>
+      </div>
+    </div>
+    <div id="welcome-right">
+      <img src={placeholder} alt="placeholder" />
+    </div>
+  </section>;
 }

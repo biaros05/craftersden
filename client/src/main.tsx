@@ -1,5 +1,4 @@
 import { createRoot } from 'react-dom/client';
-import App from './App.jsx';
 import './index.css';
 import { StrictMode } from 'react';
 import {
@@ -27,7 +26,13 @@ import CustomNotification from './components/mainUI/CustomNotification.tsx';
 import { MantineProvider, createTheme } from '@mantine/core';
 import React from 'react';
 
-function Main() {
+/**
+ * Main layout of the app. Renders header
+ * and Footer with reactrouter children in
+ * between
+ * @returns {React.ReactNode} Page parent
+ */
+function Main(): React.ReactNode {
   return <>
     <Header />
     <Outlet />
@@ -87,7 +92,7 @@ export const theme = createTheme({
   primaryShade: 7,
 });
 
-createRoot(document.getElementById('root')!!).
+createRoot(document.getElementById('root')!).
   render(
     <StrictMode>
       <AuthProvider >

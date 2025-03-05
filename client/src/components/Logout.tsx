@@ -1,14 +1,18 @@
 import React from "react";
 import Navigate from './Navigation/Navigate';
-
 import { useAuth } from "../hooks/useAuth";
 
-export default function Logout() {
-    const {logout} = useAuth() ?? {};
+/**
+ * Logout page that logs out the user
+ * and redirects them to /
+ * @returns {React.ReactNode} redirects user to /
+ */
+export default function Logout(): React.ReactNode {
+  const {logout} = useAuth() ?? {};
 
-    if (logout) {
-        logout();
-    }
+  if (logout) {
+    logout();
+  }
 
-    return <Navigate to={'/'}/>
+  return <Navigate to={'/'}/>;
 }

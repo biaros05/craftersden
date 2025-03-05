@@ -24,6 +24,9 @@ export const AuthProvider = ({ children }: ContextProviderProps) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    /**
+     *
+     */
     async function query() {
       if (loading) {
         if (!username) {

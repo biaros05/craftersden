@@ -1,10 +1,23 @@
 import React, {useState} from 'react';
 import { Carousel } from '@mantine/carousel';
-import { IconArrowRight, IconArrowLeft, IconBookmark, IconBookmarkFilled, IconHeart, IconHeartFilled } from '@tabler/icons-react';
+import { IconBookmark, IconBookmarkFilled, IconHeart, IconHeartFilled } from '@tabler/icons-react';
 import { Image, Text, Box, ActionIcon } from '@mantine/core';
 import '../styles/Post.css'; 
 
-export default function Post({placeholderImages, description, liked, saved}) {
+/**
+ * Component for a single post with a carousel of images
+ * like, and save buttons.
+ * @param {object} props - React Props
+ * @param {string[]} props.placeholderImages List of image urls to use as images
+ * @param {string} props.description Post description
+ * @param {boolean} props.liked Whether the post is liked
+ * @param {boolean} props.saved Whether the post is saved
+ * @returns {React.ReactNode} The Post
+ */
+export default function Post(
+  {placeholderImages, description, liked, saved}: 
+  { placeholderImages: string[]; description: string; liked: boolean; saved: boolean; }
+): React.ReactNode {
   const [isLiked, setIsLiked] = useState(liked);
   const [isSaved, setIsSaved] = useState(saved);
   return (
@@ -18,32 +31,32 @@ export default function Post({placeholderImages, description, liked, saved}) {
         slidesToScroll={1}
       >
         {
-          placeholderImages.map((url) => (
+          placeholderImages.map((url) => 
             <Carousel.Slide key={url}>
               <Image src={url} />
             </Carousel.Slide>
-          ))
+          )
         }
       </Carousel>
-      <section className='post-information'>
-        <div className='post-actions'>
+      <section className="post-information">
+        <div className="post-actions">
 
-        <ActionIcon 
-          className="icons" 
-          color="rgba(74, 173, 24, 1)" 
-          variant="subtle" 
-          aria-label="Settings"
-          onClick={() => {
-            setIsSaved(!isSaved);
-          }}
-        >
-          {
-            isSaved ? 
-            <IconBookmarkFilled style={{ width: '70%', height: '70%' }} stroke={1.5} /> 
-            : 
-            <IconBookmark style={{ width: '70%', height: '70%' }} stroke={1.5} />
-          }
-        </ActionIcon>
+          <ActionIcon 
+            className="icons" 
+            color="rgba(74, 173, 24, 1)" 
+            variant="subtle" 
+            aria-label="Settings"
+            onClick={() => {
+              setIsSaved(!isSaved);
+            }}
+          >
+            {
+              isSaved ? 
+                <IconBookmarkFilled style={{ width: '70%', height: '70%' }} stroke={1.5} /> 
+                : 
+                <IconBookmark style={{ width: '70%', height: '70%' }} stroke={1.5} />
+            }
+          </ActionIcon>
 
           {/* <IconBookmark className="icons"/> */}
           <p>Username</p>
@@ -58,13 +71,13 @@ export default function Post({placeholderImages, description, liked, saved}) {
               setIsLiked(!isLiked);
             }}
           >
-          {
-            isLiked ?
-            <IconHeartFilled/>
-            :
-            <IconHeart style={{ width: '70%', height: '70%' }} stroke={1.5} />
-          }
-        </ActionIcon>
+            {
+              isLiked ?
+                <IconHeartFilled/>
+                :
+                <IconHeart style={{ width: '70%', height: '70%' }} stroke={1.5} />
+            }
+          </ActionIcon>
         </div>
         <Box>
           <Text size={'xs'} component="p" lineClamp={3} inline={false}>
