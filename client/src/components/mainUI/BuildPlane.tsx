@@ -47,7 +47,6 @@ type BuildPlaneProps = {
  * @param {object} props.style optional style prop applied to the canvas
  * @returns {React.ReactNode} Build plane
  */
-
 export default function BuildPlane({canvasRef, blocks, setBlocks, style = {}}: BuildPlaneProps): React.ReactNode {
 
   const [geometries, setGeometries] = useState<object>({});
