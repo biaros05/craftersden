@@ -61,12 +61,6 @@ export default function CraftersDen(): React.ReactNode {
   const canvas = useRef(null);
   const {email} = useAuth() ?? {};
   const [isViewMode, setIsViewMode] = useState(false);
-<<<<<<< HEAD
-=======
-  // TODO implement toastify to handle error
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [error, setError] = useState({});
->>>>>>> 02bfcc3b92756cb866540dc57ea91117e4776d0a
   const [blocks, setBlocks] = useState<BlockType[]>([]);
 
   useEffect(() => {
@@ -123,19 +117,11 @@ export default function CraftersDen(): React.ReactNode {
           {!isViewMode && <BlockSelection />}
         </section>
         <ButtonPanel 
-<<<<<<< HEAD
         setIsViewMode={setIsViewMode} 
         canvas={canvas} 
         savePost={savePost} 
         isViewMode={isViewMode}
         email={email}/>
-=======
-          setIsViewMode={setIsViewMode} 
-          canvas={canvas} 
-          savePost={savePost} 
-          isViewMode={isViewMode}
-        />
->>>>>>> 02bfcc3b92756cb866540dc57ea91117e4776d0a
       </div>
     </>
   );
