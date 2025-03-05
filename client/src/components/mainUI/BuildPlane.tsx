@@ -5,7 +5,7 @@ import { OrbitControls, Stats } from '@react-three/drei';
 import React, { useEffect, useState, useContext } from 'react';
 import { CurrentBlockContext } from '../../context/currentBlockContext';
 import { Block } from './Block';
-import { Cuboid, blockExists, getTexture, BlockType, getGeometry } from '../../utils/building_plane_utils';
+import { Cuboid, blockExists, getTexture, BlockType, getGeometry, getTextures } from '../../utils/building_plane_utils';
 import { loadGround } from '../../utils/building_plane_utils';
 import grassTop from '../../assets/grass_top.png';
 import oakPlanks from '../../assets/oak_planks.png';
@@ -26,7 +26,8 @@ const tosFroms: Cuboid[] = [
   // }
   {
     from: [0, 0, 0],
-    to: [1, 1, 1]
+    to: [1, 1, 1],
+    faces : {}
   }
 ];  
 
@@ -79,7 +80,7 @@ export default function BuildPlane({canvasRef, blocks, setBlocks, style = {}}: B
         position: newPosition,
         geometry: geometry,
         texture: getTexture(oakPlanks),
-        textures: getTextures(),
+        textures: getTextures(currentBlock),
         textureURL: oakPlanks
       };
 
@@ -112,38 +113,12 @@ export default function BuildPlane({canvasRef, blocks, setBlocks, style = {}}: B
         position: position,
         geometry: geometry,
         texture: getTexture(oakPlanks),
-        textures: getTextures(),
+        textures: getTextures(currentBlock),
         textureURL: oakPlanks
       };
 
       setBlocks([...blocks, newBlock])
     }
-  }
-
-
-
-  /**
-   * Takes a texture url and creates a THREE texture with it.
-   * @param {string} url to the texture image.
-   * @returns {THREE.Texture[]} corresponding to given url.
-   */
-  function getTextures(): THREE.Texture[] {
-    const textureCache : { [url: string]: THREE.Texture} = {};
-    const loader = new THREE.TextureLoader();
-    const cuboids = currentBlock.cuboids;
-    const textureList: THREE.Texture[] = [];
-
-    cuboids.forEach(cuboid => {
-      const faces = cuboid.faces;
-      Object.keys(faces).forEach(direction => {
-        const textureURL = faces[direction].texture;
-        if  (!textureCache[textureURL]) {
-          textureCache[textureURL] =  loader.load(textureURL);
-        }
-        textureList.push(textureCache[textureURL]);
-      });
-    });
-    return textureList;
   }
   
   return <Canvas 

@@ -7,7 +7,8 @@ class StatusError extends Error {
 
 type Cuboid = {
   from: [number, number, number],
-  to: [number, number, number]
+  to: [number, number, number],
+  faces : {}
 };
 
 type SelectedBlock = {
@@ -176,5 +177,29 @@ function getGeometry(selectedBlock: SelectedBlock, geometries: object, setGeomet
 
   return geometry;
 }
+  /**
+   * Takes a texture url and creates a THREE texture with it.
+   * @param {SelectedBlock} currentBlock Currently selected block by user
+   * @returns {THREE.Texture[]} corresponding to given url.
+   */
+  function getTextures(currentBlock: SelectedBlock): THREE.Texture[] {
+    const textureCache : { [url: string]: THREE.Texture} = {};
+    const loader = new THREE.TextureLoader();
+    const cuboids = currentBlock.cuboids;
+    const textureList: THREE.Texture[] = [];
 
-export {Cuboid, createGeometry, loadGround, blockExists, getTexture, getGeometry, BlockType, SerializedBlockType, SelectedBlock, StatusError};
+    cuboids.forEach(cuboid => {
+      const faces = cuboid.faces;
+      Object.keys(faces).forEach(direction => {
+        const textureURL = faces[direction].texture;
+        if  (!textureCache[textureURL]) {
+          textureCache[textureURL] =  loader.load(textureURL);
+        }
+        textureList.push(textureCache[textureURL]);
+      });
+    });
+    return textureList;
+  }
+
+export {Cuboid, createGeometry, loadGround, 
+  blockExists, getTexture, getGeometry, BlockType, SerializedBlockType, SelectedBlock, StatusError, getTextures};
