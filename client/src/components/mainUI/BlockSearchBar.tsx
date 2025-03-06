@@ -1,6 +1,7 @@
-import React, {CSSProperties, useState} from 'react';
+import React, {CSSProperties, useState, useContext } from 'react';
 import { Autocomplete } from '@mantine/core';
 import { IconSearch } from '@tabler/icons-react';
+import { CurrentBlockContext } from '../../context/currentBlockContext';
 
 const SEARCH_ICON = <IconSearch/>;
 
@@ -22,6 +23,8 @@ export default function BlockSearchBar({blockList, style}: { blockList: BlockLis
   const [blockHistory, setBlockHistory] = useState(new Set<string>());
   const [searchValue, setSearchValue] = useState('');
 
+  const { storeBlock } = useContext(CurrentBlockContext);
+
   const filteredData = searchValue.length > 0 
     ? blockList.map(block => block.name)
     : Array.from(blockHistory);
@@ -32,7 +35,7 @@ export default function BlockSearchBar({blockList, style}: { blockList: BlockLis
    */
   function handleOptionSubmit(value: string) {
     setBlockHistory(new Set([...blockHistory, value]));
-    //TODO: add block to inventory/call func to select it
+    storeBlock(blockList.find(block => block.name === value));
   }
   return (
     <Autocomplete
