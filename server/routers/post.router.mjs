@@ -48,7 +48,7 @@ uploadImage,
 updatePostPicture
 );
 
-postRouter.post('/publish', isAuthenticated, publishBuild);
+postRouter.post('/publish', isAuthenticated, saveBuild, publishBuild);
 
 
 export default postRouter;

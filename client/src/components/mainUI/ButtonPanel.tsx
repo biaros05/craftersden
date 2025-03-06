@@ -44,7 +44,8 @@ function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode, publishPost}:
       <Button
         onClick={() => {
           savePost(canvas.current!.toDataURL('image/png'));
-          publishPost
+          publishPost();
+          console.log("publish post");
         }}>
         Publish Build
       </Button>

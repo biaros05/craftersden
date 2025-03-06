@@ -75,13 +75,9 @@ async function saveBuild(req, res, next) {
 }
 
 async function publishBuild(req, res, next) {
+  const post = req.post;
   try {
-    if (!req.body.buildId || req.body.buildId == 'null' || req.body.buildId == undefined) {
-      const error = new Error("Invalid build ID");
-      error.status(404);
-      return next(error);
-    }
-
+    console.log(post);
     const publishedBuild = await Post.findOneAndUpdate(
       { _id: req.body.buildId },
       { isPublished: true }

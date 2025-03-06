@@ -147,8 +147,10 @@ export default function CraftersDen(): React.ReactNode {
       
       const response = await fetch('/api/post/publish', requestOptions);
       const json = await response.json();
+      
+      console.log(json);
 
-      if(!response.ok){
+      if (!response.ok) {
         const err = new StatusError(`${json.message}`);
         err.status = json.status;
         throw err;
