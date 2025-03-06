@@ -74,29 +74,54 @@ async function saveBuild(req, res, next) {
   }
 }
 
-// /**
-//  * This function deletes a build from DB given a buildID. 
-//  * @param {*} req - Request object 
-//  * @param {*} res - Respond object
-//  * @param {*} next - Next 
-//  * @returns {JSON} - JSON with status code
-//  */
-// async function deleteBuild(req, res, next){
-//   try{
-//     if(!req.body.buildId || req.body.buildId == 'null' || req.body.buildId == undefined){
-//       const error = new Error('Invalid build ID');
-//       error.status = 404;
-//       return next(error);
-//     }
+/**
+ * This function deletes a build from DB given a buildID. 
+ * @param {*} req - Request object 
+ * @param {*} res - Respond object
+ * @param {*} next - Next 
+ * @returns {JSON} - JSON with status code
+ */
+async function deleteBuild(req, res, next){
+  const buildId = req.params.buildId;
+  try {
 
-//     await Post.findOneAndDelete({_id : req.body.buildId});
+    const deletedPost = await Post.findByIdAndDelete(
+      buildId
+    );
 
-//     req.status(200).json({ message: 'Build succesfully deleted'});
-//   }catch(err){
-//     e.status(500);
-//     next(err);
-//   }
-// }
+    if (!deletedPost) {
+      const error = new Error('This post does not exist');
+      error.status = 404;
+      return next(error);
+    }
+
+    req.url = deletedPost.progressPicture;
+    next();
+
+  } catch(err) {
+    err.status = 500;
+    next(err);
+  }
+}
+
+/**
+ * Takes the progressPicture from recently deleted post and removes it from azure
+ * @param {*} req -
+ * @param {*} res -
+ * @param {*} next -
+ * @returns {JSON} - status of the request
+ */
+async function deleteImageFromAzure(req, res, next) {
+  try {
+    const splitLink = req.url.split('/');
+    const blobName = splitLink[splitLink.length - 1];
+    await blobService.deleteFile(blobName);
+    return res.status(204).send();
+  } catch (err) {
+    err.status = 500;
+    next(err);
+  }
+}
 
 /**
  * Obtains the file content and stores it in azure blob.
@@ -134,7 +159,7 @@ async function updatePostPicture(req, res, next) {
       {progressPicture: req.url}
     );
 
-    res.status(200).json({message : 'Build successfully saved!'});
+    res.status(200).json({message : 'Build successfully saved!', id: req.post._id});
     return;
   } catch (e){
     e.status = 500;
@@ -142,4 +167,5 @@ async function updatePostPicture(req, res, next) {
   }
 }
 
-export {saveBuild, uploadValidation, uploadImage, updatePostPicture};
+export {saveBuild, uploadValidation, uploadImage, updatePostPicture, 
+  deleteBuild, deleteImageFromAzure};

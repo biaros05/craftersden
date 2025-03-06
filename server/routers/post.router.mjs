@@ -3,7 +3,9 @@ import {
   saveBuild,
   uploadValidation,
   updatePostPicture,
-  uploadImage
+  uploadImage,
+  deleteBuild, 
+  deleteImageFromAzure
 } from '../controllers/post.controller.mjs';
 import multer from 'multer';
 import { body } from 'express-validator';
@@ -46,6 +48,8 @@ saveBuild,
 uploadImage,
 updatePostPicture
 );
+
+postRouter.delete('/:buildId', isAuthenticated, deleteBuild, deleteImageFromAzure);
 
 
 
