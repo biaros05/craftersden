@@ -83,17 +83,14 @@ export default function Builds({ builds }: { builds: Build[]; }): React.ReactNod
               {!build.isPublished && <Button
                 key={`build-${i}`}
                 variant="outline"
-                onClick={() => {
-                  publishPost(build._id)
-                  open()
-                }}>
+                onClick={open}>
                 Publish
               </Button>}
+              <PublishForm opened={opened} close={close} buildId={build._id}/>
             </div>
           )
         })
       }
-      <PublishForm opened={opened} close={close}/>
     </section>
   );
 }
