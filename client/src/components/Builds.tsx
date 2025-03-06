@@ -4,7 +4,6 @@ import '../styles/welcome.css';
 import { Image, Button } from '@mantine/core';
 import '../styles/builds.css';
 import { useBuildUpdate } from '../hooks/BuildContext.tsx';
-import { successMessage, errorMessage } from '../utils/notification_utils';
 import { useDisclosure } from '@mantine/hooks';
 import PublishForm from './PublishForm.tsx';
 
@@ -26,33 +25,6 @@ export default function Builds({ builds }: { builds: Build[]; }): React.ReactNod
   const navigate = useNavigate();
   const { setBuild } = useBuildUpdate();
   const [opened, { open, close }] = useDisclosure(false);
-
-  async function publishPost(buildId: String) {
-    const data = new FormData();
-    try {
-      data.append('buildId', buildId);
-      const requestOptions = {
-        method: 'POST',
-        body: data
-      }
-      const response = await fetch('/api/post/publish', requestOptions);
-      const json = await response.json();
-
-      console.log(json);
-
-      if (!response.ok) {
-        const err = new StatusError(`${json.message}`);
-        err.status = json.status;
-        throw err;
-      }
-
-      successMessage(json.message);
-
-    } catch (err) {
-      console.error(err);
-      errorMessage(err.message);
-    }
-  }
 
   return (
     <section className="posts">

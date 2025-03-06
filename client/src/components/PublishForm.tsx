@@ -10,6 +10,11 @@ export default function PublishForm({opened, close, buildId}){
       const data = new FormData();
       try {
         data.append('buildId', buildId);
+        
+        if(description !== ''){
+          data.append('description', description);
+        }
+
         const requestOptions = {
           method: 'POST',
           body: data
@@ -47,6 +52,7 @@ export default function PublishForm({opened, close, buildId}){
           <Button
             variant='filled'
             onClick={() => {
+              publishPost(buildId);
             }}
           >
             Submit

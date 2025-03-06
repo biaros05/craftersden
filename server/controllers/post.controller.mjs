@@ -4,7 +4,6 @@ import dotenv from 'dotenv';
 import { validationResult } from 'express-validator';
 import { decode } from '@msgpack/msgpack';
 import BlobServiceProvider from '../utils/BlobService.mjs';
-import { TopologyDescription } from 'mongodb';
 
 dotenv.config();
 
