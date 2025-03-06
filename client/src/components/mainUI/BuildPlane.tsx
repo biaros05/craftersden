@@ -30,7 +30,9 @@ const tosFroms: Cuboid[] = [
 type BuildPlaneProps = {
   canvasRef: React.RefObject<null>,
   blocks: BlockType[],
-  setBlocks: React.Dispatch<React.SetStateAction<BlockType[]>>
+  setBlocks: React.Dispatch<React.SetStateAction<BlockType[]>>,
+  isViewMode: boolean,
+  setIsViewMode: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 /**
@@ -42,7 +44,7 @@ type BuildPlaneProps = {
  * @param {React.Dispatch<React.SetStateAction<BlockType[]>>} props.setBlocks callback to update the blocks array state
  * @returns {React.ReactNode} Build plane
  */
-export default function BuildPlane({canvasRef, blocks, setBlocks}: BuildPlaneProps): React.ReactNode {
+export default function BuildPlane({canvasRef, blocks, setBlocks, isViewMode, setIsViewMode }: BuildPlaneProps): React.ReactNode {
   const [geometries, setGeometries] = useState<object>({});
   const [highlighted, setHighlighted] = useState<THREE.Vector3 | null>(null);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
@@ -91,6 +93,7 @@ export default function BuildPlane({canvasRef, blocks, setBlocks}: BuildPlanePro
    * @param {[number,number,number]} position of the block clicked on.
    */
   function addBlock(e: ThreeEvent<PointerEvent>, id: string, position: [number, number, number]) {
+    if(isViewMode) return;
     if (e.button === 2) {
       const normalizedCoords = new THREE.Vector3(...position).add(e.normal!);
   
@@ -162,11 +165,18 @@ export default function BuildPlane({canvasRef, blocks, setBlocks}: BuildPlanePro
       camera={{position: [15,15,15]}} 
       id='build-plane' 
       ref={canvasRef}
-      onKeyDown={rotateBlock}
+      onKeyDown={isViewMode ? undefined : rotateBlock}
       tabIndex={0}
       >
     {/* Plane */}
-    <mesh rotation={[planeRotation, 0, 0]} onPointerDown={addBlockOnPlane} onPointerMove={(e: ThreeEvent<PointerEvent>) => {
+    <mesh 
+      rotation={[planeRotation, 0, 0]} 
+      onPointerDown={(e) => {
+        console.log(`plane is view mode ${isViewMode}`); 
+        if(!isViewMode){
+          addBlockOnPlane(e)
+        }}} 
+      onPointerMove={(e: ThreeEvent<PointerEvent>) => {
       const planePosition = e.point.floor().addScalar(0.5);
       planePosition.setY(-0.5);
       setHighlighted(planePosition);
@@ -197,7 +207,10 @@ export default function BuildPlane({canvasRef, blocks, setBlocks}: BuildPlanePro
                             rotation={b.rotation}
                             onPointerDown={(e: ThreeEvent<PointerEvent>) => {
                               e.stopPropagation();
-                              addBlock(e, b.id, b.position);
+                              console.log(`view mode: ${isViewMode}`);
+                              if(!isViewMode){
+                                addBlock(e, b.id, b.position);
+                              }
                             }}
                             onPointerMove={(e: ThreeEvent<PointerEvent>) => {
                               e.stopPropagation();

@@ -139,7 +139,12 @@ export default function CraftersDen(): React.ReactNode {
     <>
       <div id="main-ui">
         <section className="build-tools">
-          <BuildPlane canvasRef={canvas} blocks={blocks} setBlocks={setBlocks}/>
+          <BuildPlane 
+            canvasRef={canvas} 
+            blocks={blocks} 
+            setBlocks={setBlocks} 
+            isViewMode={isViewMode} 
+            setIsViewMode={setIsViewMode} />
           {!isViewMode && <BlockSelection />}
         </section>
         <ButtonPanel 
