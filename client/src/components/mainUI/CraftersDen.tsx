@@ -24,12 +24,13 @@ import { BlockType, SerializedBlockType, StatusError } from '../../utils/buildin
 function serializeBlocks(blocks: BlockType[]): Uint8Array<ArrayBufferLike> {
   return encode(blocks.map(block => {
     const geomJSON = block.geometry.toNonIndexed().toJSON();
-    const textureJSON = block.texture.toJSON();
+    const textureJSON = block.textures.map(texture => texture.toJSON());
     return {
       id: block.id,
+      name: block.name,
       position: block.position,
       geometry: geomJSON,
-      texture: textureJSON,
+      textures: textureJSON,
       textureURL: block.textureURL
     };
   }));
@@ -42,14 +43,16 @@ function serializeBlocks(blocks: BlockType[]): Uint8Array<ArrayBufferLike> {
  * @returns {BlockType[]} - Array of blocks which contain THREE objects
  */
 function deserializeBlocks(blocks: SerializedBlockType[]): BlockType[] {
+  const objectLoader = new THREE.ObjectLoader();
+  const geoLoader = new THREE.BufferGeometryLoader();
+  console.log('blocks in deserializeBlocks', blocks);
   return blocks.map(block => {
-    console.log(block.texture);
-    block.texture.image = block.textureURL
     return {
       id: block.id,
+      name: block.name,
       position: block.position,
-      geometry: new THREE.BufferGeometryLoader().parse(block.geometry),
-      texture: new THREE.TextureLoader().load(block.textureURL),
+      geometry: geoLoader.parse(block.geometry),
+      textures: (block.textures || []).map(texture => objectLoader.parse(texture)),
       textureURL: block.textureURL
     };
   });
