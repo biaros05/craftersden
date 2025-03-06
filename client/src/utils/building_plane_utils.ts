@@ -144,9 +144,8 @@ type BlockType = {
   position: [number, number, number],
   worldPosition?: [number, number, number] | undefined,
   geometry: THREE.BufferGeometry,
-  texture: THREE.Texture,
   textures: THREE.Texture[],
-  textureURL: string
+  textureURLs: string[],
   rotation?: [number, number, number] | undefined,
   rotationIndex?: number | undefined
 }
