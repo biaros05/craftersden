@@ -155,9 +155,8 @@ type SerializedBlockType = {
   name: string,
   position: [number, number, number],
   geometry: object,
-  texture: object,
   textures: object[],
-  textureURL: string
+  textureURLs: string[]
 }
 
 /**
