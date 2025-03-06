@@ -57,14 +57,15 @@ export default function BuildPlane({canvasRef, blocks, setBlocks, style = {}}: B
 
       if (blockExists(newPosition, blocks)) return;
 
+      const { textures, textureURLs } = getTextures(currentBlock);
+
       const newBlock: BlockType = {
         id: nanoid(),
         name: currentBlock.name,
         position: newPosition,
         geometry: geometry,
-        texture: getTexture(oakPlanks),
-        textures: getTextures(currentBlock),
-        textureURL: oakPlanks
+        textures: textures,
+        textureURLs: textureURLs
       };
 
       setBlocks(b => [...b, newBlock]);
@@ -89,15 +90,15 @@ export default function BuildPlane({canvasRef, blocks, setBlocks, style = {}}: B
       const position: [number, number, number] =  [normalizedCoords.x, 0, normalizedCoords.z];
 
       if (blockExists(position, blocks)) return;
+      const { textures, textureURLs } = getTextures(currentBlock);
 
       const newBlock: BlockType = {
         id: nanoid(),
         name: currentBlock.name,
         position: position,
         geometry: geometry,
-        texture: getTexture(oakPlanks),
-        textures: getTextures(currentBlock),
-        textureURL: oakPlanks
+        textures: textures,
+        textureURLs: textureURLs
       };
 
       setBlocks([...blocks, newBlock])

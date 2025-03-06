@@ -193,13 +193,14 @@ function getGeometry(selectedBlock: SelectedBlock, geometries: object, setGeomet
   /**
    * Takes a texture url and creates a THREE texture with it.
    * @param {SelectedBlock} currentBlock Currently selected block by user
-   * @returns {THREE.Texture[]} corresponding to given url.
+   * @returns {{textures: THREE.Texture[], textureURLs: string[]}} An object containing the textures and their URLs.
    */
-  function getTextures(currentBlock: SelectedBlock): THREE.Texture[] {
+  function getTextures(currentBlock: SelectedBlock): { textures: THREE.Texture[], textureURLs: string[] } {
     const textureCache : { [url: string]: THREE.Texture} = {};
     const loader = new THREE.TextureLoader();
     const cuboids = currentBlock.cuboids;
     const textureList: THREE.Texture[] = [];
+    const textureURLs: string[] = [];
 
     cuboids.forEach(cuboid => {
       const faces = cuboid.faces;
@@ -209,9 +210,10 @@ function getGeometry(selectedBlock: SelectedBlock, geometries: object, setGeomet
           textureCache[textureURL] =  loader.load(textureURL);
         }
         textureList.push(textureCache[textureURL]);
+        textureURLs.push(textureURL);
       });
     });
-    return textureList;
+    return { textures: textureList, textureURLs: textureURLs };
   }
 
 export {Cuboid, createGeometry, loadGround, 
