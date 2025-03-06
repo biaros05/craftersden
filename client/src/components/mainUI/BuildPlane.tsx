@@ -42,9 +42,10 @@ type BuildPlaneProps = {
  * @param {React.RefObject<null>} props.canvasRef useRef value for the Canvas
  * @param {BlockType[]} props.blocks blocks to render on plane
  * @param {React.Dispatch<React.SetStateAction<BlockType[]>>} props.setBlocks callback to update the blocks array state
+ * @param {boolean} props.isViewMode - boolean that indicates if user toggled to view mode.
  * @returns {React.ReactNode} Build plane
  */
-export default function BuildPlane({canvasRef, blocks, setBlocks, isViewMode, setIsViewMode }: BuildPlaneProps): React.ReactNode {
+export default function BuildPlane({canvasRef, blocks, setBlocks, isViewMode }: BuildPlaneProps): React.ReactNode {
   const [geometries, setGeometries] = useState<object>({});
   const [highlighted, setHighlighted] = useState<THREE.Vector3 | null>(null);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
@@ -172,7 +173,6 @@ export default function BuildPlane({canvasRef, blocks, setBlocks, isViewMode, se
     <mesh 
       rotation={[planeRotation, 0, 0]} 
       onPointerDown={(e) => {
-        console.log(`plane is view mode ${isViewMode}`); 
         if(!isViewMode){
           addBlockOnPlane(e)
         }}} 
@@ -207,7 +207,6 @@ export default function BuildPlane({canvasRef, blocks, setBlocks, isViewMode, se
                             rotation={b.rotation}
                             onPointerDown={(e: ThreeEvent<PointerEvent>) => {
                               e.stopPropagation();
-                              console.log(`view mode: ${isViewMode}`);
                               if(!isViewMode){
                                 addBlock(e, b.id, b.position);
                               }

@@ -77,7 +77,6 @@ async function saveBuild(req, res, next) {
 
 /**
  * This function deletes a build from DB given a buildID. 
- * 
  * @param {*} req - Request object 
  * @param {*} res - Respond object
  * @param {*} next - Next 
@@ -86,7 +85,7 @@ async function saveBuild(req, res, next) {
 async function deleteBuild(req, res, next){
   try{
     if(!req.body.buildId || req.body.buildId == 'null' || req.body.buildId == undefined){
-      const error = new Error("Invalid build ID");
+      const error = new Error('Invalid build ID');
       error.status = 404;
       return next(error);
     }
@@ -94,12 +93,12 @@ async function deleteBuild(req, res, next){
     const deletedPost = await Post.findOneAndDelete({_id : req.body.buildId});
 
     if(!deletedPost){
-      const error = new Error("Build not found");
+      const error = new Error('Build not found');
       error.status = 404;
       return next(error);
     }
 
-    req.status(200).json({ message: "Build succesfully deleted"});
+    req.status(200).json({ message: 'Build succesfully deleted'});
   }catch(err){
     e.status(500);
     next(err);

@@ -143,8 +143,7 @@ export default function CraftersDen(): React.ReactNode {
             canvasRef={canvas} 
             blocks={blocks} 
             setBlocks={setBlocks} 
-            isViewMode={isViewMode} 
-            setIsViewMode={setIsViewMode} />
+            isViewMode={isViewMode} />
           {!isViewMode && <BlockSelection />}
         </section>
         <ButtonPanel 
