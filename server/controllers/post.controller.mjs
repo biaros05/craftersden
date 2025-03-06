@@ -12,10 +12,6 @@ const blobService = new BlobServiceProvider();
 /**
  * Calls validationResult method to ensure all validation has passed. Throws an error 
  * on account of any failed validation.
- */
-/**
- * Calls validationResult method to ensure all validation has passed. Throws an error 
- * on account of any failed validation.
  * @param {*} req -  
  * @param {*} res -
  * @param {*} next -
@@ -23,10 +19,10 @@ const blobService = new BlobServiceProvider();
 function uploadValidation(req, res, next) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    const error = new Error();
+    const error = new Error(JSON.stringify({ errors: errors.array() })); 
     error.status = 422;
-    error.message = { errors: errors.array() };
     next(error);
+    
   }
   next();
 }
@@ -77,12 +73,12 @@ async function saveBuild(req, res, next) {
 
 async function publishBuild(req, res, next) {
   try{
-    if(!req.post){
-      return res.status(404).json({ message: 'Build post does not exist in DB'});
+    if(!req.body.buildId){
+      return res.status(404).json({ message: 'Build ID does not exist in DB'});
     }
 
     const publishedBuild = await Post.findOneAndUpdate(
-      req.post._id,
+      {_id: req.body.buildId},
       {isPublished : true},
       { returnDocument: 'after'}
     );

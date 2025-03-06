@@ -52,12 +52,7 @@ postRouter.post('/publish', isAuthenticated, upload.fields([
   { name: 'png', maxCount: 1 },
   { name: 'blocks', maxCount: 1 }
 ]),
-  imageFormValidation,
-  uploadValidation,
-  saveBuild, 
   publishBuild,
-  uploadImage,
-  updatePostPicture
 );
 
 

@@ -7,7 +7,6 @@ type ButtonPanelProps = {
   canvas: React.RefObject<null>,
   savePost: (arg0: string) => void,
   isViewMode: boolean ,
-  publishPost: () => void
 }
 
 /**
@@ -19,7 +18,7 @@ type ButtonPanelProps = {
  * @param {boolean} props.isViewMode isViewMode state.
  * @returns {React.ReactNode} Button panel section with buttons
  */
-function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode, publishPost}: ButtonPanelProps): React.ReactNode {
+function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode}: ButtonPanelProps): React.ReactNode {
 
   return (
     <section className="button-panel">

@@ -31,8 +31,7 @@ type BuildPlaneProps = {
   canvasRef: React.RefObject<null>,
   blocks: BlockType[],
   setBlocks: React.Dispatch<React.SetStateAction<BlockType[]>>,
-  isViewMode: boolean,
-  setIsViewMode: React.Dispatch<React.SetStateAction<boolean>>
+  isViewMode: boolean
 }
 
 /**

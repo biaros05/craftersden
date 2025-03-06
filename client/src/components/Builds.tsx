@@ -4,6 +4,8 @@ import '../styles/welcome.css';
 import { Image, Button } from '@mantine/core';
 import '../styles/builds.css';
 import { useBuildUpdate } from '../hooks/BuildContext.tsx';
+import { successMessage, errorMessage } from '../utils/notification_utils';
+
 
 type Build = {
   progressPicture: string,
@@ -19,37 +21,73 @@ type Build = {
  * @param {Build[]} props.builds List of builds
  * @returns {React.ReactNode} Builds to display
  */
-export default function Builds({builds}: { builds: Build[]; }): React.ReactNode {
+export default function Builds({ builds }: { builds: Build[]; }): React.ReactNode {
   const navigate = useNavigate();
   const { setBuild } = useBuildUpdate();
-  
+
+  async function publishPost(buildId: String) {
+    const data = new FormData();
+    try {
+      data.append('buildId', buildId);
+      const requestOptions = {
+        method: 'POST',
+        body: data
+      }
+      const response = await fetch('/api/post/publish', requestOptions);
+      const json = await response.json();
+
+      console.log(json);
+
+      if (!response.ok) {
+        const err = new StatusError(`${json.message}`);
+        err.status = json.status;
+        throw err;
+      }
+
+      successMessage(json.message);
+
+    } catch (err) {
+      console.error(err);
+      errorMessage(err.message);
+    }
+  }
+
   return (
     <section className="posts">
       {
         builds.map((build, i) => {
           console.log(build.progressPicture)
           return (
-          <div className="saved-builds" style={{ width: '250px'}}>
-            <Image
-              key={`build-${i}`}
-              radius="md"
-              height={125}
-              src={build.progressPicture}
-              onClick={() => {
-                setBuild(build);
-                navigate('/den');
-              }}
-            />
-            <Button 
-              key={`build-${i}`}  
-              variant="outline"
-              className='delete-save-button'
-              color="rgb(178, 14, 14)"
-              onClick={() => {}}
+            <div className="saved-builds" style={{ width: '250px' }}>
+              <Image
+                key={`build-${i}`}
+                radius="md"
+                height={125}
+                src={build.progressPicture}
+                onClick={() => {
+                  setBuild(build);
+                  navigate('/den');
+                }}
+              />
+              <Button
+                key={`build-${i}`}
+                variant="outline"
+                className='delete-save-button'
+                color="rgb(178, 14, 14)"
+                onClick={() => { }}
               >
-              Delete Save
-            </Button>
-          </div>
+                Delete Save
+              </Button>
+              {!build.isPublished && <Button
+                key={`build-${i}`}
+                variant="outline"
+                onClick={() => {
+                  console.log(build);
+                  publishPost(build._id)
+                }}>
+                Publish
+              </Button>}
+            </div>
           )
         })
       }

@@ -136,28 +136,6 @@ export default function CraftersDen(): React.ReactNode {
     }
   }
 
-  async function publishPost(){
-    try{
-      
-      const response = await fetch('/api/post/publish', {method: 'POST'});
-      const json = await response.json();
-      
-      console.log(json);
-
-      if (!response.ok) {
-        const err = new StatusError(`${json.message}`);
-        err.status = json.status;
-        throw err;
-      }
-      
-      successMessage(json.message);
-
-    }catch(err){
-      console.error(err);
-      errorMessage(err.message);
-    }
-  }
-
   return (
     <>
       <div id="main-ui">
@@ -174,7 +152,6 @@ export default function CraftersDen(): React.ReactNode {
           canvas={canvas} 
           savePost={savePost} 
           isViewMode={isViewMode}
-          publishPost={publishPost}
         />
       </div>
     </>
