@@ -6,6 +6,7 @@ import '../styles/builds.css';
 import { useBuildUpdate } from '../hooks/BuildContext.tsx';
 import { successMessage, errorMessage } from '../utils/notification_utils';
 import { useDisclosure } from '@mantine/hooks';
+import PublishForm from './PublishForm.tsx';
 
 type Build = {
   progressPicture: string,
@@ -83,8 +84,8 @@ export default function Builds({ builds }: { builds: Build[]; }): React.ReactNod
                 key={`build-${i}`}
                 variant="outline"
                 onClick={() => {
-                  console.log(build);
                   publishPost(build._id)
+                  open()
                 }}>
                 Publish
               </Button>}
@@ -92,6 +93,7 @@ export default function Builds({ builds }: { builds: Build[]; }): React.ReactNod
           )
         })
       }
+      <PublishForm opened={opened} close={close}/>
     </section>
   );
 }

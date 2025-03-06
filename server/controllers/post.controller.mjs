@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import { validationResult } from 'express-validator';
 import { decode } from '@msgpack/msgpack';
 import BlobServiceProvider from '../utils/BlobService.mjs';
+import { TopologyDescription } from 'mongodb';
 
 dotenv.config();
 
@@ -71,6 +72,13 @@ async function saveBuild(req, res, next) {
   }
 }
 
+/**
+ * This function takes a build id to update the build's isPublished field to true.
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @param {*} next - Next
+ * @returns 
+ */
 async function publishBuild(req, res, next) {
   try{
     if(!req.body.buildId){
@@ -93,6 +101,12 @@ async function publishBuild(req, res, next) {
     next(err);
   }
 }
+
+// async function updatePostFields(req, res, next){
+//   try{
+
+//   }
+// }
 
 /**
  * This function deletes a build from DB given a buildID. 
