@@ -91,7 +91,7 @@ export default function Profile(): React.ReactNode {
         </Tabs.List>
 
         <Tabs.Panel value="builds">
-          <Builds builds={builds}/>
+          <Builds setBuilds={setBuilds} builds={builds}/>
         </Tabs.Panel>
 
         <Tabs.Panel value="saves">

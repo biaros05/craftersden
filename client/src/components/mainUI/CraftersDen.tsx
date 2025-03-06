@@ -9,7 +9,10 @@ import {toByteArray} from 'base64-js';
 import * as THREE from 'three';
 import {encode} from '@msgpack/msgpack'; 
 import {scene} from './scene';
-import { useBuild } from '../../hooks/BuildContext';
+import { useBuild, useBuildUpdate } from '../../hooks/BuildContext';
+import { successMessage, errorMessage } from '../../utils/notification_utils';
+import { SerializedBlockType, StatusError } from '../../utils/building_plane_utils';
+
 
 export type BlockType = {
   id: string,
@@ -18,8 +21,6 @@ export type BlockType = {
   texture: THREE.Texture,
   textureURL: string
 }
-import { successMessage, errorMessage } from '../../utils/notification_utils';
-import { BlockType, SerializedBlockType, StatusError } from '../../utils/building_plane_utils';
 
 /**
  * Takes an array of objects and takes care of serializing their THREE objects
@@ -71,14 +72,12 @@ export default function CraftersDen(): React.ReactNode {
   const {email} = useAuth() ?? {};
   const [isViewMode, setIsViewMode] = useState(false);
   // TODO implement toastify to handle error
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [error, setError] = useState({});
   const [blocks, setBlocks] = useState<BlockType[]>([]);
 
   const build = useBuild();
+  const { setBuild } = useBuildUpdate();
 
   useEffect(() => {
-    console.log(build);
     if(build.build!==undefined && build.build!==null){
       setBlocks(deserializeBlocks(build.build.buildJSON));
     }
@@ -90,8 +89,6 @@ export default function CraftersDen(): React.ReactNode {
   let curBuildId = null;
 
   if(build.build !== undefined && build.build !== null){
-    console.log(build.build)
-    console.log(build)
     curBuildId = build.build._id;
   }
 
@@ -104,7 +101,6 @@ export default function CraftersDen(): React.ReactNode {
     const arrayBufferBlocks = serializeBlocks(blocks);
     const serializedBlocks = new Blob([arrayBufferBlocks], { type: 'application/octet-stream' });
     try {
-      console.log(progressPicture);
       const base64Data = progressPicture.split(',')[1];
       const byteArray = toByteArray(base64Data);
       const blob = new Blob([byteArray], { type: 'image/png' });
@@ -115,9 +111,7 @@ export default function CraftersDen(): React.ReactNode {
       data.append('email', email!);
       const requestOptions = {
         method: 'POST',
-        // TODO: change id to be not null if the build exists!!!
         body: data
-        // use ID to find pre-existing build if it exists, if not leave it null.
       };
       const response = await fetch('/api/post/save', requestOptions);
       const json = await response.json();
@@ -128,9 +122,9 @@ export default function CraftersDen(): React.ReactNode {
         throw err;
       }
 
+      setBuild({...{'_id': json.id}, ...build.build})
       successMessage(json.message);
     } catch (e) {
-      console.error(e);
       errorMessage(e.message);
     }
   }
