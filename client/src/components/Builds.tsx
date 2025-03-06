@@ -5,7 +5,7 @@ import { Image, Button } from '@mantine/core';
 import '../styles/builds.css';
 import { useBuildUpdate } from '../hooks/BuildContext.tsx';
 import { successMessage, errorMessage } from '../utils/notification_utils';
-
+import { useDisclosure } from '@mantine/hooks';
 
 type Build = {
   progressPicture: string,
@@ -24,6 +24,7 @@ type Build = {
 export default function Builds({ builds }: { builds: Build[]; }): React.ReactNode {
   const navigate = useNavigate();
   const { setBuild } = useBuildUpdate();
+  const [opened, { open, close }] = useDisclosure(false);
 
   async function publishPost(buildId: String) {
     const data = new FormData();
