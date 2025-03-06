@@ -20,6 +20,7 @@ import Forum from './components/Forum.tsx';
 import '@mantine/core/styles.css';
 import '@mantine/carousel/styles.css';
 import CraftersDen from './components/mainUI/CraftersDen.jsx';
+import { BuildProvider } from './hooks/BuildContext.tsx';
 import { ToastContainer, Slide } from 'react-toastify';
 import '@mantine/core/styles.css';
 import CustomNotification from './components/mainUI/CustomNotification.tsx';
@@ -98,9 +99,11 @@ createRoot(document.getElementById('root')!).
       <AuthProvider >
       <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
         <MantineProvider theme={theme}>
-          {/* <AuthProvider > */}
-            <RouterProvider router={router} />
-          {/* </AuthProvider> */}
+          <AuthProvider >
+            <BuildProvider>
+              <RouterProvider router={router} />
+            </BuildProvider>
+          </AuthProvider>
         </MantineProvider>
       </GoogleOAuthProvider>
       </AuthProvider>

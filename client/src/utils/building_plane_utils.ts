@@ -79,9 +79,12 @@ function getTexture(url: string): THREE.Texture {
 type BlockType = {
   id: string,
   position: [number, number, number],
+  worldPosition?: [number, number, number] | undefined,
   geometry: THREE.BufferGeometry,
   texture: THREE.Texture,
-  textureURL: string
+  textureURL: string,
+  rotation?: [number, number, number] | undefined,
+  rotationIndex?: number | undefined
 }
 
 type SerializedBlockType = {

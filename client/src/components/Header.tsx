@@ -3,6 +3,7 @@ import { Avatar, Button } from "@mantine/core";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import '../styles/header.css';
+import { useBuildUpdate } from "../hooks/BuildContext";
 
 /**
  * Header component that allows users to visit
@@ -15,20 +16,29 @@ export default function Header() {
   const location = useLocation();
   const isDen = location.pathname === '/den';
 
-  if (loading) {
-    return <h2>Loading...</h2>;
-  }
+    const { setBuild } = useBuildUpdate();
+
+    if (loading) {
+        return <h2>Loading...</h2>;
+    }
+
+    const handleDenClick = () => {
+        setBuild(undefined);
+    }
 
     return <header id="site-header">
-        <Link to='/profile' state={{canGoBack: true}}>
+        <Link to='/profile'>
             <Avatar src={avatar} />
         </Link>
         <h2>
-            <Link to={isDen ? `/den` : `/forum`} state={{canGoBack: true}} >
+            <Link to={isDen ? `/den` : `/forum`} state={{canGoBack: true}}>
                 {isDen ? `Crafter's Den` : `Crafter's Forum`}
             </Link>
         </h2>
-        <Link to={!isDen ? `/den` : `/forum`}>
+        <Link 
+            to={!isDen ? `/den` : `/forum`}
+            state={{canGoBack: true}}
+            onClick={handleDenClick}>
             <Button variant="filled">
                 {!isDen ? `Den` : `Forum`}
             </Button>
