@@ -2,7 +2,7 @@ import Post from '../models/Post.js';
 import User from '../models/User.mjs';
 import dotenv from 'dotenv';
 import { validationResult } from 'express-validator';
-import {decode} from '@msgpack/msgpack';
+import { decode } from '@msgpack/msgpack';
 import BlobServiceProvider from '../utils/BlobService.mjs';
 
 dotenv.config();
@@ -47,16 +47,16 @@ async function saveBuild(req, res, next) {
   try {
     if (req.body.buildId !== 'null' && req.body.buildId !== undefined) {
       req.post = await Post.findOneAndUpdate(
-        {_id: req.body.buildId}, 
-        {buildJSON: blocks},
-        {returnDocument: 'after'}
+        { _id: req.body.buildId },
+        { buildJSON: blocks },
+        { returnDocument: 'after' }
       );
 
     } else {
-      const user = await User.findOne({email: email});
+      const user = await User.findOne({ email: email });
       const post = new Post({
-        buildJSON: blocks, 
-        user: user._id, 
+        buildJSON: blocks,
+        user: user._id,
         description: '',
         thumbnails: [],
         isPublished: false,
@@ -68,9 +68,61 @@ async function saveBuild(req, res, next) {
       req.post = post;
     }
     next();
-  } catch (e){
+  } catch (e) {
     e.status = 500;
     next(e);
+  }
+}
+
+async function publishBuild(req, res, next) {
+  try {
+    if (!req.body.buildId || req.body.buildId == 'null' || req.body.buildId == undefined) {
+      const error = new Error("Invalid build ID");
+      error.status(404);
+      return next(error);
+    }
+
+    const publishedBuild = await Post.findOneAndUpdate(
+      { _id: req.body.buildId },
+      { isPublished: true }
+    )
+
+    publishedBuild.save;
+
+    return res.status(200).json("Published build successfully");
+  }catch(err){
+    err.status = 500;
+    next(err);
+  }
+}
+
+/**
+ * This function deletes a build from DB given a buildID. 
+ * @param {*} req - Request object 
+ * @param {*} res - Respond object
+ * @param {*} next - Next 
+ * @returns {JSON} - JSON with status code
+ */
+async function deleteBuild(req, res, next) {
+  try {
+    if (!req.body.buildId || req.body.buildId == 'null' || req.body.buildId == undefined) {
+      const error = new Error('Invalid build ID');
+      error.status = 404;
+      return next(error);
+    }
+
+    const deletedPost = await Post.findOneAndDelete({ _id: req.body.buildId });
+
+    if (!deletedPost) {
+      const error = new Error('Build not found');
+      error.status = 404;
+      return next(error);
+    }
+
+    req.status(200).json({ message: 'Build succesfully deleted' });
+  } catch (err) {
+    e.status(500);
+    next(err);
   }
 }
 
@@ -83,7 +135,7 @@ async function saveBuild(req, res, next) {
  */
 async function uploadImage(req, res, next) {
   // set as single file upload in router
-  const file = req.files['png'][0]; 
+  const file = req.files['png'][0];
   //moves the file to the current folder
   const blobName = `${req.post._id}.png`;
 
@@ -91,7 +143,7 @@ async function uploadImage(req, res, next) {
     const fullUrl = await blobService.overrideFile(file, blobName);
     req.url = fullUrl;
     next();
-  } catch (e){
+  } catch (e) {
     e.status = 500;
     next(e);
   }
@@ -106,16 +158,16 @@ async function uploadImage(req, res, next) {
  */
 async function updatePostPicture(req, res, next) {
   try {
-    await Post.findOneAndUpdate({_id: req.post._id},
-      {progressPicture: req.url}
+    await Post.findOneAndUpdate({ _id: req.post._id },
+      { progressPicture: req.url }
     );
 
-    res.status(200).json({message : 'Build successfully saved!'});
+    res.status(200).json({ message: 'Build successfully saved!' });
     return;
-  } catch (e){
+  } catch (e) {
     e.status = 500;
     next(e);
   }
 }
 
-export {saveBuild, uploadValidation, uploadImage, updatePostPicture};
+export { saveBuild, uploadValidation, uploadImage, updatePostPicture, publishBuild };

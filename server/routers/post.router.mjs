@@ -3,7 +3,8 @@ import {
   saveBuild,
   uploadValidation,
   updatePostPicture,
-  uploadImage
+  uploadImage,
+  publishBuild
 } from '../controllers/post.controller.mjs';
 import multer from 'multer';
 import { body } from 'express-validator';
@@ -47,6 +48,7 @@ uploadImage,
 updatePostPicture
 );
 
+postRouter.post('/publish', isAuthenticated, publishBuild);
 
 
 export default postRouter;

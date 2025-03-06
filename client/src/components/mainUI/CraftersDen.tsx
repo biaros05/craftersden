@@ -20,6 +20,7 @@ export type BlockType = {
 }
 import { successMessage, errorMessage } from '../../utils/notification_utils';
 import { BlockType, SerializedBlockType, StatusError } from '../../utils/building_plane_utils';
+import { request } from 'http';
 
 /**
  * Takes an array of objects and takes care of serializing their THREE objects
@@ -135,6 +136,32 @@ export default function CraftersDen(): React.ReactNode {
     }
   }
 
+  async function publishPost(){
+    const data = new FormData();
+    try{
+      if(curBuildId) { data.append('buildId', curBuildId)}
+      const requestOptions = {
+        method: 'POST',
+        body: data
+      }
+      
+      const response = await fetch('/api/post/publish', requestOptions);
+      const json = await response.json();
+
+      if(!response.ok){
+        const err = new StatusError(`${json.message}`);
+        err.status = json.status;
+        throw err;
+      }
+
+      successMessage(json.message);
+
+    }catch(err){
+      console.error(err);
+      errorMessage(err.message);
+    }
+  }
+
   return (
     <>
       <div id="main-ui">
@@ -147,6 +174,7 @@ export default function CraftersDen(): React.ReactNode {
           canvas={canvas} 
           savePost={savePost} 
           isViewMode={isViewMode}
+          publishPost={publishPost}
         />
       </div>
     </>

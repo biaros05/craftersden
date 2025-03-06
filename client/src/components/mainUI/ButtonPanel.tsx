@@ -6,7 +6,8 @@ type ButtonPanelProps = {
   setIsViewMode: (arg0: boolean) => void,
   canvas: React.RefObject<null>,
   savePost: (arg0: string) => void,
-  isViewMode: boolean 
+  isViewMode: boolean ,
+  publishPost: () => void
 }
 
 /**
@@ -18,7 +19,7 @@ type ButtonPanelProps = {
  * @param {boolean} props.isViewMode isViewMode state.
  * @returns {React.ReactNode} Button panel section with buttons
  */
-function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode}: ButtonPanelProps): React.ReactNode {
+function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode, publishPost}: ButtonPanelProps): React.ReactNode {
 
   return (
     <section className="button-panel">
@@ -39,6 +40,13 @@ function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode}: ButtonPanelP
         className="save-button"
       >
         Toggle Mode
+      </Button>
+      <Button
+        onClick={() => {
+          savePost(canvas.current!.toDataURL('image/png'));
+          publishPost
+        }}>
+        Publish Build
       </Button>
     </section>
   );
