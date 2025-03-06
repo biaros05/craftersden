@@ -85,9 +85,14 @@ async function publishBuild(req, res, next) {
       return res.status(404).json({ message: 'Build ID does not exist in DB'});
     }
 
+    const updateData = { isPublished : true }
+    if(req.body.description){
+      updateData.description = req.body.description;
+    }
+
     const publishedBuild = await Post.findOneAndUpdate(
       {_id: req.body.buildId},
-      {isPublished : true},
+      updateData,
       { returnDocument: 'after'}
     );
 
