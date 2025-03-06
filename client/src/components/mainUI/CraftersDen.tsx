@@ -137,15 +137,9 @@ export default function CraftersDen(): React.ReactNode {
   }
 
   async function publishPost(){
-    const data = new FormData();
     try{
-      if(curBuildId) { data.append('buildId', curBuildId)}
-      const requestOptions = {
-        method: 'POST',
-        body: data
-      }
       
-      const response = await fetch('/api/post/publish', requestOptions);
+      const response = await fetch('/api/post/publish', {method: 'POST'});
       const json = await response.json();
       
       console.log(json);
@@ -155,7 +149,7 @@ export default function CraftersDen(): React.ReactNode {
         err.status = json.status;
         throw err;
       }
-
+      
       successMessage(json.message);
 
     }catch(err){

@@ -1,5 +1,5 @@
 import express from 'express';
-import { 
+import {
   saveBuild,
   uploadValidation,
   updatePostPicture,
@@ -41,14 +41,25 @@ postRouter.post('/save', isAuthenticated, upload.fields([
   { name: 'png', maxCount: 1 },
   { name: 'blocks', maxCount: 1 }
 ]),
-imageFormValidation, 
-uploadValidation, 
-saveBuild, 
-uploadImage,
-updatePostPicture
+  imageFormValidation,
+  uploadValidation,
+  saveBuild,
+  uploadImage,
+  updatePostPicture
 );
 
-postRouter.post('/publish', isAuthenticated, saveBuild, publishBuild);
+postRouter.post('/publish', isAuthenticated, upload.fields([
+  { name: 'png', maxCount: 1 },
+  { name: 'blocks', maxCount: 1 }
+]),
+  imageFormValidation,
+  uploadValidation,
+  saveBuild, 
+  publishBuild,
+  uploadImage,
+  updatePostPicture
+);
+
 
 
 export default postRouter;

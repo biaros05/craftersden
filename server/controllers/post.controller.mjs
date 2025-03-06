@@ -40,6 +40,7 @@ function uploadValidation(req, res, next) {
  * @returns {JSON} - JSON with status code
  */
 async function saveBuild(req, res, next) {
+  console.log(req);
   const encoded = req.files['blocks'][0];
   const buffer = Buffer.from(encoded.buffer, encoded.byteOffset, encoded.byteLength);
   const blocks = decode(buffer);
@@ -75,17 +76,22 @@ async function saveBuild(req, res, next) {
 }
 
 async function publishBuild(req, res, next) {
-  const post = req.post;
-  try {
-    console.log(post);
+  try{
+    if(!req.post){
+      return res.status(404).json({ message: 'Build post does not exist in DB'});
+    }
+
     const publishedBuild = await Post.findOneAndUpdate(
-      { _id: req.body.buildId },
-      { isPublished: true }
-    )
+      req.post._id,
+      {isPublished : true},
+      { returnDocument: 'after'}
+    );
 
-    publishedBuild.save;
+    if(!publishedBuild){
+      return res.json(404).json({ message: 'Not able to publish build'});
+    }
 
-    return res.status(200).json("Published build successfully");
+    return res.status(200).json({ message: 'Build published successfully!'});
   }catch(err){
     err.status = 500;
     next(err);
@@ -115,7 +121,7 @@ async function deleteBuild(req, res, next) {
       return next(error);
     }
 
-    req.status(200).json({ message: 'Build succesfully deleted' });
+    res.status(200).json({ message: 'Build succesfully deleted' });
   } catch (err) {
     e.status(500);
     next(err);
