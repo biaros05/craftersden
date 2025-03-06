@@ -28,7 +28,7 @@ import { BlockType, SerializedBlockType, StatusError } from '../../utils/buildin
  * @param {BlockType[]} blocks - array of blocks with THREE objects.
  * @returns {SerializedBlockType[]} - a buffer containing the newly serialized blocks. 
  */
-function serializeBlocks(blocks: BlockType[]): Uint8Array<ArrayBufferLike> {
+export function serializeBlocks(blocks: BlockType[]): Uint8Array<ArrayBufferLike> {
   return encode(blocks.map(block => {
     const geomJSON = block.geometry.toNonIndexed().toJSON();
     const textureJSON = block.texture.toJSON();
@@ -48,7 +48,7 @@ function serializeBlocks(blocks: BlockType[]): Uint8Array<ArrayBufferLike> {
  * @param {SerializedBlockType[]} blocks - array of blocks fetched from the database
  * @returns {BlockType[]} - Array of blocks which contain THREE objects
  */
-function deserializeBlocks(blocks: SerializedBlockType[]): BlockType[] {
+export function deserializeBlocks(blocks: SerializedBlockType[]): BlockType[] {
   return blocks.map(block => {
     console.log(block.texture);
     block.texture.image = block.textureURL
@@ -75,20 +75,23 @@ export default function CraftersDen(): React.ReactNode {
   const build = useBuild();
 
   useEffect(() => {
-    console.log(build);
-    if(build.build!==undefined && build.build!==null){
+    const serializedBlocks = JSON.parse(localStorage.getItem("build") ?? "{}");
+
+    if (Object.keys(serializedBlocks).length && Object.keys(serializedBlocks.blocks).length) {
+      setBlocks(deserializeBlocks(serializedBlocks.blocks))
+      localStorage.clear();
+    }
+    else if (build.build !== undefined && build.build !== null) {
       setBlocks(deserializeBlocks(build.build.buildJSON));
     }
     else{
-      setBlocks(deserializeBlocks(scene));
+      setBlocks(deserializeBlocks([]));
     }
   }, []);
 
   let curBuildId = null;
 
-  if(build.build !== undefined && build.build !== null){
-    console.log(build.build)
-    console.log(build)
+  if (build.build !== undefined && build.build !== null) {
     curBuildId = build.build._id;
   }
 
@@ -143,6 +146,7 @@ export default function CraftersDen(): React.ReactNode {
           {!isViewMode && <BlockSelection />}
         </section>
         <ButtonPanel 
+        blocks={blocks}
         setIsViewMode={setIsViewMode} 
         canvas={canvas} 
         savePost={savePost} 

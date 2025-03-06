@@ -5,13 +5,30 @@ import '../../styles/ButtonPanel.css';
 import { toast } from 'react-toastify';
 import CustomNotification from './CustomNotification.tsx'
 import { Slide } from 'react-toastify';
+import {serializeBlocks} from './CraftersDen.tsx';
+import {BlockType} from './CraftersDen.tsx';
 
 type ButtonPanelProps = { 
   setIsViewMode: (arg0: boolean) => void,
   canvas: React.RefObject<null>,
   savePost: (arg0: string) => void,
   isViewMode: boolean,
-  email: string
+  email: string,
+  blocks: BlockType[]
+}
+
+function jsonifyBlocks(blocks: BlockType[]) {
+  return blocks.map(block => {
+    const geomJSON = block.geometry.toNonIndexed().toJSON();
+    const textureJSON = block.texture.toJSON();
+    return {
+      id: block.id,
+      position: block.position,
+      geometry: geomJSON,
+      texture: textureJSON,
+      textureURL: block.textureURL
+    };
+  });
 }
 
 /**
@@ -21,10 +38,13 @@ type ButtonPanelProps = {
  * @param {Function} props.setIsViewMode Callback to set isViewModel state 
  * @param {Function} props.savePost thumbnail url
  * @param {boolean} props.isViewMode isViewMode state.
+ * @param {email} props.email email of current user.
+ * @param {blocks} props.blocks build blocks.
  * @returns {React.ReactNode} Button panel section with buttons
  */
-function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode, email}: ButtonPanelProps): React.ReactNode {
+function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode, email, blocks}: ButtonPanelProps): React.ReactNode {
   const navigate = useNavigate();
+
   return (
     <section className="button-panel">
       <Button 
@@ -33,6 +53,10 @@ function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode, email}: Butto
         className="save-button"
         onClick={() => {
           if (!email) {
+            const serializedBlocks = jsonifyBlocks(blocks);
+            console.log(serializedBlocks);
+            localStorage.setItem("build", JSON.stringify({"blocks": serializedBlocks}));
+
             toast.info(CustomNotification, {
               data: {
                 redirect: navigate,
