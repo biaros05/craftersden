@@ -74,6 +74,30 @@ async function saveBuild(req, res, next) {
   }
 }
 
+// /**
+//  * This function deletes a build from DB given a buildID. 
+//  * @param {*} req - Request object 
+//  * @param {*} res - Respond object
+//  * @param {*} next - Next 
+//  * @returns {JSON} - JSON with status code
+//  */
+// async function deleteBuild(req, res, next){
+//   try{
+//     if(!req.body.buildId || req.body.buildId == 'null' || req.body.buildId == undefined){
+//       const error = new Error('Invalid build ID');
+//       error.status = 404;
+//       return next(error);
+//     }
+
+//     await Post.findOneAndDelete({_id : req.body.buildId});
+
+//     req.status(200).json({ message: 'Build succesfully deleted'});
+//   }catch(err){
+//     e.status(500);
+//     next(err);
+//   }
+// }
+
 /**
  * Obtains the file content and stores it in azure blob.
  * Passes the returned azure blob URL to next middleware for processing.

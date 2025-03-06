@@ -145,8 +145,15 @@ export default function CraftersDen(): React.ReactNode {
     <CurrentBlockContext.Provider value={{currentBlock, storeBlock}}>
       <div id="main-ui">
         <section className="build-tools">
-          <BuildPlane canvasRef={canvas} blocks={blocks} setBlocks={setBlocks} style={{ width: "80%" }}/>
-          {!isViewMode && <BlockSelection style={{height: "100%"}}/>}
+          <BuildPlane 
+            canvasRef={canvas} 
+            blocks={blocks} 
+            setBlocks={setBlocks} 
+            isViewMode={isViewMode} 
+            setIsViewMode={setIsViewMode}
+            style={{width: "80%"}}
+            />
+          {!isViewMode && <BlockSelection />}
         </section>
         <ButtonPanel 
           setIsViewMode={setIsViewMode} 
