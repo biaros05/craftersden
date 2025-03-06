@@ -4,6 +4,7 @@ import '../styles/welcome.css';
 import { Image } from '@mantine/core';
 import '../styles/builds.css';
 import { useBuildUpdate } from '../hooks/BuildContext.tsx';
+import { Button } from '@mantine/core';
 
 type Build = {
   progressPicture: string,
@@ -28,16 +29,26 @@ export default function Builds({builds}: { builds: Build[]; }): React.ReactNode 
       {
         builds.map((build, i) => {
           console.log(build.progressPicture);
-          return <Image
-            key={`build-${i}`}
-            radius="md"
-            height={125}
-            src={build.progressPicture}
-            onClick={() => {
-              setBuild(build);
-              navigate('/den');
-            }}
-          />;
+          return (
+          <div className="saved-builds" style={{ width: '250px'}}>
+            <Image
+              key={`build-${i}`}
+              radius="md"
+              height={125}
+              src={build.progressPicture}
+              onClick={() => {
+                setBuild(build);
+                navigate('/den');
+              }}
+            />;
+            <Button 
+              variant="filled"
+              onClick={() => {}}
+              >
+              Delete Save
+            </Button>
+          </div>
+          );
         })
       }
     </section>
