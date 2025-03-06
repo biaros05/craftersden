@@ -90,9 +90,9 @@ export default function CraftersDen(): React.ReactNode {
   }
 
     /**
-   * Fetches the complete block data from the api, and stores it in CurrentBlockContext.
-   * @param {Object} block - block object to fetch from the api
-   */
+     * Fetches the complete block data from the api, and stores it in CurrentBlockContext.
+     * @param {object} block - block object to fetch from the api
+     */
     async function storeBlock(block) {
       const response = await fetch(`/api/block/${block._id}`);
       const completeBlockData = await response.json();

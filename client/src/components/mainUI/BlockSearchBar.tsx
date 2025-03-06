@@ -23,7 +23,7 @@ export default function BlockSearchBar({blockList, style}: { blockList: BlockLis
   const [blockHistory, setBlockHistory] = useState(new Set<string>());
   const [searchValue, setSearchValue] = useState('');
 
-  const { currentBlock, storeBlock } = useContext(CurrentBlockContext);
+  const { storeBlock } = useContext(CurrentBlockContext);
 
   const filteredData = searchValue.length > 0 
     ? blockList.map(block => block.name)

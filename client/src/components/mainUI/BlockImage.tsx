@@ -8,14 +8,12 @@ import { BlockType } from '../../../server/models/BlockType';
 /**
  * Displays an image with an action icon.
  * @param {object} props - React props
- * @param {string} props.src image source
- * @param {string} props.alt image alt text
+ * @param {BlockType} props.block Block to render
  * @returns {React.ReactNode} Image of block with action button
  */
-export default function BlockImage({ block }) {
+export default function BlockImage({block}: { block: BlockType; }): React.ReactNode {
 
   const {
-    currentBlock,
     storeBlock
   } = useContext(CurrentBlockContext);
 

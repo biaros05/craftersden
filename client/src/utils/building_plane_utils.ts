@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils.js';
+import React from 'react';
 
 class StatusError extends Error {
   status: number | undefined;
@@ -8,7 +9,7 @@ class StatusError extends Error {
 type Cuboid = {
   from: [number, number, number],
   to: [number, number, number],
-  faces : {}
+  faces : object
 };
 
 type SelectedBlock = {
@@ -83,7 +84,16 @@ function addMaterialGroups(geometry: THREE.BufferGeometry, cuboidCount: number):
 }
 
 
-  function getMaterials(cuboid): THREE.Material[] {
+  /**
+   * Generates an array of THREE.Material objects for a given cuboid. 
+   *
+   * It iterates over the cuboid's faces and creates a new material for each using the texture associated
+   * with the face.
+   * @param {object} cuboid - The cuboid object containing face texture information.
+   * @param {object} cuboid.faces - An object where keys are face directions and values are objects containing texture URLs.
+   * @returns {THREE.Material[]} An array of THREE.Material objects corresponding to the cuboid's faces.
+   */
+  function getMaterials(cuboid: Cuboid) : THREE.Material[] {
     const textureCache : { [url: string]: THREE.Texture} = {};
     const loader = new THREE.TextureLoader();
     const faces = cuboid.faces;
@@ -97,11 +107,11 @@ function addMaterialGroups(geometry: THREE.BufferGeometry, cuboidCount: number):
     return materials;
   }
 
-/*
+/**
  * Loads ground texture from string
  * and saves it with given state setter
- * @param {string} groundTexture path or url to ground texture
- * @param {Function} setGrassTexture callback to set groundTexture state
+ * @param {string} groundTexture the current texture url
+ * @param {React.Dispatch<React.SetStateAction<THREE.Texture | undefined>>} setGrassTexture callback to set the ground texture
  */
 async function loadGround(groundTexture: string, setGrassTexture: React.Dispatch<React.SetStateAction<THREE.Texture | undefined>>) {
   const grassTexture = new THREE.TextureLoader().load(groundTexture, function (texture) {

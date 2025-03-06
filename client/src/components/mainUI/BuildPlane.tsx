@@ -5,31 +5,13 @@ import { OrbitControls, Stats } from '@react-three/drei';
 import React, { useEffect, useState, useContext } from 'react';
 import { CurrentBlockContext } from '../../context/currentBlockContext';
 import { Block } from './Block';
-import { Cuboid, blockExists, getTexture, BlockType, getGeometry, getTextures } from '../../utils/building_plane_utils';
+import { blockExists, getTexture, BlockType, getGeometry, getTextures } from '../../utils/building_plane_utils';
 import { loadGround } from '../../utils/building_plane_utils';
 import grassTop from '../../assets/grass_top.png';
 import oakPlanks from '../../assets/oak_planks.png';
-import acacia_log from '../../assets/acacia_log.png'
-import acacia_log_top from '../../assets/acacia_log_top.png'
 import { nanoid } from 'nanoid';
 
 const planeRotation = -0.5 * Math.PI;
-
-const tosFroms: Cuboid[] = [
-  // {
-  //   from: [0, 0, 0],
-  //   to: [1, 0.5, 1],
-  // },
-  // {
-  //   from: [0.5, 0.5, 0],
-  //   to: [1, 1, 1],
-  // }
-  {
-    from: [0, 0, 0],
-    to: [1, 1, 1],
-    faces : {}
-  }
-];  
 
 type BuildPlaneProps = {
   canvasRef: React.RefObject<null>,
@@ -154,7 +136,7 @@ export default function BuildPlane({canvasRef, blocks, setBlocks, style = {}}: B
     }
 
     {/* Blocks */}
-    {blocks.map((b, index) => 
+    {blocks.map(b => 
       <Block 
         position={b.position}
         geometry={b.geometry} 
