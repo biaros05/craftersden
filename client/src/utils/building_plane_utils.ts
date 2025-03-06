@@ -142,10 +142,13 @@ type BlockType = {
   id: string,
   name: string,
   position: [number, number, number],
+  worldPosition?: [number, number, number] | undefined,
   geometry: THREE.BufferGeometry,
   texture: THREE.Texture,
   textures: THREE.Texture[],
   textureURL: string
+  rotation?: [number, number, number] | undefined,
+  rotationIndex?: number | undefined
 }
 
 type SerializedBlockType = {

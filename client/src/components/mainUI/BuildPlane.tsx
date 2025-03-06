@@ -34,6 +34,7 @@ export default function BuildPlane({canvasRef, blocks, setBlocks, style = {}}: B
 
   const [geometries, setGeometries] = useState<object>({});
   const [highlighted, setHighlighted] = useState<THREE.Vector3 | null>(null);
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [grassTexture, setGrassTexture] = useState<THREE.Texture>();
   const {currentBlock} = useContext(CurrentBlockContext);
 
@@ -103,12 +104,55 @@ export default function BuildPlane({canvasRef, blocks, setBlocks, style = {}}: B
     }
   }
   
+  /**
+   * Rotates block being hovered and computes the
+   * world position to offset the rotation
+   * @param {KeyboardEvent} e event object
+   * @returns {void}
+   */
+  function rotateBlock(e: React.KeyboardEvent<HTMLDivElement>): void {
+    if (e.key.toLowerCase() === 'r') {
+      const b = blocks.find(b => b.id === hoveredId);
+      if (!b) return;
+      if (!b.rotation) {
+        b.rotationIndex = 0;
+      }
+      
+      const ra = Math.PI / 2;
+      const transformations: {rotation: [number,number,number], translate?: [number,number,number]}[] = [
+        {rotation: [0, 0, 0], translate: undefined},
+        {rotation: [0, ra, 0], translate: [0, 0, 1]},
+        {rotation: [0, 2 * ra, 0], translate: [1, 0, 1]},
+        {rotation: [0, 3 * ra, 0], translate: [1, 0, 0]},
+        {rotation: [2 * ra, 0, 0], translate: [0, 1, 1]},
+        {rotation: [2 * ra, ra, 0], translate: [0, 1, 0]},
+        {rotation: [2 * ra, 2 * ra, 0], translate: [1, 1, 0]},
+        {rotation: [2 * ra, 3 * ra, 0], translate: [1, 1, 1]},
+      ];
+
+      if (e.shiftKey) {
+        b.rotationIndex!--;
+        if (b.rotationIndex! < 0) {
+          b.rotationIndex = transformations.length - 1;
+        }
+      } else {
+        b.rotationIndex! = (b.rotationIndex! + 1) % transformations.length;
+      }
+
+      b.rotation = transformations[b.rotationIndex!].rotation;
+      b.worldPosition = transformations[b.rotationIndex!].translate ? b.position.map((pos, i) => pos + transformations[b.rotationIndex!].translate![i]) as [number,number,number] : undefined;
+      setBlocks([...blocks]);
+    }
+  }
+
   return <Canvas 
       gl={{ preserveDrawingBuffer: true }}  
       camera={{position: [15,15,15]}} 
       id='build-plane' 
       ref={canvasRef}
       style={style}
+      onKeyDown={rotateBlock}
+      tabIndex={0}
       >
     {/* Plane */}
     <mesh rotation={[planeRotation, 0, 0]} onPointerDown={addBlockOnPlane} onPointerMove={(e: ThreeEvent<PointerEvent>) => {
@@ -123,6 +167,7 @@ export default function BuildPlane({canvasRef, blocks, setBlocks, style = {}}: B
         side: THREE.DoubleSide,
       }]} />
     </mesh>
+
     {/* Grid */}
     <gridHelper args={[30, 30]} />
 
@@ -136,35 +181,40 @@ export default function BuildPlane({canvasRef, blocks, setBlocks, style = {}}: B
     }
 
     {/* Blocks */}
-    {blocks.map(b => 
-      <Block 
-        position={b.position}
-        geometry={b.geometry} 
-        onPointerDown={(e: ThreeEvent<PointerEvent>) => {
-          e.stopPropagation();
-          addBlock(e, b.id, b.position);
-        }}
-        onPointerMove={(e: ThreeEvent<PointerEvent>) => {
-          e.stopPropagation();
-          setHighlighted(new THREE.Vector3(...b.position).addScalar(0.5));
-        }}
-        key={b?.id}
-        >
-          {/* There are supposed to be one texture for each face of each cuboid */}
-          {b.textures?.map((texture, index) => {
-            if (b.name?.includes('glass')) {
-              return <meshBasicMaterial key={index} attach={`material-${index}`} map={texture} transparent={true} opacity={0.7}/>
-            } else if (b.textures.length !== b.geometry.groups.length) {
-              // Three implicitly uses the same logic as above, but in cases where there
-              // are not enough materials, it uses the last used material. Fallback case, gets rid off invalid side errors.
-              return <meshBasicMaterial key={index} map={texture}/>
-            } else {
-              return <meshBasicMaterial key={index} attach={`material-${index}`} map={texture}/>
-            }
+    {blocks.map(b => <Block position={b.worldPosition ?? b.position}
+      geometry={b.geometry} 
+      rotation={b.rotation}
+      onPointerDown={(e: ThreeEvent<PointerEvent>) => {
+        e.stopPropagation();
+        addBlock(e, b.id, b.position);
+      }}
+      onPointerMove={(e: ThreeEvent<PointerEvent>) => {
+        e.stopPropagation();
+        setHighlighted(new THREE.Vector3(...b.position).addScalar(0.5));
+        setHoveredId(b.id);
+      }}
+      onPointerEnter={(e: ThreeEvent<PointerEvent>) => {
+        e.stopPropagation();
+        setHighlighted(new THREE.Vector3(...b.position).addScalar(0.5));
+        setHoveredId(b.id);
+      }}
+      key={b.id}
+      >
+        {/* There are supposed to be one texture for each face of each cuboid */}
+        {b.textures?.map((texture, index) => {
+          if (b.name?.includes('glass')) {
+            return <meshBasicMaterial key={index} attach={`material-${index}`} map={texture} transparent={true} opacity={0.7}/>
+          } else if (b.textures.length !== b.geometry.groups.length) {
+            // Three implicitly uses the same logic as above, but in cases where there
+            // are not enough materials, it uses the last used material. Fallback case, gets rid off invalid side errors.
+            return <meshBasicMaterial key={index} map={texture}/>
+          } else {
+            return <meshBasicMaterial key={index} attach={`material-${index}`} map={texture}/>
           }
-          )}
-        </Block>
-      )}
+        }
+        )}
+      </Block>
+                          )}
     <OrbitControls />
     {!import.meta.env.PROD && <Stats />}
   </Canvas>;
