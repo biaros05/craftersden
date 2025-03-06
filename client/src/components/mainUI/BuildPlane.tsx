@@ -5,10 +5,9 @@ import { OrbitControls, Stats } from '@react-three/drei';
 import React, { useEffect, useState, useContext } from 'react';
 import { CurrentBlockContext } from '../../context/currentBlockContext';
 import { Block } from './Block';
-import { blockExists, getTexture, BlockType, getGeometry, getTextures } from '../../utils/building_plane_utils';
+import { blockExists, BlockType, getGeometry, getTextures } from '../../utils/building_plane_utils';
 import { loadGround } from '../../utils/building_plane_utils';
 import grassTop from '../../assets/grass_top.png';
-import oakPlanks from '../../assets/oak_planks.png';
 import { nanoid } from 'nanoid';
 
 const planeRotation = -0.5 * Math.PI;
