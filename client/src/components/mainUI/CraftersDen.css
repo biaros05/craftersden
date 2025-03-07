@@ -31,3 +31,8 @@
   align-items: center; 
   height: 100vh; 
 }
+
+.block-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
