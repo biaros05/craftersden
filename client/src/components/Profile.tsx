@@ -39,7 +39,7 @@ export default function Profile(): React.ReactNode {
     >
       <form onSubmit={onSubmitHandler}>
         <label htmlFor="username">Username</label>
-        <input type="text" name="username" placeholder="Username" />
+        <input type="text" name="username" placeholder="Username" maxLength={30}/>
         <label htmlFor="avatar">Upload an image!</label>
         <input type="file" id="avatar" name="avatar" 
           accept="image/png, image/jpeg, image/jpg, image/webp" />

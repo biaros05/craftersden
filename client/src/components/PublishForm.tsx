@@ -48,19 +48,23 @@ export default function PublishForm({ opened, close, buildId, updateBuildStatus 
 
   return (
     <>
-      <Modal opened={opened} onClose={close} title="Post Details">
+      <Modal opened={opened} onClose={close} title="Post Details" overlayProps={{
+          backgroundOpacity: 0.22,
+          blur: 3,
+        }} centered>
         <form>
           <TextInput
             label='Description:'
             placeholder='Build description'
             value={description}
             onChange={(e) => { setDescription(e.target.value) }}
-            required
+            maxLength={50}
           />
           <Button
             variant='filled'
             onClick={() => {
               publishPost(buildId);
+              close();
             }}
           >
             Submit

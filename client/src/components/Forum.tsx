@@ -71,7 +71,7 @@ export default function Forum(): React.ReactNode {
             );
           })
         ) : (
-          <p>No builds posted.</p>
+          <p>Fetching builds...</p>
         )
         }
       </div>
