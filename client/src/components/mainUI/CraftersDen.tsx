@@ -11,8 +11,8 @@ import {encode} from '@msgpack/msgpack';
 import {scene} from './scene';
 import { useBuild, useBuildUpdate } from '../../hooks/BuildContext';
 import { successMessage, errorMessage } from '../../utils/notification_utils';
-import { SerializedBlockType, StatusError } from '../../utils/building_plane_utils';
-
+import { BlockType, SerializedBlockType, StatusError } from '../../utils/building_plane_utils';
+import { CurrentBlockContext } from '../../context/currentBlockContext';
 
 export type BlockType = {
   id: string,
@@ -32,14 +32,14 @@ export type BlockType = {
 function serializeBlocks(blocks: BlockType[]): Uint8Array<ArrayBufferLike> {
   return encode(blocks.map(block => {
     const geomJSON = block.geometry.toNonIndexed().toJSON();
-    const textureJSON = block.texture.toJSON();
-    return {
+    const b = {
       id: block.id,
+      name: block.name,
       position: block.position,
       geometry: geomJSON,
-      texture: textureJSON,
-      textureURL: block.textureURL
+      textureURLs: block.textureURLs,
     };
+    return b;
   }));
 }
 
@@ -50,16 +50,18 @@ function serializeBlocks(blocks: BlockType[]): Uint8Array<ArrayBufferLike> {
  * @returns {BlockType[]} - Array of blocks which contain THREE objects
  */
 function deserializeBlocks(blocks: SerializedBlockType[]): BlockType[] {
+  const textureLoader = new THREE.TextureLoader();
+  const geoLoader = new THREE.BufferGeometryLoader();
+  console.log('blocks in deserializeBlocks', blocks);
   return blocks.map(block => {
-    console.log(block.texture);
-    block.texture.image = block.textureURL
     return {
       id: block.id,
+      name: block.name,
       position: block.position,
-      geometry: new THREE.BufferGeometryLoader().parse(block.geometry),
-      texture: new THREE.TextureLoader().load(block.textureURL),
-      textureURL: block.textureURL
-    };
+      geometry: geoLoader.parse(block.geometry),
+      textureURLs: block.textureURLs,
+      textures: (block.textureURLs || []).map(url => textureLoader.load(url)),
+    }
   });
 }
 
@@ -73,6 +75,7 @@ export default function CraftersDen(): React.ReactNode {
   const [isViewMode, setIsViewMode] = useState(false);
   // TODO implement toastify to handle error
   const [blocks, setBlocks] = useState<BlockType[]>([]);
+  const [currentBlock, setCurrentBlock] = useState(null);
 
   const build = useBuild();
   const { setBuild } = useBuildUpdate();
@@ -91,6 +94,16 @@ export default function CraftersDen(): React.ReactNode {
   if(build.build !== undefined && build.build !== null){
     curBuildId = build.build._id;
   }
+
+    /**
+     * Fetches the complete block data from the api, and stores it in CurrentBlockContext.
+     * @param {object} block - block object to fetch from the api
+     */
+    async function storeBlock(block) {
+      const response = await fetch(`/api/block/${block._id}`);
+      const completeBlockData = await response.json();
+      setCurrentBlock(completeBlockData);
+    }
 
   /**
    * Saves the current build in the db
@@ -130,14 +143,17 @@ export default function CraftersDen(): React.ReactNode {
   }
 
   return (
-    <>
+    <CurrentBlockContext.Provider value={{currentBlock, storeBlock}}>
       <div id="main-ui">
         <section className="build-tools">
           <BuildPlane 
             canvasRef={canvas} 
             blocks={blocks} 
             setBlocks={setBlocks} 
-            isViewMode={isViewMode} />
+            isViewMode={isViewMode} 
+            setIsViewMode={setIsViewMode}
+            style={{width: "80%"}}
+            />
           {!isViewMode && <BlockSelection />}
         </section>
         <ButtonPanel 
@@ -147,6 +163,6 @@ export default function CraftersDen(): React.ReactNode {
           isViewMode={isViewMode}
         />
       </div>
-    </>
+    </CurrentBlockContext.Provider>
   );
 }
