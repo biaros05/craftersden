@@ -1,4 +1,3 @@
-import BuildPlane from './BuildPlane';
 import BlockSelection from './BlockSelection';
 import ButtonPanel from './ButtonPanel';
 import { useAuth } from '../../hooks/useAuth';
@@ -14,6 +13,7 @@ import { BlockType, SerializedBlockType, StatusError } from '../../utils/buildin
 import { CurrentBlockContext } from '../../context/currentBlockContext';
 import { isMobile } from 'react-device-detect';
 import {jsonifyBlocks} from '../../utils/building_plane_utils.ts';
+import DeepslatePlane from './deepslate/DeepslatePlane.tsx';
 
 /**
  * Takes an array of objects and takes care of serializing their THREE objects
@@ -147,14 +147,8 @@ export default function CraftersDen(): React.ReactNode {
     <CurrentBlockContext.Provider value={{currentBlock, storeBlock}}>
       <div id="main-ui">
         <section className="build-tools">
-          <BuildPlane 
-            canvasRef={canvas} 
-            blocks={blocks} 
-            setBlocks={setBlocks} 
-            isViewMode={isViewMode} 
-            setIsViewMode={setIsViewMode}
-            style={{width: "75%"}}
-            />
+          {/* <BuildPlane canvasRef={canvas} blocks={blocks} setBlocks={setBlocks}/> */}
+          <DeepslatePlane />
           {!isViewMode && <BlockSelection />}
         </section>
         <ButtonPanel 
