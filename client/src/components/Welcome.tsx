@@ -4,6 +4,9 @@ import { Button } from "@mantine/core";
 import '../styles/welcome.css'
 import placeholder from '../assets/placeholder.png';
 
+/**
+ * @returns {React.ReactNode} - Welcome component
+ */
 export default function Welcome(): React.ReactNode {
     return <section id="welcome-page">
         <div id="welcome-left">

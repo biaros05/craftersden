@@ -10,6 +10,13 @@ type CustomNotificationProps = ToastContentProps<{
   content: string;
 }>;
 
+/**
+ * @param {object} props React props
+ * @param {() => void} props.closeToast - callback to close the toast popup
+ * @param {JSON} props.data - JSON containing all the data for the CustomNotification 
+ * @param {JSON} props.toastProps - props to pass to the toast notification
+ * @returns {React.ReactNode} - CustomNotification component
+ */
 export default function CustomNotification({
   closeToast,
   data,

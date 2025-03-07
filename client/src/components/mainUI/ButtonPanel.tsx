@@ -5,8 +5,8 @@ import '../../styles/ButtonPanel.css';
 import { toast } from 'react-toastify';
 import CustomNotification from './CustomNotification.tsx'
 import { Slide } from 'react-toastify';
-import {serializeBlocks} from './CraftersDen.tsx';
 import {BlockType} from './CraftersDen.tsx';
+import {jsonifyBlocks} from '../../utils/building_plane_utils.ts';
 
 type ButtonPanelProps = { 
   setIsViewMode: (arg0: boolean) => void,
@@ -15,20 +15,6 @@ type ButtonPanelProps = {
   isViewMode: boolean,
   email: string,
   blocks: BlockType[]
-}
-
-function jsonifyBlocks(blocks: BlockType[]) {
-  return blocks.map(block => {
-    const geomJSON = block.geometry.toNonIndexed().toJSON();
-    const textureJSON = block.texture.toJSON();
-    return {
-      id: block.id,
-      position: block.position,
-      geometry: geomJSON,
-      texture: textureJSON,
-      textureURL: block.textureURL
-    };
-  });
 }
 
 /**

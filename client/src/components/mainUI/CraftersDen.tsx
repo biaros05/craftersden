@@ -12,6 +12,7 @@ import { CurrentBlockContext } from '../../context/currentBlockContext';
 import { useBuild } from '../../hooks/BuildContext';
 import { successMessage, errorMessage } from '../../utils/notification_utils';
 import { BlockType, SerializedBlockType, StatusError } from '../../utils/building_plane_utils';
+import {jsonifyBlocks} from '../../utils/building_plane_utils.ts';
 
 /**
  * Takes an array of objects and takes care of serializing their THREE objects
@@ -21,17 +22,7 @@ import { BlockType, SerializedBlockType, StatusError } from '../../utils/buildin
  * @returns {SerializedBlockType[]} - a buffer containing the newly serialized blocks. 
  */
 export function serializeBlocks(blocks: BlockType[]): Uint8Array<ArrayBufferLike> {
-  return encode(blocks.map(block => {
-    const geomJSON = block.geometry.toNonIndexed().toJSON();
-    const b = {
-      id: block.id,
-      name: block.name,
-      position: block.position,
-      geometry: geomJSON,
-      textureURLs: block.textureURLs,
-    };
-    return b;
-  }));
+  return encode(jsonifyBlocks(blocks));
 }
 
 /**

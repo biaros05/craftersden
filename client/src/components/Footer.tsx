@@ -2,6 +2,9 @@ import React from "react";
 import Link from "./Navigation/Link";
 import '../styles/footer.css'
 
+/**
+ * @returns {React.ReactNode} - Footer component
+ */
 export default function Footer(): React.ReactNode {
     return <footer className="site-footer">
         <ul className="footer-links">

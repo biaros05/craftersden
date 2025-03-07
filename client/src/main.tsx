@@ -23,7 +23,6 @@ import CraftersDen from './components/mainUI/CraftersDen.jsx';
 import { BuildProvider } from './hooks/BuildContext.tsx';
 import { ToastContainer, Slide } from 'react-toastify';
 import '@mantine/core/styles.css';
-import CustomNotification from './components/mainUI/CustomNotification.tsx';
 import { MantineProvider, createTheme } from '@mantine/core';
 import React from 'react';
 

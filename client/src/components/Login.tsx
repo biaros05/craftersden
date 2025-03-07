@@ -5,6 +5,9 @@ import React from 'react';
 import '../styles/login.css';
 import useGoBack from './Navigation/useGoBack.tsx';
 
+/**
+ * @returns {React.ReactNode} - Login component
+ */
 export default function Login(): React.ReactNode  {
   const goBack = useGoBack('/');
   const {loading, login} = useAuth() ?? {};
