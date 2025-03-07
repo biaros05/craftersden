@@ -18,10 +18,7 @@ export default function ProfileBuilds({ email }
   const [userBuilds, setUserBuilds] = useState<Build[]>([]);
 
   useEffect(() => {
-    /**
-     * Fetches all builds for a user and updates
-     * builds state
-     */
+    const controller = new AbortController();
     async function getBuilds() {
       const response = await fetch(`/api/user/${email}/builds`);
       const json = await response.json();
@@ -31,6 +28,10 @@ export default function ProfileBuilds({ email }
 
     getBuilds();
 
+    return () => {
+      controller.abort();
+    }
+    
   }, [email]);
 
   function updateBuildStatus(buildId: string, isPublished: boolean) {
