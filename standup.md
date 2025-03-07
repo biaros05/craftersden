@@ -32,6 +32,12 @@
 - **Axel Brochu:** Fixing the conflicts to merge the eslint fixes. Probably going to need new issue to group the react three fiber plane implementations because that got rid of alot of other issues.
 - **Marin Melentii:** Worked on selecting blocks, issue with block textures. React three fiber + the textures are not compatible. Cube works fine, but when there are more than 6 sides, it looks weird. 
 
+## March 07 2025 
+- **Amy Nguyen:** 
+- **Bianca Rossetti:** 
+- **Axel Brochu:** 
+- **Marin Melentii:** 
+
 ### Template 
 - **Amy Nguyen:** 
 - **Bianca Rossetti:** 
