@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { Modal, Button, TextInput } from '@mantine/core';
 import { successMessage, errorMessage, } from '../utils/notification_utils';
-import { useNavigate } from 'react-router-dom';
 
 type propTypes = {
   opened: boolean,
@@ -10,10 +9,17 @@ type propTypes = {
   updateBuildStatus: (buildId :string, isPublished: boolean) => void
 }
 
+/**
+ * This component represents the publish form in which user can input their description to describe their build.
+ * @param {boolean} opened - Decides if Modal is opened.
+ * @returns {React.ReactNode}- The publish form component.
+ */
 export default function PublishForm({ opened, close, buildId, updateBuildStatus } :  propTypes) {
   const [description, setDescription] = useState('');
-  const navigate = useNavigate();
-
+  /**
+   *
+   * @param {string} buildId - The build id to be published.
+   */
   async function publishPost(buildId: string) {
     const data = new FormData();
     try {

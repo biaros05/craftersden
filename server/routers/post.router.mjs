@@ -43,11 +43,11 @@ postRouter.post('/save', isAuthenticated, upload.fields([
   { name: 'png', maxCount: 1 },
   { name: 'blocks', maxCount: 1 }
 ]),
-  imageFormValidation,
-  uploadValidation,
-  saveBuild,
-  uploadImage,
-  updatePostPicture
+imageFormValidation,
+uploadValidation,
+saveBuild,
+uploadImage,
+updatePostPicture
 );
 
 postRouter.post('/unpublish', isAuthenticated, unpublishBuild);
@@ -56,7 +56,7 @@ postRouter.post('/publish', isAuthenticated, upload.fields([
   { name: 'png', maxCount: 1 },
   { name: 'blocks', maxCount: 1 }
 ]),
-  publishBuild,
+publishBuild,
 );
 
 

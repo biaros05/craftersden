@@ -19,6 +19,9 @@ type propTypes = {
  * @param {string} props.description Post description
  * @param {boolean} props.liked Whether the post is liked
  * @param {boolean} props.saved Whether the post is saved
+ * Rida was here
+ * @param {string} props.imageURL Snapshot of the build
+ * @param {string} props.username Username of the creator
  * @returns {React.ReactNode} The Post
  */
 export default function Post(

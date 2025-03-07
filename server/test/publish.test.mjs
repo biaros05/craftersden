@@ -1,10 +1,10 @@
-import request from "supertest";
+import request from 'supertest';
 import * as chai from 'chai';
-import { describe, it, before, after, beforeEach } from 'mocha';
+import { describe, it, before, after } from 'mocha';
 const expect = chai.expect;
 import  app  from '../api.mjs';
 import Sinon from 'sinon';
-import mongoose, { Mongoose } from 'mongoose';
+import mongoose from 'mongoose';
 import { OAuthService } from '../utils/auth.mjs';
 
 let findOneAndUpdateStubPublish;
@@ -16,23 +16,23 @@ let cookie;
 
 const testPostNotPublished = {
   '_id': '1111',
-  'description': "This is my first build on den!",
+  'description': 'This is my first build on den!',
   'user': '656a3c9d5d42a2d9b3c5e2f4',
   'buildJSON' : [{}],
   'isPublished': false,
   'thumbnails': [],
   'progressPicture': 'myPictureUrl'
-}
+};
 
 const testPostIsPublished = {
   '_id': '9898',
-  'description': "This is my first build on den!",
+  'description': 'This is my first build on den!',
   'user': '656a3c9d5d42a2d9b3c5e2f4',
   'buildJSON' : [{}],
   'isPublished': true,
   'thumbnails': [],
   'progressPicture': 'myPictureUrl'
-}
+};
 
 
 
@@ -90,14 +90,14 @@ describe('Post publish endpoints', () => {
     findBuildsStubPublish.resolves(testPostNotPublished);
     
     const loginResp = await request(app).post('/api/auth').
-    send({token: 'faketoken'});
+      send({token: 'faketoken'});
     cookie = loginResp.headers['set-cookie'][0].split(';')[0];
 
     const response = await request(app).
-      post('/api/post/unpublish')
-      .send({ buildId: '1111' }) 
-      .set('Cookie', cookie)
-      .set('Content-Type', 'application/json');
+      post('/api/post/unpublish').
+      send({ buildId: '1111' }). 
+      set('Cookie', cookie).
+      set('Content-Type', 'application/json');
     
     const query = await request(app).
       get('/api/user/user@test.com/builds').
@@ -117,5 +117,5 @@ describe('Post publish endpoints', () => {
     findBuildsStubPublish.restore();
     OAuthClientCreateClientStub.restore();
     OAuthClientStub.restore();
-  })
+  });
 });

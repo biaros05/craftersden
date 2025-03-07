@@ -26,6 +26,7 @@ type propTypes = {
  * Builds component to show list of builds.
  * @param {object} props - React Props
  * @param {Build[]} props.builds List of builds
+ * @param {Function} props.updateBuildStatus - Updates the buildStatus inside of builds
  * @returns {React.ReactNode} Builds to display
  */
 export default function Builds({ builds, updateBuildStatus }: propTypes): React.ReactNode {
@@ -34,6 +35,10 @@ export default function Builds({ builds, updateBuildStatus }: propTypes): React.
   const [opened, { open, close }] = useDisclosure(false);
   const [selectedBuildId, setSelectedBuildId] = useState<string | null>(null);
 
+  /**
+   * Takes a build id and fetch /api/post/unpublish to unpublish the chosen post.
+   * @param {string} buildId - the build id
+   */
   async function unpublishBuild(buildId: string) {
     try {
       const requestBody = {

@@ -36,7 +36,6 @@ function uploadValidation(req, res, next) {
  * @returns {JSON} - JSON with status code
  */
 async function saveBuild(req, res, next) {
-  console.log(req);
   const encoded = req.files['blocks'][0];
   const buffer = Buffer.from(encoded.buffer, encoded.byteOffset, encoded.byteLength);
   const blocks = decode(buffer);
@@ -74,10 +73,10 @@ async function saveBuild(req, res, next) {
 /**
  * This function takes a build id to update the build's isPublished field to true. 
  * Updates description if there is one.
- * @param {Object} req - The request object.
- * @param {Object} res - The response object.
+ * @param {object} req - The request object.
+ * @param {object} res - The response object.
  * @param {*} next - Next
- * @returns 
+ * @returns {Response} - The response object
  */
 async function publishBuild(req, res, next) {
   try{
@@ -85,7 +84,7 @@ async function publishBuild(req, res, next) {
       return res.status(404).json({ message: 'Invalid build ID'});
     }
 
-    const updateData = { isPublished : true }
+    const updateData = { isPublished : true };
     if(req.body.description){
       updateData.description = req.body.description;
     }
@@ -107,6 +106,13 @@ async function publishBuild(req, res, next) {
   }
 }
 
+/**
+ * This function unpublishes a build using the buildId
+ * @param {object} req - The request object.
+ * @param {object} res - The response object.
+ * @param {*} next - Next
+ * @returns {Response} - The response object
+ */
 async function unpublishBuild(req, res, next){
   try{
     if(!req.body.buildId){
@@ -134,11 +140,10 @@ async function unpublishBuild(req, res, next){
 /**
  * This function gets all the published builds and returns them.
  * If there are no published builds, then it returns a 100 with a neutral message.
- * 
- * @param {Object} req  - The request object.
- * @param {Object} res - The respond object.
+ * @param {object} req  - The request object.
+ * @param {object} res - The respond object.
  * @param {*} next - Next
- * @returns 
+ * @returns {Response} - The respones of the function.
  */
 async function getPublishedBuilds(req, res, next){
   try{
@@ -156,42 +161,14 @@ async function getPublishedBuilds(req, res, next){
           username: username ? username.username : 'Unknown'
         };
       })
-    )
+    );
 
-    return res.status(200).json({ message: 'Published builds fetched!', builds : publishBuildsWithUsername});
+    return res.status(200).json({ 
+      message: 'Published builds fetched!', 
+      builds : publishBuildsWithUsername});
 
   }catch(err){
     err.status = 500;
-    next(err);
-  }
-}
-
-/**
- * This function deletes a build from DB given a buildID. 
- * @param {*} req - Request object 
- * @param {*} res - Respond object
- * @param {*} next - Next 
- * @returns {JSON} - JSON with status code
- */
-async function deleteBuild(req, res, next) {
-  try {
-    if (!req.body.buildId || req.body.buildId == 'null' || req.body.buildId == undefined) {
-      const error = new Error('Invalid build ID');
-      error.status = 404;
-      return next(error);
-    }
-
-    const deletedPost = await Post.findOneAndDelete({ _id: req.body.buildId });
-
-    if (!deletedPost) {
-      const error = new Error('Build not found');
-      error.status = 404;
-      return next(error);
-    }
-
-    res.status(200).json({ message: 'Build succesfully deleted' });
-  } catch (err) {
-    e.status(500);
     next(err);
   }
 }

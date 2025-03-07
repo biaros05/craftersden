@@ -12,13 +12,22 @@ type Build = {
   thumnails: [],
 }
 
-export default function ProfileBuilds({ email }
+/**
+ * This component represents the builds section of the profile page.
+ * @param {string} email - The user email
+ * @returns {Function} - Cleanup function to abort the fetch
+ */
+export default function ProfileBuilds({ email } : {email: string}
 ) {
 
   const [userBuilds, setUserBuilds] = useState<Build[]>([]);
 
   useEffect(() => {
     const controller = new AbortController();
+
+    /**
+     *Get the user's bulds by emails and sets the builds.
+     */
     async function getBuilds() {
       const response = await fetch(`/api/user/${email}/builds`);
       const json = await response.json();
@@ -34,6 +43,11 @@ export default function ProfileBuilds({ email }
     
   }, [email]);
 
+  /**
+   *
+   * @param {string} buildId - The build id.
+   * @param {boolean} isPublished - Whether or not the post has been set to published.
+   */
   function updateBuildStatus(buildId: string, isPublished: boolean) {
     setUserBuilds((prevBuilds) =>
       prevBuilds.map((build) =>
