@@ -16,6 +16,10 @@ type Build = {
   thumnails: [],
 }
 
+/**
+ * Deletes the build and will send either a success or error message.
+ * @param {string} buildId - id of the build to delete
+ */
 async function deleteBuild(buildId: string) {
   try {
     const requestOptions = {
@@ -40,9 +44,10 @@ async function deleteBuild(buildId: string) {
  * Builds component to show list of builds.
  * @param {object} props - React Props
  * @param {Build[]} props.builds List of builds
+ * @param {React.Dispatch<React.SetStateAction<[]>>} props.setBuilds List of builds
  * @returns {React.ReactNode} Builds to display
  */
-export default function Builds({builds, setBuilds}: { builds: Build[], setBuilds: any }): React.ReactNode {
+export default function Builds({builds, setBuilds}: { builds: Build[], setBuilds: React.Dispatch<React.SetStateAction<[]>> }): React.ReactNode {
   const navigate = useNavigate();
   const { setBuild } = useBuildUpdate();
   
