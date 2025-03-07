@@ -76,6 +76,7 @@ describe('Post publish endpoints', () => {
     expect(response.body.message).to.equal('Build published successfully!');
     expect(query.body.builds).to.deep.equal(testPostIsPublished);
     expect(query.body.message).to.equal('Builds retrieved!');
+    expect(query.body.builds.isPublished).to.equal(true);
     return;
   });
 
