@@ -11,7 +11,7 @@ type AuthContextType = {
     email: string,
     avatar: string,
     loading: boolean, 
-    login: (googleCredentials: CredentialResponse) => void,
+    login: (googleCredentials: CredentialResponse, goBack: () => void) => void,
     logout: () => void
 };
 

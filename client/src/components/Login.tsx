@@ -3,13 +3,13 @@ import { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import React from 'react';
 import '../styles/login.css';
+import useGoBack from './Navigation/useGoBack.tsx';
 
 /**
- * Login page that allows user to login with
- * google.
- * @returns {React.ReactNode} Login page.
+ * @returns {React.ReactNode} - Login component
  */
-export default function Login(): React.ReactNode {
+export default function Login(): React.ReactNode  {
+  const goBack = useGoBack('/');
   const {loading, login} = useAuth() ?? {};
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -28,7 +28,9 @@ export default function Login(): React.ReactNode {
         <h2>Login</h2>
         <p className="error">{errorMessage}</p>
         <GoogleLogin
-          onSuccess={login}
+          onSuccess={(creds) => {
+            login(creds, goBack);
+          }}
           onError={handleError} />
       </section>
     </div>
