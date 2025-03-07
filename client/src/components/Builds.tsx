@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from "react-router-dom"
 import '../styles/welcome.css';
 import { Image, Button } from '@mantine/core';
@@ -6,8 +6,10 @@ import '../styles/builds.css';
 import { useBuildUpdate } from '../hooks/BuildContext.tsx';
 import { useDisclosure } from '@mantine/hooks';
 import PublishForm from './PublishForm.tsx';
+import { errorMessage, successMessage } from '../utils/notification_utils.ts';
 
 type Build = {
+  _id : string,
   progressPicture: string,
   description: string,
   buildJSON: object,
@@ -25,6 +27,35 @@ export default function Builds({ builds }: { builds: Build[]; }): React.ReactNod
   const navigate = useNavigate();
   const { setBuild } = useBuildUpdate();
   const [opened, { open, close }] = useDisclosure(false);
+  const [unpublishedBuilds, setUnpublishedBuilds] = useState<string[]>([]); 
+
+  async function unpublishBuild(buildId: string) {
+    try {
+      const requestBody = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ buildId })
+      };
+  
+      const response = await fetch('/api/post/unpublish', requestBody);
+      const json = await response.json();
+      console.log(response); 
+  
+      if (!response.ok) {
+        throw new Error(`${json.message}`);
+      }
+  
+      successMessage(json.message);
+      setUnpublishedBuilds((prev) => [...prev, buildId]);
+  
+    } catch (err) {
+      console.error(err);
+      errorMessage(err.message);
+    }
+  }
+  
 
   return (
     <section className="posts">
@@ -58,17 +89,23 @@ export default function Builds({ builds }: { builds: Build[]; }): React.ReactNod
                 onClick={open}>
                 Publish
               </Button> :
-              <Button
-                key={`build-${i}`}
-                variant='outline'
-                color='orange'
-                onClick={() => {
-                  
-                }}
-              >
-                Unpublish 
-              </Button>
-              
+              <>
+              {!unpublishedBuilds.includes(build._id) ? (
+                <Button
+                  key={`build-${i}`}
+                  variant='outline'
+                  color='orange'
+                  onClick={() => {
+                    unpublishBuild(build._id);
+                  }}
+                >
+                  Unpublish 
+                </Button>
+              ) : (
+                <p style={{ color: 'gray', fontSize: '14px' }}>Refresh to see changes</p>
+              )
+              }
+              </>
             }
               <PublishForm opened={opened} close={close} buildId={build._id}/>
             </div>

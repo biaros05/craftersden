@@ -57,7 +57,7 @@ export default function Forum(): React.ReactNode {
         w={200}
       />
       <div className="posts">
-        {
+        {publishedBuilds.length !== 0 ? (
           publishedBuilds.map((build, i) => {
             return (
               <Post
@@ -70,6 +70,9 @@ export default function Forum(): React.ReactNode {
               />
             );
           })
+        ) : (
+          <p>No builds posted.</p>
+        )
         }
       </div>
     </section>

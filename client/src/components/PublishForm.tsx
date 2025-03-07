@@ -1,10 +1,12 @@
 import React, { useState } from 'react'
 import {Modal, Button, TextInput} from '@mantine/core';
-import { successMessage, errorMessage } from '../utils/notification_utils';
+import { successMessage, errorMessage,  } from '../utils/notification_utils';
+import { useNavigate } from 'react-router-dom';
 
 
 export default function PublishForm({opened, close, buildId}){
-  const [description, setDescription] = useState('');
+  const [description, setDescription] = useState(''); 
+  const navigate = useNavigate();
 
     async function publishPost(buildId: String) {
       const data = new FormData();
@@ -25,8 +27,7 @@ export default function PublishForm({opened, close, buildId}){
         console.log(json);
   
         if (!response.ok) {
-          const err = new StatusError(`${json.message}`);
-          err.status = json.status;
+          const err = new Error(`${json.message}`);
           throw err;
         }
   
