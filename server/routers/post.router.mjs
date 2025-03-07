@@ -4,7 +4,8 @@ import {
   uploadValidation,
   updatePostPicture,
   uploadImage,
-  publishBuild
+  publishBuild,
+  getPublishedBuilds
 } from '../controllers/post.controller.mjs';
 import multer from 'multer';
 import { body } from 'express-validator';
@@ -55,6 +56,6 @@ postRouter.post('/publish', isAuthenticated, upload.fields([
   publishBuild,
 );
 
-
+postRouter.get('/', getPublishedBuilds);
 
 export default postRouter;

@@ -107,11 +107,30 @@ async function publishBuild(req, res, next) {
   }
 }
 
-// async function updatePostFields(req, res, next){
-//   try{
+/**
+ * This function gets all the published builds and returns them.
+ * If there are no published builds, then it returns a 100 with a neutral message.
+ * 
+ * @param {Object} req  - The request object.
+ * @param {Object} res - The respond object.
+ * @param {*} next - Next
+ * @returns 
+ */
+async function getPublishedBuilds(req, res, next){
+  try{
+    const publishedBuilds = await Post.find({isPublished : true});
 
-//   }
-// }
+    if(publishedBuilds.length === 0){
+      return res.status(100).json({ message: 'There are no published builds at this moment.'});
+    }
+
+    return res.status(200).json({ message: 'Published builds fetched!', builds : publishedBuilds});
+
+  }catch(err){
+    err.status = 500;
+    next(err);
+  }
+}
 
 /**
  * This function deletes a build from DB given a buildID. 
@@ -142,6 +161,8 @@ async function deleteBuild(req, res, next) {
     next(err);
   }
 }
+
+
 
 /**
  * Obtains the file content and stores it in azure blob.
@@ -187,4 +208,4 @@ async function updatePostPicture(req, res, next) {
   }
 }
 
-export { saveBuild, uploadValidation, uploadImage, updatePostPicture, publishBuild };
+export { saveBuild, uploadValidation, uploadImage, updatePostPicture, publishBuild, getPublishedBuilds };
