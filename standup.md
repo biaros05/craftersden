@@ -33,10 +33,10 @@
 - **Marin Melentii:** Worked on selecting blocks, issue with block textures. React three fiber + the textures are not compatible. Cube works fine, but when there are more than 6 sides, it looks weird. 
 
 ## March 07 2025 
-- **Amy Nguyen:** 
-- **Bianca Rossetti:** 
-- **Axel Brochu:** 
-- **Marin Melentii:** 
+- **Amy Nguyen:** Toggle mouse on toggle view mode, publishing, and fetching to display on the forum, right now I am working on unpublishing, it works, but now I've introduced a bug into the publishing. Will also have to look at how to rerender on click publish/unpublish.
+- **Bianca Rossetti:** Login to save is done, going to be an MR soon. Also did the delete build, completely done. Linting require fixing.
+- **Axel Brochu:** Worked on investigating deepslate to see if it's possible to import and export files to minecraft. Going to look to see if we can use deep slate as our plane in replacement.
+- **Marin Melentii:** Push MR to select blocks.
 
 ### Template 
 - **Amy Nguyen:** 
