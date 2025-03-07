@@ -2,36 +2,23 @@
 import { Canvas, ThreeEvent } from '@react-three/fiber';
 import * as THREE from 'three';
 import { OrbitControls, Stats } from '@react-three/drei';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
+import { CurrentBlockContext } from '../../context/currentBlockContext';
 import { Block } from './Block';
-import { Cuboid, blockExists, getTexture, BlockType, getGeometry, SelectedBlock } from '../../utils/building_plane_utils';
+import { blockExists, BlockType, getGeometry, getTextures } from '../../utils/building_plane_utils';
 import { loadGround } from '../../utils/building_plane_utils';
 import grassTop from '../../assets/grass_top.png';
-import oakPlanks from '../../assets/oak_planks.png';
 import { nanoid } from 'nanoid';
 
 const planeRotation = -0.5 * Math.PI;
 
-const tosFroms: Cuboid[] = [
-  {
-    from: [0, 0, 0],
-    to: [1, 0.5, 1],
-  },
-  {
-    from: [0.5, 0.5, 0],
-    to: [1, 1, 1],
-  }
-  // {
-  //   from: [0,0,0],
-  //   to: [1,1,1]
-  // }
-];  
-
 type BuildPlaneProps = {
   canvasRef: React.RefObject<null>,
   blocks: BlockType[],
-  setBlocks: React.Dispatch<React.SetStateAction<BlockType[]>>,
-  isViewMode: boolean
+  setBlocks: React.Dispatch<React.SetStateAction<BlockType[]>>
+  style?: object
+  isViewMode: boolean,
+  setIsViewMode: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 /**
@@ -41,21 +28,16 @@ type BuildPlaneProps = {
  * @param {React.RefObject<null>} props.canvasRef useRef value for the Canvas
  * @param {BlockType[]} props.blocks blocks to render on plane
  * @param {React.Dispatch<React.SetStateAction<BlockType[]>>} props.setBlocks callback to update the blocks array state
+ * @param {object} props.style optional style prop applied to the canvas
  * @param {boolean} props.isViewMode - boolean that indicates if user toggled to view mode.
  * @returns {React.ReactNode} Build plane
  */
-export default function BuildPlane({canvasRef, blocks, setBlocks, isViewMode }: BuildPlaneProps): React.ReactNode {
+export default function BuildPlane({canvasRef, blocks, setBlocks, isViewMode, style = {} }: BuildPlaneProps): React.ReactNode {
   const [geometries, setGeometries] = useState<object>({});
   const [highlighted, setHighlighted] = useState<THREE.Vector3 | null>(null);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [grassTexture, setGrassTexture] = useState<THREE.Texture>();
-  // sample data
-  const selectedBlock: SelectedBlock = {
-    name: 'oak_planks',
-    parent: 'block',
-    cuboids: tosFroms,
-    texture: oakPlanks
-  };
+  const {currentBlock} = useContext(CurrentBlockContext);
 
   useEffect(() => {loadGround(grassTop, setGrassTexture)}, [setGrassTexture]);  
 
@@ -68,17 +50,20 @@ export default function BuildPlane({canvasRef, blocks, setBlocks, isViewMode }: 
     if (e.button === 2) {
     const normalizedCoords = e.point.floor();
 
-    const geometry: THREE.BufferGeometry = getGeometry(selectedBlock, geometries, setGeometries);
+    const geometry: THREE.BufferGeometry = getGeometry(currentBlock, geometries, setGeometries);
     const position: [number, number, number] =  [normalizedCoords.x, 0, normalizedCoords.z];
 
     if (blockExists(position, blocks)) return;
 
+    const { textures, textureURLs } = getTextures(currentBlock);
+
     const newBlock: BlockType = {
       id: nanoid(),
+      name: currentBlock.name,
       position: position,
       geometry: geometry,
-      texture: getTexture(selectedBlock.texture),
-      textureURL: selectedBlock.texture
+      textures: textures,
+      textureURLs: textureURLs
     };
 
     setBlocks([...blocks, newBlock]);
@@ -97,28 +82,25 @@ export default function BuildPlane({canvasRef, blocks, setBlocks, isViewMode }: 
     if (e.button === 2) {
       const normalizedCoords = new THREE.Vector3(...position).add(e.normal!);
   
-      const geometry = getGeometry(selectedBlock, geometries, setGeometries);
+      const geometry = getGeometry(currentBlock, geometries, setGeometries);
       const newPosition: [number, number, number] = [normalizedCoords.x, normalizedCoords.y, normalizedCoords.z];
   
-      if (blockExists(newPosition, blocks)) return;
-  
+      if (blockExists(position, blocks)) return;
+      const { textures, textureURLs } = getTextures(currentBlock);
+
       const newBlock: BlockType = {
         id: nanoid(),
+        name: currentBlock.name,
         position: newPosition,
         geometry: geometry,
-        texture: getTexture(oakPlanks),
-        textureURL: oakPlanks
+        textures: textures,
+        textureURLs: textureURLs
       };
-  
-      setBlocks(b => [...b, newBlock]);
-    } else if (e.button === 0) {
-      const remainingBlocks = blocks.filter(b => b.id !== id);
-  
-      setBlocks([...remainingBlocks]);
-    }
-    e.stopPropagation();
-  }
 
+      setBlocks([...blocks, newBlock])
+    }
+  }
+  
   /**
    * Rotates block being hovered and computes the
    * world position to offset the rotation
@@ -165,6 +147,7 @@ export default function BuildPlane({canvasRef, blocks, setBlocks, isViewMode }: 
       camera={{position: [15,15,15]}} 
       id='build-plane' 
       ref={canvasRef}
+      style={style}
       onKeyDown={isViewMode ? undefined : rotateBlock}
       tabIndex={0}
       >
@@ -222,7 +205,19 @@ export default function BuildPlane({canvasRef, blocks, setBlocks, isViewMode }: 
                             }}
                             key={b.id}
                             >
-                              <meshBasicMaterial args={[{map: b.texture}]} />
+                                      {/* There are supposed to be one texture for each face of each cuboid */}
+        {b.textures?.map((texture, index) => {
+          if (b.name?.includes('glass')) {
+            return <meshBasicMaterial key={index} attach={`material-${index}`} map={texture} transparent={true} opacity={0.7}/>
+          } else if (b.textures.length !== b.geometry.groups.length) {
+            // Three implicitly uses the same logic as above, but in cases where there
+            // are not enough materials, it uses the last used material. Fallback case, gets rid off invalid side errors.
+            return <meshBasicMaterial key={index} map={texture}/>
+          } else {
+            return <meshBasicMaterial key={index} attach={`material-${index}`} map={texture}/>
+          }
+        }
+        )}
                             </Block>
                           )}
     <OrbitControls />

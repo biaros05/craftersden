@@ -19,7 +19,7 @@ type Build = {
 
 type propTypes = {
   builds: Build[],
-  updateBuildStatus: (string, boolean) => void
+  updateBuildStatus: (buildId : string, isPublished: boolean) => void
 }
 
 /**
