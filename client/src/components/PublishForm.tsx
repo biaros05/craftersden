@@ -3,14 +3,18 @@ import { Modal, Button, TextInput } from '@mantine/core';
 import { successMessage, errorMessage, } from '../utils/notification_utils';
 import { useNavigate } from 'react-router-dom';
 
+type propTypes = {
+  opened: boolean,
+  close: () => void,
+  buildId: string, 
+  updateBuildStatus: (buildId :string, isPublished: boolean) => void
+}
 
-export default function PublishForm({ opened, close, buildId }) {
+export default function PublishForm({ opened, close, buildId, updateBuildStatus } :  propTypes) {
   const [description, setDescription] = useState('');
   const navigate = useNavigate();
 
-  console.log(buildId);
-
-  async function publishPost(buildId: String) {
+  async function publishPost(buildId: string) {
     const data = new FormData();
     try {
       data.append('buildId', buildId);
@@ -34,6 +38,7 @@ export default function PublishForm({ opened, close, buildId }) {
       }
 
       successMessage(json.message);
+      updateBuildStatus(buildId, true);
 
     } catch (err) {
       console.error(err);

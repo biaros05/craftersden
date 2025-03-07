@@ -110,7 +110,7 @@ export default function Builds({ builds, updateBuildStatus }: propTypes): React.
                 Unpublish 
               </Button>
             }
-              <PublishForm opened={opened} close={close} buildId={selectedBuildId}/>
+              <PublishForm opened={opened} close={close} buildId={selectedBuildId} updateBuildStatus={updateBuildStatus}/>
             </div>
           )
         })
