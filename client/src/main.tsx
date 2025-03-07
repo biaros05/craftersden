@@ -82,7 +82,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'den',
-        element: <CraftersDen/>
+        element: <CraftersDen />
       }
     ]
   }

@@ -38,8 +38,8 @@ function jsonifyBlocks(blocks: BlockType[]) {
  * @param {Function} props.setIsViewMode Callback to set isViewModel state 
  * @param {Function} props.savePost thumbnail url
  * @param {boolean} props.isViewMode isViewMode state.
- * @param {email} props.email email of current user.
- * @param {blocks} props.blocks build blocks.
+ * @param {string} props.email email of current user.
+ * @param {[]} props.blocks build blocks.
  * @returns {React.ReactNode} Button panel section with buttons
  */
 function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode, email, blocks}: ButtonPanelProps): React.ReactNode {
