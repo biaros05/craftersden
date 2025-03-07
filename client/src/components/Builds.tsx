@@ -28,6 +28,7 @@ export default function Builds({ builds }: { builds: Build[]; }): React.ReactNod
   const { setBuild } = useBuildUpdate();
   const [opened, { open, close }] = useDisclosure(false);
   const [unpublishedBuilds, setUnpublishedBuilds] = useState<string[]>([]); 
+  const [selectedBuildId, setSelectedBuildId] = useState<string | null>(null);
 
   async function unpublishBuild(buildId: string) {
     try {
@@ -62,10 +63,11 @@ export default function Builds({ builds }: { builds: Build[]; }): React.ReactNod
       {
         builds.map((build, i) => {
           console.log(build.progressPicture)
+          console.log(build);
           return (
             <div className="saved-builds" style={{ width: '250px' }}>
               <Image
-                key={`build-${i}`}
+                key={`buildImage-${i}`}
                 radius="md"
                 height={125}
                 src={build.progressPicture}
@@ -75,7 +77,7 @@ export default function Builds({ builds }: { builds: Build[]; }): React.ReactNod
                 }}
               />
               <Button
-                key={`build-${i}`}
+                key={`saveButton-${i}`}
                 variant="outline"
                 className='delete-save-button'
                 color="rgb(178, 14, 14)"
@@ -84,15 +86,18 @@ export default function Builds({ builds }: { builds: Build[]; }): React.ReactNod
                 Delete Save
               </Button>
               {!build.isPublished ? <Button
-                key={`build-${i}`}
+                key={`publishButton-${i}`}
                 variant="outline"
-                onClick={open}>
+                onClick={() => {
+                  setSelectedBuildId(build._id);
+                  open();
+                  }}>
                 Publish
               </Button> :
               <>
               {!unpublishedBuilds.includes(build._id) ? (
                 <Button
-                  key={`build-${i}`}
+                  key={`unPublish-${i}`}
                   variant='outline'
                   color='orange'
                   onClick={() => {
@@ -107,7 +112,7 @@ export default function Builds({ builds }: { builds: Build[]; }): React.ReactNod
               }
               </>
             }
-              <PublishForm opened={opened} close={close} buildId={build._id}/>
+              <PublishForm opened={opened} close={close} buildId={selectedBuildId}/>
             </div>
           )
         })
