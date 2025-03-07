@@ -109,8 +109,6 @@ describe('Post endpoints', () => {
       resolves(BlobServiceProvider.blobPublicUrl + 'image');
   });
 
-  it()
-
   it('should save post with url', async () => {
     const loginResp = await request(app).post('/api/auth').
       send({token: 'faketoken'});
