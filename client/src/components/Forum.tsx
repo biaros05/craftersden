@@ -9,7 +9,7 @@ import { useState } from 'react';
 
 type Post = {
   progressPicture: string,
-  user: object,  
+  username: string,  
   description: string,
   buildJSON: object,
   isPublished: boolean,
@@ -64,6 +64,7 @@ export default function Forum(): React.ReactNode {
                 key={`publishing-${i}`}
                 imageURL={build.progressPicture}
                 description={build.description}
+                username={build.username}
                 liked={false}
                 saved={false}
               />

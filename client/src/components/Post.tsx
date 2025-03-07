@@ -8,7 +8,8 @@ type propTypes = {
   description: string,
   liked: boolean,
   saved: boolean;
-  image: string
+  imageURL: string
+  username: string
 }
 
 /**
@@ -21,7 +22,7 @@ type propTypes = {
  * @returns {React.ReactNode} The Post
  */
 export default function Post(
-  { description, liked, saved, imageURL }: propTypes): React.ReactNode {
+  { description, liked, saved, imageURL, username }: propTypes): React.ReactNode {
 
   const [isLiked, setIsLiked] = useState(liked);
   const [isSaved, setIsSaved] = useState(saved);
@@ -62,9 +63,7 @@ export default function Post(
             }
           </ActionIcon>
 
-          {/* <IconBookmark className="icons"/> */}
-          <p>Username</p>
-          {/* <IconHeart className="icons"/> */}
+          <p>{username}</p>
 
           <ActionIcon
             className="icons"
