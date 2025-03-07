@@ -5,7 +5,8 @@ import {
   updatePostPicture,
   uploadImage,
   publishBuild,
-  getPublishedBuilds
+  getPublishedBuilds,
+  unpublishBuild
 } from '../controllers/post.controller.mjs';
 import multer from 'multer';
 import { body } from 'express-validator';
@@ -49,12 +50,15 @@ postRouter.post('/save', isAuthenticated, upload.fields([
   updatePostPicture
 );
 
+postRouter.post('/unpublish', isAuthenticated, unpublishBuild);
+
 postRouter.post('/publish', isAuthenticated, upload.fields([
   { name: 'png', maxCount: 1 },
   { name: 'blocks', maxCount: 1 }
 ]),
   publishBuild,
 );
+
 
 postRouter.get('/', getPublishedBuilds);
 

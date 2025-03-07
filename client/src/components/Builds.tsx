@@ -17,17 +17,21 @@ type Build = {
   thumnails: [],
 }
 
+type propTypes = {
+  builds: Build[],
+  updateBuildStatus: (string, boolean) => void
+}
+
 /**
  * Builds component to show list of builds.
  * @param {object} props - React Props
  * @param {Build[]} props.builds List of builds
  * @returns {React.ReactNode} Builds to display
  */
-export default function Builds({ builds }: { builds: Build[]; }): React.ReactNode {
+export default function Builds({ builds, updateBuildStatus }: propTypes): React.ReactNode {
   const navigate = useNavigate();
   const { setBuild } = useBuildUpdate();
   const [opened, { open, close }] = useDisclosure(false);
-  const [unpublishedBuilds, setUnpublishedBuilds] = useState<string[]>([]); 
   const [selectedBuildId, setSelectedBuildId] = useState<string | null>(null);
 
   async function unpublishBuild(buildId: string) {
@@ -39,7 +43,8 @@ export default function Builds({ builds }: { builds: Build[]; }): React.ReactNod
         },
         body: JSON.stringify({ buildId })
       };
-  
+      
+      console.log(`request body: ${requestBody.body}`);
       const response = await fetch('/api/post/unpublish', requestBody);
       const json = await response.json();
       console.log(response); 
@@ -49,8 +54,7 @@ export default function Builds({ builds }: { builds: Build[]; }): React.ReactNod
       }
   
       successMessage(json.message);
-      setUnpublishedBuilds((prev) => [...prev, buildId]);
-  
+      updateBuildStatus(buildId, false);
     } catch (err) {
       console.error(err);
       errorMessage(err.message);
@@ -63,7 +67,7 @@ export default function Builds({ builds }: { builds: Build[]; }): React.ReactNod
       {
         builds.map((build, i) => {
           console.log(build.progressPicture)
-          console.log(build);
+          console.log(`build ${i} id: ${build._id}`);
           return (
             <div className="saved-builds" style={{ width: '250px' }}>
               <Image
@@ -94,23 +98,17 @@ export default function Builds({ builds }: { builds: Build[]; }): React.ReactNod
                   }}>
                 Publish
               </Button> :
-              <>
-              {!unpublishedBuilds.includes(build._id) ? (
-                <Button
-                  key={`unPublish-${i}`}
-                  variant='outline'
-                  color='orange'
-                  onClick={() => {
-                    unpublishBuild(build._id);
-                  }}
-                >
-                  Unpublish 
-                </Button>
-              ) : (
-                <p style={{ color: 'gray', fontSize: '14px' }}>Refresh to see changes</p>
-              )
-              }
-              </>
+              <Button
+                key={`unPublish-${i}`}
+                variant='outline'
+                color='orange'
+                onClick={() => {
+                  console.log(`unpublishing build: ${build._id}`)
+                  unpublishBuild(build._id);
+                }}
+              >
+                Unpublish 
+              </Button>
             }
               <PublishForm opened={opened} close={close} buildId={selectedBuildId}/>
             </div>

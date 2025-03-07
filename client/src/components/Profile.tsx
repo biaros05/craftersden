@@ -1,13 +1,13 @@
 import React, { FormEvent, FormEventHandler, useEffect, useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
-import { Tabs, ActionIcon, Button, Modal } from '@mantine/core';
+import { ActionIcon, Button, Modal } from '@mantine/core';
 // import { useLocation } from 'react-router-dom';
 import { useDisclosure } from '@mantine/hooks';
 import { IconEdit } from '@tabler/icons-react';
 import '../styles/profile.css';
-import Builds from './Builds';
 import { useBuild } from '../hooks/BuildContext.tsx';
 import { useLocation } from 'react-router-dom';
+import ProfileBuilds from './ProfileBuilds.tsx';
 
 /**
  * Profile page component that displays list of users
@@ -19,24 +19,6 @@ export default function Profile(): React.ReactNode {
   // const location = useLocation(); 
   const {username, email, avatar} = useAuth() ?? {};
   const [opened, {open, close}] = useDisclosure(false);
-  const [builds, setBuilds] = useState([]);
-  const location = useLocation(); // Detects route changes
-  const build = useBuild();
-
-  useEffect(() => {
-    /**
-     * Fetches all builds for a user and updates
-     * builds state
-     */
-    async function getBuilds() {
-      const response = await fetch(`/api/user/${email}/builds`);
-      const json = await response.json();
-      console.log(json.builds);
-      setBuilds([...json.builds]);
-    }
-
-    getBuilds();
-  }, [email, build, location.pathname]);
 
   const onSubmitHandler: FormEventHandler = async (event: FormEvent) => {
     event.preventDefault();
@@ -79,25 +61,6 @@ export default function Profile(): React.ReactNode {
         </ActionIcon>
       </div>
     </section>
-    <section className="profile-builds">
-      <Tabs defaultValue="builds" >
-        <Tabs.List>
-          <Tabs.Tab value="builds">
-            <h2>Builds</h2>
-          </Tabs.Tab>
-          <Tabs.Tab value="saves">
-            <h2>Saves</h2>
-          </Tabs.Tab>
-        </Tabs.List>
-
-        <Tabs.Panel value="builds">
-          <Builds builds={builds}/>
-        </Tabs.Panel>
-
-        <Tabs.Panel value="saves">
-            Saves go here
-        </Tabs.Panel>
-      </Tabs>
-    </section>
+    <ProfileBuilds email={email}/>
   </div>;
 }

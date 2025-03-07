@@ -82,7 +82,7 @@ async function saveBuild(req, res, next) {
 async function publishBuild(req, res, next) {
   try{
     if(!req.body.buildId){
-      return res.status(404).json({ message: 'Build ID does not exist in DB'});
+      return res.status(404).json({ message: 'Invalid build ID'});
     }
 
     const updateData = { isPublished : true }
@@ -107,7 +107,29 @@ async function publishBuild(req, res, next) {
   }
 }
 
+async function unpublishBuild(req, res, next){
+  try{
+    if(!req.body.buildId){
+      return res.status(404).json({ message: 'Invalid build ID'});
+    }
 
+    const unpublishedBuild = await Post.findOneAndUpdate(
+      {_id: req.body.buildId},
+      {isPublished: false},
+      { returnDocument: 'after'}
+    );
+
+    if(!unpublishBuild){
+      return res.status(404).json({ message: 'Unable to unpublish post'});
+    }
+
+    return res.status(200).json({ message: 'Build unpublished successfully!'});
+
+  }catch(err){
+    err.status = 500;
+    next(err);
+  }
+}
 
 /**
  * This function gets all the published builds and returns them.
@@ -174,8 +196,6 @@ async function deleteBuild(req, res, next) {
   }
 }
 
-
-
 /**
  * Obtains the file content and stores it in azure blob.
  * Passes the returned azure blob URL to next middleware for processing.
@@ -220,4 +240,11 @@ async function updatePostPicture(req, res, next) {
   }
 }
 
-export { saveBuild, uploadValidation, uploadImage, updatePostPicture, publishBuild, getPublishedBuilds };
+export { 
+  saveBuild, 
+  uploadValidation, 
+  uploadImage, 
+  updatePostPicture, 
+  publishBuild, 
+  getPublishedBuilds,
+  unpublishBuild };
