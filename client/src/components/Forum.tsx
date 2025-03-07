@@ -6,51 +6,14 @@ import { IconSearch } from '@tabler/icons-react';
 import { errorMessage } from '../utils/notification_utils';
 import { useState } from 'react';
 
-const placeholderImages = [
-  [
-    'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-1.png',
-    'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-2.png',
-    'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-3.png',
-    'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-4.png',
-    'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-5.png',
-  ],
-  [
-    'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-1.png',
-    'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-2.png',
-    'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-3.png',
-    'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-4.png',
-    'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-5.png',
-  ],
-  [
-    'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-1.png',
-    'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-2.png',
-    'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-3.png',
-    'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-4.png',
-    'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-5.png',
-  ],
-  [
-    'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-1.png',
-    'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-2.png',
-    'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-3.png',
-    'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-4.png',
-    'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-5.png',
-  ],
-  [
-    'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-1.png',
-    'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-2.png',
-    'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-3.png',
-    'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-4.png',
-    'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-5.png',
-  ],
-  [
-    'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-1.png',
-    'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-2.png',
-    'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-3.png',
-    'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-4.png',
-    'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-5.png',
-  ]
-];
 
+type Post = {
+  progressPicture: string,
+  description: string,
+  buildJSON: object,
+  isPublished: boolean,
+  thumnails: [],
+}
 
 /**
  * Forum page renders a Search bar and a
@@ -59,7 +22,7 @@ const placeholderImages = [
  */
 export default function Forum(): React.ReactNode {
 
-  const [publishedBuilds, setPublishedBuilds] = useState([]);
+  const [publishedBuilds, setPublishedBuilds] = useState<Post[]>([]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -95,12 +58,12 @@ export default function Forum(): React.ReactNode {
       />
       <div className="posts">
         {
-          placeholderImages.map((publishedBuilds, i) => {
+          publishedBuilds.map((build, i) => {
             return (
               <Post
-                key={`post-${i}`}
-                description="This is a fun little house to build in the nether!!"
-                placeholderImages={images}
+                key={`publishing-${i}`}
+                imageURL={build.progressPicture}
+                description={build.description}
                 liked={false}
                 saved={false}
               />
