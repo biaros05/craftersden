@@ -119,7 +119,7 @@ async function unpublishBuild(req, res, next){
       { returnDocument: 'after'}
     );
 
-    if(!unpublishBuild){
+    if(!unpublishedBuild){
       return res.status(404).json({ message: 'Unable to unpublish post'});
     }
 
