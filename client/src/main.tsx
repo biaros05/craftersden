@@ -23,7 +23,6 @@ import CraftersDen from './components/mainUI/CraftersDen.jsx';
 import { BuildProvider } from './hooks/BuildContext.tsx';
 import { ToastContainer, Slide } from 'react-toastify';
 import '@mantine/core/styles.css';
-
 import { MantineProvider, createTheme } from '@mantine/core';
 import React from 'react';
 
@@ -38,7 +37,20 @@ function Main(): React.ReactNode {
     <Header />
     <Outlet />
     <Footer />
-  </>;
+    <ToastContainer
+    position="bottom-right"
+    autoClose={5000}
+    hideProgressBar={false}
+    newestOnTop={false}
+    closeOnClick
+    rtl={false}
+    pauseOnFocusLoss
+    draggable
+    pauseOnHover
+    theme="colored"
+    transition={Slide}
+    />
+  </>
 }
 
 const router = createBrowserRouter([
@@ -53,19 +65,19 @@ const router = createBrowserRouter([
       },
       {
         path: 'login',
-        element: <ProtectedRoute to={'/'} authed={false} ><Login /></ProtectedRoute>
+        element: <ProtectedRoute authed={false} ><Login /></ProtectedRoute>
       },
       {
         path: 'logout',
-        element: <ProtectedRoute to={'/'} authed={true} ><Logout /></ProtectedRoute>
+        element: <ProtectedRoute authed={true} ><Logout /></ProtectedRoute>
       },
       {
         path: 'forum',
-        element: <ProtectedRoute to={'/forum'} authed={true} ><Forum /></ProtectedRoute>
+        element: <ProtectedRoute  authed={true} ><Forum /></ProtectedRoute>
       },
       {
         path: 'profile',
-        element: <ProtectedRoute to={'/login'} authed={true} ><Profile /></ProtectedRoute>
+        element: <ProtectedRoute authed={true} ><Profile /></ProtectedRoute>
       },
       {
         path: 'den',
@@ -75,7 +87,7 @@ const router = createBrowserRouter([
   }
 ]);
 
-const theme = createTheme({
+export const theme = createTheme({
   primaryColor: 'green',
   primaryShade: 7,
 });
@@ -83,6 +95,7 @@ const theme = createTheme({
 createRoot(document.getElementById('root')!).
   render(
     <StrictMode>
+      <AuthProvider >
       <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
         <MantineProvider theme={theme}>
           <AuthProvider >
@@ -92,18 +105,6 @@ createRoot(document.getElementById('root')!).
           </AuthProvider>
         </MantineProvider>
       </GoogleOAuthProvider>
-      <ToastContainer
-        position="bottom-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="colored"
-        transition={Slide}
-        />
+      </AuthProvider>
     </StrictMode>
   );

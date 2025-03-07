@@ -18,7 +18,7 @@ const BuildUpdateContext = createContext<BuildUpdateContextType | undefined>(und
 
 /**
  *This function returns the current build.
- @returns {object} The current build.
+ * @returns {object} The current build.
  */
 export function useBuild(){
   return useContext(BuildContext);

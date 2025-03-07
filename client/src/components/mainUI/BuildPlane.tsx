@@ -98,7 +98,12 @@ export default function BuildPlane({canvasRef, blocks, setBlocks, isViewMode, st
       };
 
       setBlocks([...blocks, newBlock])
+    } else if (e.button === 0) {
+      const remainingBlocks = blocks.filter(b => b.id !== id);
+  
+      setBlocks([...remainingBlocks]);
     }
+    e.stopPropagation();
   }
   
   /**

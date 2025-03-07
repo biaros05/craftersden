@@ -1,7 +1,7 @@
-import React from 'react';
-import { Avatar, Button } from '@mantine/core';
-import { Link, useLocation } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
+import React from "react";
+import { Avatar, Button } from "@mantine/core";
+import { Link, useLocation } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 import '../styles/header.css';
 import { useBuildUpdate } from "../hooks/BuildContext";
 
@@ -31,12 +31,13 @@ export default function Header() {
             <Avatar src={avatar} />
         </Link>
         <h2>
-            <Link to={isDen ? `/den` : `/forum`}>
+            <Link to={isDen ? `/den` : `/forum`} state={{canGoBack: true}}>
                 {isDen ? `Crafter's Den` : `Crafter's Forum`}
             </Link>
         </h2>
         <Link 
             to={!isDen ? `/den` : `/forum`}
+            state={{canGoBack: true}}
             onClick={handleDenClick}>
             <Button variant="filled">
                 {!isDen ? `Den` : `Forum`}
