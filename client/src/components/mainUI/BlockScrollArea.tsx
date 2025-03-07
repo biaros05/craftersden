@@ -8,9 +8,10 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 /**
  * Scrollable area for displaying grid of BlockImage. Contains BlockSearchBar.
+ * @param {style} style - CSS style object
  * @returns {React.ReactNode} Block scroll area component
  */
-export default function BlockScrollArea(): React.ReactNode {
+export default function BlockScrollArea({ style = {}}): React.ReactNode {
 
   const [pageIndex, setPageIndex] = useState<number>(1);
 
@@ -23,13 +24,13 @@ export default function BlockScrollArea(): React.ReactNode {
   const pageCount = pageCountData?.totalPages;
 
   return (
-    <section id="block-scroll-area">
+    <section id="block-scroll-area" style={style}>
       <BlockSearchBar blockList={blockData?.blocks}/>
       {/* Cache next page */}
       {pageIndex < pageCount &&
         <div style={{ display: 'none' }}><BlockPage index={ pageIndex + 1 }/></div> }
       {pageCount && <Pagination total={pageCount} value={pageIndex} onChange={setPageIndex} withPages={true}/>}
-      <ScrollArea h={250} type="always" scrollbarSize={12} style={{ padding: '1em'}}>
+      <ScrollArea h={"30vw"} type="always" scrollbarSize={12} style={{ padding: '1em'}}>
         <BlockPage index={pageIndex}/>
       </ScrollArea>
     </section>
