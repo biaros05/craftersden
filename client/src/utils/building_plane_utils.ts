@@ -216,5 +216,24 @@ function getGeometry(selectedBlock: SelectedBlock, geometries: object, setGeomet
     return { textures: textureList, textureURLs: textureURLs };
   }
 
-export {Cuboid, createGeometry, loadGround, 
+/**
+ * jsonifies the array of blocks for storage
+ * @param {BlockType[]} blocks - array of blocks to jsonify
+ * @returns {JSON} - new json of blocks
+ */
+function jsonifyBlocks(blocks: BlockType[]) {
+  return blocks.map(block => {
+    const geomJSON = block.geometry.toNonIndexed().toJSON();
+    const b = {
+      id: block.id,
+      name: block.name,
+      position: block.position,
+      geometry: geomJSON,
+      textureURLs: block.textureURLs,
+    };
+    return b;
+  })
+}
+
+export {Cuboid, jsonifyBlocks, createGeometry, loadGround, 
   blockExists, getTexture, getGeometry, BlockType, SerializedBlockType, SelectedBlock, StatusError, getTextures};

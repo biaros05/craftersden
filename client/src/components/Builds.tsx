@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from "react-router-dom"
+import useNavigate from "./Navigation/useNavigate.tsx"
 import '../styles/welcome.css';
 import { Image, Button } from '@mantine/core';
 import '../styles/builds.css';
