@@ -52,12 +52,24 @@ export default function Builds({ builds }: { builds: Build[]; }): React.ReactNod
               >
                 Delete Save
               </Button>
-              {!build.isPublished && <Button
+              {!build.isPublished ? <Button
                 key={`build-${i}`}
                 variant="outline"
                 onClick={open}>
                 Publish
-              </Button>}
+              </Button> :
+              <Button
+                key={`build-${i}`}
+                variant='outline'
+                color='orange'
+                onClick={() => {
+                  
+                }}
+              >
+                Unpublish 
+              </Button>
+              
+            }
               <PublishForm opened={opened} close={close} buildId={build._id}/>
             </div>
           )
