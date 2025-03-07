@@ -22,6 +22,7 @@
   padding: 10px; 
   background: white; 
   border-left: 2px solid #ddd; 
+  height: 100%;
 }
 
 .build-tools {
