@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import useNavigate from "./Navigation/useNavigate.tsx"
 import '../styles/welcome.css';
 import { Image, Button } from '@mantine/core';
@@ -33,7 +33,7 @@ export default function Builds({ builds, updateBuildStatus }: propTypes): React.
   const navigate = useNavigate();
   const { setBuild } = useBuildUpdate();
   const [opened, { open, close }] = useDisclosure(false);
-  const [selectedBuildId, setSelectedBuildId] = useState<string | null>(null);
+  const [selectedBuildId, setSelectedBuildId] = useState<string | ''>('');
 
   /**
    * Takes a build id and fetch /api/post/unpublish to unpublish the chosen post.
