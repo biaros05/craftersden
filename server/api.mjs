@@ -9,9 +9,30 @@ import authRouter from './routers/auth.router.mjs';
 import blockRouter from './routers/block.router.mjs';
 import userRouter from './routers/user.router.mjs';
 import postRouter from './routers/post.router.mjs'
+import swaggerJSDoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
 
 dotenv.config();
 const app = express();
+
+
+const swaggerDefinition = {
+  openapi: '3.0.0',
+  info: {
+    title: 'LDD Got Moves Like Swagger',
+    version: '1.0.0',
+  },
+};
+
+const options = {
+  swaggerDefinition,
+  // Paths to files containing OpenAPI definitions
+  apis: ['./routers/*.mjs'],
+};
+
+const swaggerSpec = swaggerJSDoc(options);
+
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use(compression());
 app.use(express.json());
