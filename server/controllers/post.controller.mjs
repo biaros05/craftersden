@@ -1,5 +1,6 @@
 import Post from '../models/Post.js';
 import User from '../models/User.mjs';
+import User from '../models/User.mjs';
 import dotenv from 'dotenv';
 import { validationResult } from 'express-validator';
 import { decode } from '@msgpack/msgpack';
@@ -124,7 +125,17 @@ async function getPublishedBuilds(req, res, next){
       return res.status(100).json({ message: 'There are no published builds at this moment.'});
     }
 
-    return res.status(200).json({ message: 'Published builds fetched!', builds : publishedBuilds});
+    const publishBuildsWithUsername = await Promise.all(
+      publishedBuilds.map( async (build) => {
+        const username = await User.findOne({_id : build.user}).select('username');
+        return{
+          ...build.toObject(),
+          username: username ? username : 'Unknown'
+        };
+      })
+    )
+
+    return res.status(200).json({ message: 'Published builds fetched!', builds : publishBuildsWithUsername});
 
   }catch(err){
     err.status = 500;

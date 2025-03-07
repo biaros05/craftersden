@@ -9,6 +9,7 @@ import { useState } from 'react';
 
 type Post = {
   progressPicture: string,
+  user: object,  
   description: string,
   buildJSON: object,
   isPublished: boolean,
@@ -23,7 +24,6 @@ type Post = {
 export default function Forum(): React.ReactNode {
 
   const [publishedBuilds, setPublishedBuilds] = useState<Post[]>([]);
-
   useEffect(() => {
     const controller = new AbortController();
 
