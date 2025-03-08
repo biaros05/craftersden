@@ -1,13 +1,13 @@
-import React, { FormEvent, FormEventHandler, useEffect, useState } from 'react';
+import React, { FormEvent, FormEventHandler, useState, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
-import { Tabs, ActionIcon, Button, Modal } from '@mantine/core';
-// import { useLocation } from 'react-router-dom';
+import { ActionIcon, Button, Modal } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconEdit } from '@tabler/icons-react';
 import '../styles/profile.css';
-import Builds from './Builds';
+import ProfileBuilds from './ProfileBuilds.tsx';
 import { useBuild } from '../hooks/BuildContext.tsx';
 import { useLocation } from 'react-router-dom';
+
 
 /**
  * Profile page component that displays list of users
@@ -19,9 +19,11 @@ export default function Profile(): React.ReactNode {
   // const location = useLocation(); 
   const {username, email, avatar} = useAuth() ?? {};
   const [opened, {open, close}] = useDisclosure(false);
-  const [builds, setBuilds] = useState([]);
+
   const location = useLocation(); // Detects route changes
   const build = useBuild();
+
+  const [userBuilds, setUserBuilds] = useState<Build[]>([]);
 
   useEffect(() => {
     /**
@@ -31,12 +33,12 @@ export default function Profile(): React.ReactNode {
     async function getBuilds() {
       const response = await fetch(`/api/user/${email}/builds`);
       const json = await response.json();
-      console.log(json.builds);
-      setBuilds([...json.builds]);
+      setUserBuilds([...json.builds]);
     }
 
     getBuilds();
   }, [email, build, location.pathname]);
+
 
   const onSubmitHandler: FormEventHandler = async (event: FormEvent) => {
     event.preventDefault();
@@ -57,7 +59,7 @@ export default function Profile(): React.ReactNode {
     >
       <form onSubmit={onSubmitHandler}>
         <label htmlFor="username">Username</label>
-        <input type="text" name="username" placeholder="Username" />
+        <input type="text" name="username" placeholder="Username" maxLength={30}/>
         <label htmlFor="avatar">Upload an image!</label>
         <input type="file" id="avatar" name="avatar" 
           accept="image/png, image/jpeg, image/jpg, image/webp" />
@@ -79,25 +81,6 @@ export default function Profile(): React.ReactNode {
         </ActionIcon>
       </div>
     </section>
-    <section className="profile-builds">
-      <Tabs defaultValue="builds" >
-        <Tabs.List>
-          <Tabs.Tab value="builds">
-            <h2>Builds</h2>
-          </Tabs.Tab>
-          <Tabs.Tab value="saves">
-            <h2>Saves</h2>
-          </Tabs.Tab>
-        </Tabs.List>
-
-        <Tabs.Panel value="builds">
-          <Builds setBuilds={setBuilds} builds={builds}/>
-        </Tabs.Panel>
-
-        <Tabs.Panel value="saves">
-            Saves go here
-        </Tabs.Panel>
-      </Tabs>
-    </section>
+    <ProfileBuilds userBuilds={userBuilds} setUserBuilds={setUserBuilds} email={email}/>
   </div>;
 }

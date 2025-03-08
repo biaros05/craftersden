@@ -1,11 +1,14 @@
 import express from 'express';
-import { 
+import {
   saveBuild,
   uploadValidation,
   updatePostPicture,
   uploadImage,
   deleteBuild, 
-  deleteImageFromAzure
+  deleteImageFromAzure,
+  publishBuild,
+  getPublishedBuilds,
+  unpublishBuild
 } from '../controllers/post.controller.mjs';
 import multer from 'multer';
 import { body } from 'express-validator';
@@ -42,15 +45,25 @@ postRouter.post('/save', isAuthenticated, upload.fields([
   { name: 'png', maxCount: 1 },
   { name: 'blocks', maxCount: 1 }
 ]),
-imageFormValidation, 
-uploadValidation, 
-saveBuild, 
+imageFormValidation,
+uploadValidation,
+saveBuild,
 uploadImage,
 updatePostPicture
 );
 
 postRouter.delete('/:buildId', isAuthenticated, deleteBuild, deleteImageFromAzure);
 
+postRouter.post('/unpublish', isAuthenticated, unpublishBuild);
 
+postRouter.post('/publish', isAuthenticated, upload.fields([
+  { name: 'png', maxCount: 1 },
+  { name: 'blocks', maxCount: 1 }
+]),
+publishBuild,
+);
+
+
+postRouter.get('/', getPublishedBuilds);
 
 export default postRouter;
