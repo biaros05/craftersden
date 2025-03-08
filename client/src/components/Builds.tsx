@@ -7,6 +7,7 @@ import { useBuildUpdate } from '../hooks/BuildContext.tsx';
 import { useDisclosure } from '@mantine/hooks';
 import PublishForm from './PublishForm.tsx';
 import { errorMessage, successMessage } from '../utils/notification_utils.ts';
+import { StatusError } from '../utils/building_plane_utils';
 
 type Build = {
   _id : string,
@@ -19,7 +20,32 @@ type Build = {
 
 type propTypes = {
   builds: Build[],
-  updateBuildStatus: (buildId : string, isPublished: boolean) => void
+  updateBuildStatus: (buildId : string, isPublished: boolean) => void,
+  setBuilds: ([]) => void
+}
+
+/**
+ * Deletes the build and will send either a success or error message.
+ * @param {string} buildId - id of the build to delete
+ */
+async function deleteBuild(buildId: string) {
+  try {
+    const requestOptions = {
+      method: 'DELETE',
+    };
+    const response = await fetch(`/api/post/${buildId}`, requestOptions);
+
+    if (!response.ok) {
+      const err = new StatusError(`Something went wrong!`);
+      err.status = response.status;
+      throw err;
+    }
+
+    successMessage('Build successfully deleted!');
+  } catch (e) {
+    errorMessage(e.message);
+  }
+
 }
 
 /**
@@ -27,9 +53,10 @@ type propTypes = {
  * @param {object} props - React Props
  * @param {Build[]} props.builds List of builds
  * @param {Function} props.updateBuildStatus - Updates the buildStatus inside of builds
+ * @param {Function} props.setBuilds - Updates the builds inside of builds
  * @returns {React.ReactNode} Builds to display
  */
-export default function Builds({ builds, updateBuildStatus }: propTypes): React.ReactNode {
+export default function Builds({ builds, updateBuildStatus, setBuilds }: propTypes): React.ReactNode {
   const navigate = useNavigate();
   const { setBuild } = useBuildUpdate();
   const [opened, { open, close }] = useDisclosure(false);
@@ -74,9 +101,8 @@ export default function Builds({ builds, updateBuildStatus }: propTypes): React.
           console.log(build.progressPicture)
           console.log(`build ${i} id: ${build._id}`);
           return (
-            <div className="saved-builds" style={{ width: '250px' }}>
+            <div key={build._id} className="saved-builds" style={{ width: '250px' }}>
               <Image
-                key={`buildImage-${i}`}
                 radius="md"
                 height={125}
                 src={build.progressPicture}
@@ -86,16 +112,20 @@ export default function Builds({ builds, updateBuildStatus }: propTypes): React.
                 }}
               />
               <Button
-                key={`saveButton-${i}`}
                 variant="outline"
                 className='delete-save-button'
                 color="rgb(178, 14, 14)"
-                onClick={() => { }}
+                onClick={async () => {
+                  console.log(build);
+                  const buildId = build._id;
+                  await deleteBuild(buildId);
+                  setBuilds(builds.filter(build => build._id !== buildId));
+                }}
               >
                 Delete Save
               </Button>
-              {!build.isPublished ? <Button
-                key={`publishButton-${i}`}
+              {!build.isPublished ? 
+              <Button
                 variant="outline"
                 onClick={() => {
                   setSelectedBuildId(build._id);
@@ -104,7 +134,6 @@ export default function Builds({ builds, updateBuildStatus }: propTypes): React.
                 Publish
               </Button> :
               <Button
-                key={`unPublish-${i}`}
                 variant='outline'
                 color='orange'
                 onClick={() => {
