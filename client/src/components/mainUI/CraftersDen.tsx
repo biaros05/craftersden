@@ -140,7 +140,7 @@ export default function CraftersDen(): React.ReactNode {
             setBlocks={setBlocks} 
             isViewMode={isViewMode} 
             setIsViewMode={setIsViewMode}
-            style={{width: "80%"}}
+            style={{width: "75%"}}
             />
           {!isViewMode && <BlockSelection />}
         </section>

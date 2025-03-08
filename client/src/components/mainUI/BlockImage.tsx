@@ -33,7 +33,7 @@ export default function BlockImage({block}: { block: BlockType; }): React.ReactN
         alt={block.name}
         fallbackSrc="https://placehold.co/600x400?text=Placeholder"
       />
-      {block.name}
+      <div className="block-name"> {block.name} </div>
     </div>
     
   );
