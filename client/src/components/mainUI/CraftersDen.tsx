@@ -8,7 +8,6 @@ import React from 'react';
 import {toByteArray} from 'base64-js';
 import * as THREE from 'three';
 import {encode} from '@msgpack/msgpack'; 
-import {scene} from './scene';
 import { useBuild, useBuildUpdate } from '../../hooks/BuildContext';
 import { successMessage, errorMessage } from '../../utils/notification_utils';
 import { BlockType, SerializedBlockType, StatusError } from '../../utils/building_plane_utils';
@@ -21,6 +20,7 @@ export type BlockType = {
   texture: THREE.Texture,
   textureURL: string
 }
+import {jsonifyBlocks} from '../../utils/building_plane_utils.ts';
 
 /**
  * Takes an array of objects and takes care of serializing their THREE objects
@@ -29,18 +29,8 @@ export type BlockType = {
  * @param {BlockType[]} blocks - array of blocks with THREE objects.
  * @returns {SerializedBlockType[]} - a buffer containing the newly serialized blocks. 
  */
-function serializeBlocks(blocks: BlockType[]): Uint8Array<ArrayBufferLike> {
-  return encode(blocks.map(block => {
-    const geomJSON = block.geometry.toNonIndexed().toJSON();
-    const b = {
-      id: block.id,
-      name: block.name,
-      position: block.position,
-      geometry: geomJSON,
-      textureURLs: block.textureURLs,
-    };
-    return b;
-  }));
+export function serializeBlocks(blocks: BlockType[]): Uint8Array<ArrayBufferLike> {
+  return encode(jsonifyBlocks(blocks));
 }
 
 /**
@@ -73,7 +63,6 @@ export default function CraftersDen(): React.ReactNode {
   const canvas = useRef(null);
   const {email} = useAuth() ?? {};
   const [isViewMode, setIsViewMode] = useState(false);
-  // TODO implement toastify to handle error
   const [blocks, setBlocks] = useState<BlockType[]>([]);
   const [currentBlock, setCurrentBlock] = useState(null);
 
@@ -81,11 +70,17 @@ export default function CraftersDen(): React.ReactNode {
   const { setBuild } = useBuildUpdate();
 
   useEffect(() => {
-    if(build.build!==undefined && build.build!==null){
+    const serializedBlocks = JSON.parse(localStorage.getItem("build") ?? "{}");
+
+    if (Object.keys(serializedBlocks).length && Object.keys(serializedBlocks.blocks).length) {
+      setBlocks(deserializeBlocks(serializedBlocks.blocks))
+      localStorage.clear();
+    }
+    else if (build.build !== undefined && build.build !== null) {
       setBlocks(deserializeBlocks(build.build.buildJSON));
     }
     else{
-      setBlocks(deserializeBlocks(scene));
+      setBlocks(deserializeBlocks([]));
     }
   }, []);
 
@@ -157,11 +152,12 @@ export default function CraftersDen(): React.ReactNode {
           {!isViewMode && <BlockSelection />}
         </section>
         <ButtonPanel 
-          setIsViewMode={setIsViewMode} 
-          canvas={canvas} 
-          savePost={savePost} 
-          isViewMode={isViewMode}
-        />
+        blocks={blocks}
+        setIsViewMode={setIsViewMode} 
+        canvas={canvas} 
+        savePost={savePost} 
+        isViewMode={isViewMode}
+        email={email}/>
       </div>
     </CurrentBlockContext.Provider>
   );
