@@ -7,7 +7,7 @@
     "build": "cd client && npm install && npm run build && cd ../server && npm install",
     "critical": "node critical.js",
     "dev": "nodemon",
-    "lint": "cd client && eslint . --fix && cd ../server && eslint . --fix"
+    "lint": "cd client && npm run lint && cd ../server && npm run lint"
   },
   "author": "Amy, Marin, Axel, Bianca",
   "license": "ISC",

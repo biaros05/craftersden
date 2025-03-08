@@ -1,24 +1,15 @@
 import React from "react";
 import { Tabs } from "@mantine/core";
 import Builds from "./Builds";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { FunctionExpression } from "mongoose";
-
-type Build = {
-  _id: string,
-  progressPicture: string,
-  description: string,
-  buildJSON: object,
-  isPublished: boolean,
-  thumnails: [],
-}
 
 /**
  * This component represents the builds section of the profile page.
  * @param {string} email - The user email
  * @returns {Function} - Cleanup function to abort the fetch
  */
-export default function ProfileBuilds({ userBuilds, setUserBuilds, email } : {email: string, builds: [], setBuilds: FunctionExpression}
+export default function ProfileBuilds({ userBuilds, setUserBuilds, email } : {email: string, userBuilds: [], setUserBuilds: FunctionExpression}
 ) {
 
   useEffect(() => {
