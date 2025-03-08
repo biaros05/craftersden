@@ -71,33 +71,32 @@ export default function BuildPlane({canvasRef, blocks, setBlocks, isViewMode, st
   }
   
   /**
-   * EventHandler for onPointerDown event that places a block
-   * relative to the block clicked on.
-   * @param {ThreeEvent<PointerEvent>} e Event object for pointerDown.
-   * @param {string} id of the block.
-   * @param {[number,number,number]} position of the block clicked on.
+   * Adds a block on top of the block being hovered with right click and removes it with left click.
+   * @param {ThreeEvent<PointerEvent>} e Event object of pointerDown
+   * @param {string} id id of the block being hovered
+   * @param {[number, number, number]} position position of the block being hovered
+   * @returns {void}
    */
   function addBlock(e: ThreeEvent<PointerEvent>, id: string, position: [number, number, number]) {
-    if(isViewMode) return;
     if (e.button === 2) {
       const normalizedCoords = new THREE.Vector3(...position).add(e.normal!);
   
       const geometry = getGeometry(currentBlock, geometries, setGeometries);
       const newPosition: [number, number, number] = [normalizedCoords.x, normalizedCoords.y, normalizedCoords.z];
+      const {textures, textureURLs} = getTextures(currentBlock);
   
-      if (blockExists(position, blocks)) return;
-      const { textures, textureURLs } = getTextures(currentBlock);
-
+      if (blockExists(newPosition, blocks)) return;
+  
       const newBlock: BlockType = {
         id: nanoid(),
-        name: currentBlock.name,
         position: newPosition,
         geometry: geometry,
         textures: textures,
-        textureURLs: textureURLs
+        textureURLs: textureURLs,
+        name: currentBlock.name
       };
-
-      setBlocks([...blocks, newBlock])
+  
+      setBlocks(b => [...b, newBlock]);
     } else if (e.button === 0) {
       const remainingBlocks = blocks.filter(b => b.id !== id);
   
@@ -105,7 +104,6 @@ export default function BuildPlane({canvasRef, blocks, setBlocks, isViewMode, st
     }
     e.stopPropagation();
   }
-  
   /**
    * Rotates block being hovered and computes the
    * world position to offset the rotation
