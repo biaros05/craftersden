@@ -78,6 +78,7 @@ export default function BuildPlane({canvasRef, blocks, setBlocks, isViewMode, st
    * @returns {void}
    */
   function addBlock(e: ThreeEvent<PointerEvent>, id: string, position: [number, number, number]) {
+    if (isViewMode) return;
     if (e.button === 2) {
       const normalizedCoords = new THREE.Vector3(...position).add(e.normal!);
   
