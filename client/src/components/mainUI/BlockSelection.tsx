@@ -28,7 +28,7 @@ export default function BlockSelection({style}: { style?: CSSProperties}): React
         </Tabs.List>
 
         <Tabs.Panel value="all">
-          <BlockScrollArea/>
+          <BlockScrollArea style={{height:"100%"}}/>
         </Tabs.Panel>
 
         <Tabs.Panel value="resources">

@@ -8,10 +8,18 @@ import React from 'react';
 import {toByteArray} from 'base64-js';
 import * as THREE from 'three';
 import {encode} from '@msgpack/msgpack'; 
-import { CurrentBlockContext } from '../../context/currentBlockContext';
-import { useBuild } from '../../hooks/BuildContext';
+import { useBuild, useBuildUpdate } from '../../hooks/BuildContext';
 import { successMessage, errorMessage } from '../../utils/notification_utils';
 import { BlockType, SerializedBlockType, StatusError } from '../../utils/building_plane_utils';
+import { CurrentBlockContext } from '../../context/currentBlockContext';
+
+export type BlockType = {
+  id: string,
+  position: [number,number,number],
+  geometry: THREE.BufferGeometry,
+  texture: THREE.Texture,
+  textureURL: string
+}
 import {jsonifyBlocks} from '../../utils/building_plane_utils.ts';
 
 /**
@@ -59,6 +67,7 @@ export default function CraftersDen(): React.ReactNode {
   const [currentBlock, setCurrentBlock] = useState(null);
 
   const build = useBuild();
+  const { setBuild } = useBuildUpdate();
 
   useEffect(() => {
     const serializedBlocks = JSON.parse(localStorage.getItem("build") ?? "{}");
@@ -77,7 +86,7 @@ export default function CraftersDen(): React.ReactNode {
 
   let curBuildId = null;
 
-  if (build.build !== undefined && build.build !== null) {
+  if(build.build !== undefined && build.build !== null){
     curBuildId = build.build._id;
   }
 
@@ -100,7 +109,6 @@ export default function CraftersDen(): React.ReactNode {
     const arrayBufferBlocks = serializeBlocks(blocks);
     const serializedBlocks = new Blob([arrayBufferBlocks], { type: 'application/octet-stream' });
     try {
-      console.log(progressPicture);
       const base64Data = progressPicture.split(',')[1];
       const byteArray = toByteArray(base64Data);
       const blob = new Blob([byteArray], { type: 'image/png' });
@@ -111,9 +119,7 @@ export default function CraftersDen(): React.ReactNode {
       data.append('email', email!);
       const requestOptions = {
         method: 'POST',
-        // TODO: change id to be not null if the build exists!!!
         body: data
-        // use ID to find pre-existing build if it exists, if not leave it null.
       };
       const response = await fetch('/api/post/save', requestOptions);
       const json = await response.json();
@@ -124,6 +130,7 @@ export default function CraftersDen(): React.ReactNode {
         throw err;
       }
 
+      setBuild({...{'_id': json.id}, ...build.build})
       successMessage(json.message);
     } catch (e) {
       errorMessage(e.message);
@@ -140,7 +147,7 @@ export default function CraftersDen(): React.ReactNode {
             setBlocks={setBlocks} 
             isViewMode={isViewMode} 
             setIsViewMode={setIsViewMode}
-            style={{width: "80%"}}
+            style={{width: "75%"}}
             />
           {!isViewMode && <BlockSelection />}
         </section>
