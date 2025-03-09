@@ -19,9 +19,38 @@ const app = express();
 const swaggerDefinition = {
   openapi: '3.0.0',
   info: {
-    title: 'LDD Got Moves Like Swagger',
+    title: 'Crafter\'s Got the Moves Like Swagger',
     version: '1.0.0',
   },
+};
+
+
+const swaggerOptions = {
+  swaggerDefinition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Crafter\'s Got the Moves Like Swagger',
+      version: '1.0.0',
+    },
+    components: {
+      securitySchemes: {
+        GoogleOAuth: {
+          type: 'oauth2',
+          flows: {
+            implicit: {
+              tokenUrl: 'https://oauth2.googleapis.com/token',
+              scopes: {
+                profile: 'Access your profile info',
+                email: 'Access your email address',
+              },
+            },
+          },
+        },
+      },
+    },
+    security: [{ GoogleOAuth: ['email', 'profile'] }], // Apply globally
+  },
+  apis: ['./routes/*.js'], // Adjust based on your file structure
 };
 
 const options = {
@@ -30,7 +59,7 @@ const options = {
   apis: ['./routers/*.mjs'],
 };
 
-const swaggerSpec = swaggerJSDoc(options);
+const swaggerSpec = swaggerJSDoc(swaggerOptions);
 
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 

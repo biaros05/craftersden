@@ -6,45 +6,36 @@ const auth = express.Router();
 
 /**
  * @swagger
- * /auth:
+ * /api/auth:
  *   post:
- *     summary: Authenticates a user using Google's OAuth.
- *     description: Authenticates the user by verifying the OAuth token and creating a session.
+ *     summary: Authenticate user with Google OAuth
  *     tags:
  *       - Authentication
+ *     security:
+ *       - GoogleOAuth: [email, profile]
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
- *             required:
- *               - token
  *             properties:
  *               token:
  *                 type: string
- *                 description: The OAuth token from Google.
+ *                 description: Google ID Token obtained from OAuth flow
  *     responses:
  *       200:
- *         description: Authentication successful. Returns user details.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 user:
- *                   type: object
- *                   description: The authenticated user details.
+ *         description: Successfully authenticated user
  *       400:
- *         description: Bad request, token missing.
+ *         description: Missing token
  *       500:
- *         description: Server error, session creation failed.
+ *         description: Server error
  */
 auth.post('/auth', authenticateUser);
 
 /**
  * @swagger
- * /query:
+ * /api/query:
  *   get:
  *     summary: Retrieves the authenticated user's details.
  *     description: Returns the currently logged-in user's session data.
@@ -70,7 +61,7 @@ auth.get('/query', isAuthenticated, queryUser);
 
 /**
  * @swagger
- * /logout:
+ * /api/logout:
  *   get:
  *     summary: Logs out the authenticated user.
  *     description: Destroys the user's session and clears the authentication cookie.
