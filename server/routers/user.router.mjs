@@ -38,7 +38,7 @@ const userUpdateValidation = [
 
 /**
  * @swagger
- * /user/:
+ * /api/user/:
  *   put:
  *     summary: Update user profile with avatar upload
  *     tags: [Users]
@@ -73,7 +73,7 @@ userRouter.put('/', isAuthenticated,
 
 /**
  * @swagger
- * /user/{email}/builds:
+ * /api/user/{email}/builds:
  *   get:
  *     summary: Get user's saved builds
  *     tags: [Users]

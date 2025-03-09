@@ -38,7 +38,7 @@ const postRouter = express.Router();
 
 /**
  * @swagger
- * /post/save:
+ * /api/post/save:
  *   post:
  *     summary: Save a new build with an image and block data
  *     tags: [Posts]
