@@ -3,7 +3,9 @@ import { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import React from 'react';
 import '../styles/login.css';
+import {successMessage, errorMessage as errorPopup} from '../utils/notification_utils';
 import useGoBack from './Navigation/useGoBack.tsx';
+
 
 /**
  * @returns {React.ReactNode} - Login component
@@ -15,6 +17,7 @@ export default function Login(): React.ReactNode  {
 
   const handleError = (error = 'Error logging in') => {
     setErrorMessage('Error logging in');
+    errorPopup('Error logging in');
     console.error(error);
   };
 
@@ -29,7 +32,9 @@ export default function Login(): React.ReactNode  {
         <p className="error">{errorMessage}</p>
         <GoogleLogin
           onSuccess={(creds) => {
-            login(creds, goBack);
+            login(creds);
+            successMessage("Successfully logged in!");
+            // goBack();
           }}
           onError={handleError} />
       </section>

@@ -1,6 +1,9 @@
 import React from "react";
+import {errorMessage} from '../utils/notification_utils';
 import { useAuth } from "./../hooks/useAuth";
 import useGoBack from './Navigation/useGoBack';
+import {useLocation} from 'react-router-dom';
+
 /**
  * Checks if a user is logged in or not and if they should be. If they
  * aren't the user is redirected to the given route.
@@ -13,16 +16,20 @@ export default function ProtectedRoute({ authed, children }:
   {authed: boolean, children: React.ReactNode}
 ): React.ReactNode {
   const { username, loading } = useAuth() ?? {};
+  const location = useLocation();
 
-  const goBack = useGoBack('/')
+  const goBack = useGoBack('/');
 
   if (loading) {
     return <h2>Loading...</h2>;
   }
 
   if (username && !authed || !username && authed) {
+    if (location.pathname !== '/logout' && location.pathname !== '/login') {
+      errorMessage("Please log in to access this page!");
+    }
     goBack();
   }
-  
+
   return children;
 };
