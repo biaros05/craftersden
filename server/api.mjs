@@ -38,7 +38,8 @@ const swaggerOptions = {
           type: 'oauth2',
           flows: {
             implicit: {
-              tokenUrl: 'https://oauth2.googleapis.com/token',
+              authorizationUrl: "https://accounts.google.com/o/oauth2/v2/auth",
+              tokenUrl: "https://www.googleapis.com/oauth2/v4/token",
               scopes: {
                 profile: 'Access your profile info',
                 email: 'Access your email address',
