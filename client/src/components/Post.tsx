@@ -30,7 +30,7 @@ export default function Post(
   const [isLiked, setIsLiked] = useState(liked);
   const [isSaved, setIsSaved] = useState(saved);
   return (
-    <div className="post" style={{ width: '250px' }}>
+    <div className="post" style={{ width: '250px', height: '230px' }}>
       <Carousel
         height={125}
         slideSize="100%"
