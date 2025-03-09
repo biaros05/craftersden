@@ -1,26 +1,16 @@
 import React from "react";
 import { Tabs } from "@mantine/core";
 import Builds from "./Builds";
-import { useEffect, useState } from "react";
-
-type Build = {
-  _id: string,
-  progressPicture: string,
-  description: string,
-  buildJSON: object,
-  isPublished: boolean,
-  thumnails: [],
-}
+import { useEffect } from "react";
+import { FunctionExpression } from "mongoose";
 
 /**
  * This component represents the builds section of the profile page.
  * @param {string} email - The user email
  * @returns {Function} - Cleanup function to abort the fetch
  */
-export default function ProfileBuilds({ email } : {email: string}
+export default function ProfileBuilds({ userBuilds, setUserBuilds, email } : {email: string, userBuilds: [], setUserBuilds: FunctionExpression}
 ) {
-
-  const [userBuilds, setUserBuilds] = useState<Build[]>([]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -70,7 +60,7 @@ export default function ProfileBuilds({ email } : {email: string}
         </Tabs.List>
 
         <Tabs.Panel value="builds">
-          <Builds builds={userBuilds} updateBuildStatus={updateBuildStatus} />
+          <Builds builds={userBuilds} setBuilds={setUserBuilds} updateBuildStatus={updateBuildStatus} />
         </Tabs.Panel>
 
         <Tabs.Panel value="saves">

@@ -71,6 +71,36 @@ async function saveBuild(req, res, next) {
 }
 
 /**
+ * This function deletes a build from DB given a buildID. 
+ * @param {*} req - Request object 
+ * @param {*} res - Respond object
+ * @param {*} next - Next 
+ * @returns {JSON} - JSON with status code
+ */
+async function deleteBuild(req, res, next){
+  const buildId = req.params.buildId;
+  try {
+
+    const deletedPost = await Post.findByIdAndDelete(
+      buildId
+    );
+
+    if (!deletedPost) {
+      const error = new Error('This post does not exist');
+      error.status = 404;
+      return next(error);
+    }
+
+    req.url = deletedPost.progressPicture;
+    next();
+
+  } catch(err) {
+    err.status = 500;
+    next(err);
+  }
+}
+
+/**
  * This function takes a build id to update the build's isPublished field to true. 
  * Updates description if there is one.
  * @param {object} req - The request object.
@@ -101,6 +131,25 @@ async function publishBuild(req, res, next) {
 
     return res.status(200).json({ message: 'Build published successfully!'});
   }catch(err){
+    err.status = 500;
+    next(err);
+  }
+}
+
+/**
+ * Takes the progressPicture from recently deleted post and removes it from azure
+ * @param {*} req -
+ * @param {*} res -
+ * @param {*} next -
+ * @returns {JSON} - status of the request
+ */
+async function deleteImageFromAzure(req, res, next) {
+  try {
+    const splitLink = req.url.split('/');
+    const blobName = splitLink[splitLink.length - 1];
+    await blobService.deleteFile(blobName);
+    return res.status(204).send();
+  } catch (err) {
     err.status = 500;
     next(err);
   }
@@ -209,7 +258,7 @@ async function updatePostPicture(req, res, next) {
       { progressPicture: req.url }
     );
 
-    res.status(200).json({ message: 'Build successfully saved!' });
+    res.status(200).json({message : 'Build successfully saved!', id: req.post._id});
     return;
   } catch (e) {
     e.status = 500;
@@ -218,10 +267,8 @@ async function updatePostPicture(req, res, next) {
 }
 
 export { 
-  saveBuild, 
-  uploadValidation, 
-  uploadImage, 
-  updatePostPicture, 
+  saveBuild, uploadValidation, uploadImage, updatePostPicture, 
+  deleteBuild, deleteImageFromAzure,
   publishBuild, 
   getPublishedBuilds,
   unpublishBuild };

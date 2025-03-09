@@ -4,6 +4,8 @@ import {
   uploadValidation,
   updatePostPicture,
   uploadImage,
+  deleteBuild, 
+  deleteImageFromAzure,
   publishBuild,
   getPublishedBuilds,
   unpublishBuild
@@ -49,6 +51,8 @@ saveBuild,
 uploadImage,
 updatePostPicture
 );
+
+postRouter.delete('/:buildId', isAuthenticated, deleteBuild, deleteImageFromAzure);
 
 postRouter.post('/unpublish', isAuthenticated, unpublishBuild);
 

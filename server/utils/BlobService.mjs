@@ -53,6 +53,16 @@ class BlobServiceProvider {
     const fullUrl = BlobServiceProvider.blobPublicUrl + blobName;
     return fullUrl;
   }
+
+  async deleteFile(blobName) {
+    const options = {
+      deleteSnapshots: 'include'
+    };
+  
+    const blockBlobClient = this.#containerClient.getBlockBlobClient(blobName);
+  
+    await blockBlobClient.delete(options);
+  }
 }
 
 export default BlobServiceProvider;
