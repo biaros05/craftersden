@@ -9,9 +9,60 @@ import authRouter from './routers/auth.router.mjs';
 import blockRouter from './routers/block.router.mjs';
 import userRouter from './routers/user.router.mjs';
 import postRouter from './routers/post.router.mjs'
+import swaggerJSDoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
 
 dotenv.config();
 const app = express();
+
+
+const swaggerDefinition = {
+  openapi: '3.0.0',
+  info: {
+    title: 'Crafter\'s Got the Moves Like Swagger',
+    version: '1.0.0',
+  },
+};
+
+
+const swaggerOptions = {
+  swaggerDefinition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Crafter\'s Got the Moves Like Swagger',
+      version: '1.0.0',
+    },
+    components: {
+      securitySchemes: {
+        GoogleOAuth: {
+          type: 'oauth2',
+          flows: {
+            implicit: {
+              authorizationUrl: "https://accounts.google.com/o/oauth2/v2/auth",
+              tokenUrl: "https://www.googleapis.com/oauth2/v4/token",
+              scopes: {
+                profile: 'Access your profile info',
+                email: 'Access your email address',
+              },
+            },
+          },
+        },
+      },
+    },
+    security: [{ GoogleOAuth: ['email', 'profile'] }], // Apply globally
+  },
+  apis: ['./routes/*.js'], // Adjust based on your file structure
+};
+
+const options = {
+  swaggerDefinition,
+  // Paths to files containing OpenAPI definitions
+  apis: ['./routers/*.mjs'],
+};
+
+const swaggerSpec = swaggerJSDoc(swaggerOptions);
+
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use(compression());
 app.use(express.json());

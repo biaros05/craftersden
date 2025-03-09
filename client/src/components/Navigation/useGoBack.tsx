@@ -4,13 +4,17 @@ import useNavigate from './useNavigate';
 
 const useGoBack = (fallback: string) => {
   const navigate = useNavigate();
+
   const location = useLocation();
 
   return useCallback(() => {
-    console.log("Location state:", location.state);
-    if (location.state.canGoBack) {
+    console.log("Location state:", location);
+    if (location.pathname === '/login') {
+      console.log('going back');
       navigate(-1);
-    } else {
+    }
+    else {
+      console.log('fallback');
       navigate(fallback, { replace: true });
     }
   }, [location, fallback]);
