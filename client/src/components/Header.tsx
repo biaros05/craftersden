@@ -1,6 +1,7 @@
 import React from "react";
 import { Avatar, Button } from "@mantine/core";
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import Link from './Navigation/Link';
 import { useAuth } from "../hooks/useAuth";
 import '../styles/header.css';
 import { useBuildUpdate } from "../hooks/BuildContext";
