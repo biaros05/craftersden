@@ -4,14 +4,12 @@ import { useAuth } from '../hooks/useAuth';
 import React from 'react';
 import '../styles/login.css';
 import {successMessage, errorMessage as errorPopup} from '../utils/notification_utils';
-import useGoBack from './Navigation/useGoBack.tsx';
 
 
 /**
  * @returns {React.ReactNode} - Login component
  */
 export default function Login(): React.ReactNode  {
-  const goBack = useGoBack('/');
   const {loading, login} = useAuth() ?? {};
   const [errorMessage, setErrorMessage] = useState('');
 

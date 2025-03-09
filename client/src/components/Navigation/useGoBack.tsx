@@ -1,7 +1,6 @@
 import { useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import useNavigate from './useNavigate';
-import {useAuth} from '../../hooks/useAuth'
 
 const useGoBack = (fallback: string) => {
   const navigate = useNavigate();

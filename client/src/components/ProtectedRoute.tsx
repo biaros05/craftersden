@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import {errorMessage} from '../utils/notification_utils';
 import { useAuth } from "./../hooks/useAuth";
 import useGoBack from './Navigation/useGoBack';
@@ -24,12 +24,14 @@ export default function ProtectedRoute({ authed, children }:
     return <h2>Loading...</h2>;
   }
 
-  if (username && !authed || !username && authed) {
-    if (location.pathname !== '/logout' && location.pathname !== '/login') {
-      errorMessage("Please log in to access this page!");
+  useEffect(() => {
+    if (username && !authed || !username && authed) {
+      if (location.pathname !== '/logout' && location.pathname !== '/login') {
+        errorMessage("Please log in to access this page!");
+      }
+      goBack();
     }
-    goBack();
-  }
+  });
 
   return children;
 };
