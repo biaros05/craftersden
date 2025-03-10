@@ -16,9 +16,7 @@ import path from 'path';
 import { isAuthenticated } from '../utils/auth.mjs';
 
 const upload = multer({
-  limits: {
-    fileSize: 1024 * 1024
-  }
+
 });
 
 
