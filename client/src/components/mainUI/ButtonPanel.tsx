@@ -64,7 +64,29 @@ function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode, email, isBuil
               theme: "colored",
               transition: Slide,
             });
-          } else {
+          } else if (!isBuildOwner) {
+            toast.info(ConfirmNotification, {
+              data: {
+                content: 'Would you like to make a copy of this build',
+                confirmContent: 'Yes',
+                cancelContent: 'Nah',
+                onConfirmClick: () => {
+                  savePost(canvas.current!.toDataURL('image/png')); 
+                }
+              },
+              ariaLabel: 'Something went wrong',
+              position: "bottom-right",
+              autoClose: 10000,
+              hideProgressBar: false,
+              closeOnClick: false,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "colored",
+              transition: Slide,
+            });
+          }
+          else {
             savePost(canvas.current!.toDataURL('image/png'));
           }
         }}
