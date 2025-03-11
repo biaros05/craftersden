@@ -71,7 +71,6 @@ export default function CraftersDen(): React.ReactNode {
 
   useEffect(() => {
     const serializedBlocks = JSON.parse(localStorage.getItem("build") ?? "{}");
-
     if (Object.keys(serializedBlocks).length && Object.keys(serializedBlocks.blocks).length) {
       setBlocks(deserializeBlocks(serializedBlocks.blocks))
       localStorage.clear();
@@ -86,7 +85,7 @@ export default function CraftersDen(): React.ReactNode {
 
   let curBuildId = null;
 
-  if(build.build !== undefined && build.build !== null){
+  if(build.build !== undefined && build.build !== null && build.build.email === email) {
     curBuildId = build.build._id;
   }
 
