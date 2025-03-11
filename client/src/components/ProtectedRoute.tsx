@@ -20,10 +20,6 @@ export default function ProtectedRoute({ authed, children }:
 
   const goBack = useGoBack('/');
 
-  if (loading) {
-    return <h2>Loading...</h2>;
-  }
-
   useEffect(() => {
     if (username && !authed || !username && authed) {
       if (location.pathname !== '/logout' && location.pathname !== '/login') {
@@ -32,6 +28,11 @@ export default function ProtectedRoute({ authed, children }:
       goBack();
     }
   });
+
+  if (loading) {
+    return <h2>Loading...</h2>;
+  }
+
 
   return children;
 };
