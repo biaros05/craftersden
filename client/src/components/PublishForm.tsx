@@ -36,7 +36,6 @@ export default function PublishForm({ opened, close, buildId, updateBuildStatus 
       const response = await fetch('/api/post/publish', requestOptions);
       const json = await response.json();
 
-      console.log(json);
 
       if (!response.ok) {
         const err = new Error(`${json.message}`);

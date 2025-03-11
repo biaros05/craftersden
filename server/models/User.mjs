@@ -9,8 +9,8 @@ const UserSchema = new Schema({
     type: Boolean,
     default: false
   },
-  liked: [],
-  saved: []
+  liked: [{type: Schema.Types.ObjectId, ref: 'Post'}],
+  saved: [{type: Schema.Types.ObjectId, ref: 'Post'}]
 });
 
 // Compile model from schema, name of collection in the

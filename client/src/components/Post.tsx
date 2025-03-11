@@ -3,6 +3,7 @@ import { Carousel } from '@mantine/carousel';
 import { IconBookmark, IconBookmarkFilled, IconHeart, IconHeartFilled } from '@tabler/icons-react';
 import { Image, Text, Box, ActionIcon } from '@mantine/core';
 import '../styles/Post.css';
+import { errorMessage, successMessage } from '../utils/notification_utils';
 
 type propTypes = {
   description: string,
@@ -10,6 +11,8 @@ type propTypes = {
   saved: boolean;
   imageURL: string
   username: string
+  buildId: string,
+  userId: string
 }
 
 /**
@@ -22,13 +25,44 @@ type propTypes = {
  * Rida was here
  * @param {string} props.imageURL Snapshot of the build
  * @param {string} props.username Username of the creator
+ * @param {string} props.buildId the id of the build
+ * @param {string} props.userId the id of the user.
  * @returns {React.ReactNode} The Post
  */
 export default function Post(
-  { description, liked, saved, imageURL, username }: propTypes): React.ReactNode {
+  { description, liked, saved, imageURL, username, buildId, userId }: propTypes): React.ReactNode {
 
   const [isLiked, setIsLiked] = useState(liked);
   const [isSaved, setIsSaved] = useState(saved);
+
+  const toggleLike = async (isLiked, buildId, userId) => {
+    const data = new FormData();
+    try{
+        data.append('isLiked', isLiked);
+        data.append('buildId', buildId);
+        data.append('userId', userId);
+
+        const requestOptions = {
+          method: 'POST',
+          body: data
+        };
+
+        const response = await fetch('/api/post/like', requestOptions);
+        const json = await response.json();
+
+        if(!response.ok){
+          const err = new Error(json.message);
+          errorMessage(err.message);
+          throw err;
+        }
+
+        successMessage(json.message);
+
+    }catch(err){
+      console.error(err);
+      errorMessage(err.message);
+    }
+  }
   return (
     <div className="post">
       <Carousel
@@ -56,6 +90,7 @@ export default function Post(
             aria-label="Settings"
             onClick={() => {
               setIsSaved(!isSaved);
+
             }}
           >
             {

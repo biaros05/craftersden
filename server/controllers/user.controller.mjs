@@ -105,19 +105,10 @@ async function getUsersSavedBuilds(req, res, next) {
   }
 }
 
-async function toggleLikeBuild(req, res, next){
-  try{
 
-    //Do toggle build, if the id is in -> remove, if id is not -> add 
-    const user = User.findOneAndUpdate(
-      {email: req.body.email},
-
-    )
-
-  } catch(e){
-    e.status = 500;
-    next(e);
-  }
-}
-
-export {uploadImage, storeImageWithName, uploadValidation, getUsersSavedBuilds};
+export {
+  uploadImage, 
+  storeImageWithName, 
+  uploadValidation, 
+  getUsersSavedBuilds
+};

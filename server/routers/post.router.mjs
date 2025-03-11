@@ -8,7 +8,8 @@ import {
   deleteImageFromAzure,
   publishBuild,
   getPublishedBuilds,
-  unpublishBuild
+  unpublishBuild,
+  toggleLikeBuild
 } from '../controllers/post.controller.mjs';
 import multer from 'multer';
 import { body } from 'express-validator';
@@ -97,6 +98,7 @@ postRouter.post('/publish', isAuthenticated, upload.fields([
 publishBuild,
 );
 
+postRouter.post('/like', isAuthenticated, toggleLikeBuild);
 
 postRouter.get('/', getPublishedBuilds);
 

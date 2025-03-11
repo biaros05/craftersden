@@ -8,6 +8,8 @@ import { useState } from 'react';
 
 
 type Post = {
+  _id: string,
+  user: string,
   progressPicture: string,
   username: string,  
   description: string,
@@ -65,6 +67,8 @@ export default function Forum(): React.ReactNode {
                 imageURL={build.progressPicture}
                 description={build.description}
                 username={build.username}
+                buildId={build._id}
+                userId={build.user}
                 liked={false}
                 saved={false}
               />

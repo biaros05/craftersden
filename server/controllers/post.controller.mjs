@@ -266,9 +266,60 @@ async function updatePostPicture(req, res, next) {
   }
 }
 
+async function toggleLikeBuild(req, res, next){
+  try{
+    const user = User.findOne({_id: req.body.userId});
+
+    if(!user){
+      const error = new Error('User does not exist in database.');
+      error.status = 404;
+      next(err);
+    }
+
+    const post = Post.findOne({_id: req.body.buildId});
+
+    if(!post){
+      const error = new Error('Post does not exist in the database');
+      error.status = 404;
+      next(err);
+    }
+
+    const updateUserLiked = req.body.isLiked
+    ? {$addToSet: {liked: req.body.buildId} }
+    : {$pull: {liked: req.body.buildId} };
+
+    const updatePostLikes = req.body.isLiked
+    ? {$addToSet: {likedBy: user._id} } 
+    : {$pull : {likedBy: user._id} };
+
+    await User.findOneAndUpdate(
+      {_id: user._id},
+      updateUserLiked
+    );
+
+    await Post.findOneAndUpdate(
+      {_id: req.body.buildId},
+      updatePostLikes
+    );
+    const message = req.body.isLiked ? 'Liked post' : 'Unliked post';
+    return res.status(200).json({ message: message});
+
+  } catch(e){
+    e.status = 500;
+    next(e);
+  }
+};
+
+
 export { 
-  saveBuild, uploadValidation, uploadImage, updatePostPicture, 
-  deleteBuild, deleteImageFromAzure,
+  saveBuild, 
+  uploadValidation, 
+  uploadImage, 
+  updatePostPicture, 
+  deleteBuild, 
+  deleteImageFromAzure,
   publishBuild, 
   getPublishedBuilds,
-  unpublishBuild };
+  unpublishBuild,
+  toggleLikeBuild
+ };
