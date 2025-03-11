@@ -1,6 +1,6 @@
 import React from 'react';
-import type { ItemRendererResources, NbtTag, Resources } from 'deepslate'
-import { BlockDefinition, ItemModel, BlockModel, Identifier, jsonToNbt, Structure, StructureRenderer, TextureAtlas, upperPowerOfTwo } from 'deepslate'
+import type { NbtTag, Resources } from 'deepslate'
+import { BlockDefinition, ItemModel, BlockModel, Identifier, jsonToNbt, Structure, TextureAtlas, upperPowerOfTwo } from 'deepslate'
 import InteractiveCanvas from "./InteractiveCanvas";
 import InteractiveStructureRenderer from './InteractiveStructureRenderer';
 
@@ -81,7 +81,7 @@ export default async function fetchResources(canvas: React.RefObject<HTMLCanvasE
         })
         const textureAtlas = new TextureAtlas(atlasData, idMap)
     
-        const resources: Resources & ItemRendererResources = {
+        const resources: Resources = {
             getBlockDefinition(id) { return blockDefinitions[id.toString()] },
             getBlockModel(id) { return blockModels[id.toString()] },
             getTextureUV(id) { return textureAtlas.getTextureUV(id) },
@@ -89,8 +89,6 @@ export default async function fetchResources(canvas: React.RefObject<HTMLCanvasE
             getBlockFlags() { return { opaque: false } },
             getBlockProperties() { return null },
             getDefaultBlockProperties() { return null },
-            getItemModel(id) { return itemModels[id.toString()] },
-            getItemComponents(id) { return itemComponents[id.toString()] },
         }
     
         // === Structure rendering ===
