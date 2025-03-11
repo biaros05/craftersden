@@ -1,17 +1,28 @@
+/* eslint-disable jsdoc/no-undefined-types */
 import React from 'react';
 import type { NbtTag, Resources } from 'deepslate'
 import { BlockDefinition, ItemModel, BlockModel, Identifier, jsonToNbt, Structure, TextureAtlas, upperPowerOfTwo } from 'deepslate'
 import InteractiveCanvas from "./InteractiveCanvas";
 import InteractiveStructureRenderer from './InteractiveStructureRenderer';
+import { mat4, vec3 } from 'gl-matrix';
+import { getCameraPosition } from './RaycastUtils';
 
 const MCMETA = 'https://raw.githubusercontent.com/misode/mcmeta/';
 
 /**
- *
  * @param {React.RefObject<HTMLCanvasElement | null>} canvas html canvas
  * @param {Structure} structure the structure to render
+ * @param {React.Dispatch<React.SetStateAction<mat4>>} setProjMat setState callback for projection matrix
+ * @param {React.Dispatch<React.SetStateAction<mat4 | undefined>>} setViewMat setState callback for view matrix
+ * @param {React.Dispatch<React.SetStateAction<vec3 | undefined>>} setCameraPosition setState callback for camera position
  */
-export default async function fetchResources(canvas: React.RefObject<HTMLCanvasElement | null>, structure: Structure) {
+export default async function fetchResources(
+        canvas: React.RefObject<HTMLCanvasElement | null>, 
+        structure: Structure, 
+        setProjMat: React.Dispatch<React.SetStateAction<mat4 | undefined>>, 
+        setViewMat: React.Dispatch<React.SetStateAction<mat4 | undefined>>,
+        setCameraPosition: React.Dispatch<React.SetStateAction<vec3 | undefined>>
+    ) {
     if (!canvas?.current) return;
     Promise.all([
         fetch(`${MCMETA}registries/item/data.min.json`).then(r => r.json()),
@@ -96,13 +107,14 @@ export default async function fetchResources(canvas: React.RefObject<HTMLCanvasE
         const structureGl = canvas?.current?.getContext('webgl');
         if (structureGl) {
             const structureRenderer = new InteractiveStructureRenderer(structureGl, structure, resources)
-            console.log(structure.getBlocks());
-            console.log(structure.isInside([0,2,0]))
 		    const size = structure.getSize()
-            
+
             new InteractiveCanvas(canvas.current!, view => {
-                structureRenderer.drawStructure(view); // 2
+                structureRenderer.drawStructure(view);
                 structureRenderer.drawGrid(view);
+                setViewMat(view);
+                setProjMat(structureRenderer.getPerspectiveMatrix());
+                setCameraPosition(getCameraPosition(view));
             }, [size[0] / 2, size[1] / 2, size[2] / 2])
         }
     })
