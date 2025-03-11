@@ -28,19 +28,9 @@ export default function Forum(): React.ReactNode {
 
   const navigate = useNavigate();
   const { setBuild } = useBuildUpdate();
-  const {username, email} = useAuth() ?? {};
 
   const handlePostClick = (build: Post) => {
-    console.log('username from useAuth:', username);
-    console.log('email from useAuth:', email);
-    console.log('build:', build);
-    setBuild(
-      {
-        ...build,
-        email: email,
-        username: username
-      }
-    );
+    setBuild(build)
     navigate('/den');
   }
 
