@@ -21,7 +21,6 @@ export default function ProfileBuilds({ userBuilds, setUserBuilds, email } : {em
     async function getBuilds() {
       const response = await fetch(`/api/user/${email}/builds`);
       const json = await response.json();
-      console.log(json.builds);
       setUserBuilds([...json.builds]);
     }
 
@@ -46,7 +45,6 @@ export default function ProfileBuilds({ userBuilds, setUserBuilds, email } : {em
     );
   }
 
-  console.log(`userBuilds: ${userBuilds}`);
   return(
     <section className="profile-builds">
       <Tabs defaultValue="builds" >
