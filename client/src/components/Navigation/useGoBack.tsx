@@ -1,11 +1,8 @@
 import { useCallback } from 'react';
-import { useLocation } from 'react-router-dom';
 import useNavigate from './useNavigate';
 
-const useGoBack = (fallback: string) => {
+const useGoBack = (fallback: string, location: any) => {
   const navigate = useNavigate();
-
-  const location = useLocation();
 
   return useCallback(() => {
     console.log("Location state:", location);

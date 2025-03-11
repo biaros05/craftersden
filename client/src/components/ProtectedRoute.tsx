@@ -18,20 +18,18 @@ export default function ProtectedRoute({ authed, children }:
   const { username, loading } = useAuth() ?? {};
   const location = useLocation();
 
-  const goBack = useGoBack('/');
+  const goBack = useGoBack('/', location, );
 
   if (loading) {
     return <h2>Loading...</h2>;
   }
 
-  useEffect(() => {
-    if (username && !authed || !username && authed) {
-      if (location.pathname !== '/logout' && location.pathname !== '/login') {
-        errorMessage("Please log in to access this page!");
-      }
-      goBack();
+  if (username && !authed || !username && authed) {
+    if (location.pathname !== '/logout' && location.pathname !== '/login') {
+      errorMessage("Please log in to access this page!");
     }
-  });
+    goBack();
+  }
 
   return children;
 };

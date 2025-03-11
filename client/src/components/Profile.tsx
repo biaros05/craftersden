@@ -16,7 +16,6 @@ import { useLocation } from 'react-router-dom';
  */
 export default function Profile(): React.ReactNode {
   // Detects route changes
-  // const location = useLocation(); 
   const {username, email, avatar} = useAuth() ?? {};
   const [opened, {open, close}] = useDisclosure(false);
 

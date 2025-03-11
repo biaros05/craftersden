@@ -32,7 +32,6 @@ export default function Login(): React.ReactNode  {
           onSuccess={(creds) => {
             login(creds);
             successMessage("Successfully logged in!");
-            // goBack();
           }}
           onError={handleError} />
       </section>
