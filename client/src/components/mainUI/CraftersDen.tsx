@@ -10,7 +10,7 @@ import * as THREE from 'three';
 import {encode} from '@msgpack/msgpack'; 
 import { useBuild, useBuildUpdate } from '../../hooks/BuildContext';
 import { successMessage, errorMessage } from '../../utils/notification_utils';
-import { BlockType, Mutable, SerializedBlockType, StatusError } from '../../utils/building_plane_utils';
+import { BlockType, SerializedBlockType, StatusError } from '../../utils/building_plane_utils';
 import { CurrentBlockContext } from '../../context/currentBlockContext';
 
 import {jsonifyBlocks} from '../../utils/building_plane_utils.ts';
@@ -37,7 +37,7 @@ function deserializeBlocks(blocks: SerializedBlockType[]): BlockType[] {
   const geoLoader = new THREE.BufferGeometryLoader();
   console.log('blocks in deserializeBlocks', blocks);
   return blocks.map(block => {
-    const newBlock: Mutable<BlockType> = {
+    const newBlock: BlockType = {
       id: block.id,
       name: block.name,
       position: [...block.position],

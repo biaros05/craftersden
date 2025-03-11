@@ -5,7 +5,7 @@ import { OrbitControls, Stats } from '@react-three/drei';
 import React, { useEffect, useState, useContext } from 'react';
 import { CurrentBlockContext } from '../../context/currentBlockContext';
 import { Block } from './Block';
-import { blockExists, BlockType, Mutable, getGeometry, getTextures } from '../../utils/building_plane_utils';
+import { blockExists, BlockType, getGeometry, getTextures } from '../../utils/building_plane_utils';
 import { loadGround } from '../../utils/building_plane_utils';
 import grassTop from '../../assets/grass_top.png';
 import { nanoid } from 'nanoid';
@@ -14,8 +14,8 @@ const planeRotation = -0.5 * Math.PI;
 
 type BuildPlaneProps = {
   canvasRef: React.RefObject<null>,
-  blocks: Mutable<BlockType>[],
-  setBlocks: React.Dispatch<React.SetStateAction<Mutable<BlockType>[]>>
+  blocks: BlockType[],
+  setBlocks: React.Dispatch<React.SetStateAction<BlockType[]>>
   style?: object
   isViewMode: boolean,
   setIsViewMode: React.Dispatch<React.SetStateAction<boolean>>
@@ -57,7 +57,7 @@ export default function BuildPlane({canvasRef, blocks, setBlocks, isViewMode, st
 
     const { textures, textureURLs } = getTextures(currentBlock);
 
-    const newBlock: Mutable<BlockType> = {
+    const newBlock: BlockType = {
       id: nanoid(),
       name: currentBlock.name,
       position: position,
@@ -88,7 +88,7 @@ export default function BuildPlane({canvasRef, blocks, setBlocks, isViewMode, st
   
       if (blockExists(newPosition, blocks)) return;
   
-      const newBlock: Mutable<BlockType> = {
+      const newBlock: BlockType = {
         id: nanoid(),
         position: newPosition,
         geometry: geometry,

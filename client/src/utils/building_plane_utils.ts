@@ -138,10 +138,6 @@ function getTexture(url: string): THREE.Texture {
   return texture;
 }
 
-type Mutable<T> = {
-  -readonly [k in keyof T]: T[k];
-};
-
 type BlockType = {
   id: string,
   name: string,
@@ -245,5 +241,4 @@ function jsonifyBlocks(blocks: BlockType[]) {
 }
 
 export {Cuboid, jsonifyBlocks, createGeometry, loadGround, 
-  blockExists, getTexture, getGeometry, BlockType, SerializedBlockType, SelectedBlock, StatusError, getTextures,
-  Mutable};
+  blockExists, getTexture, getGeometry, BlockType, SerializedBlockType, SelectedBlock, StatusError, getTextures};
