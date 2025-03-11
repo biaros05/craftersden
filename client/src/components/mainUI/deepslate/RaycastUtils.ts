@@ -1,5 +1,15 @@
 import { mat4, vec4, vec3 } from "gl-matrix";
 
+export type Mesh = {
+    geometry: Geometry
+}
+
+export type Geometry = Triangle[];
+
+export type Triangle = [Vertex, Vertex, Vertex];
+
+export type Vertex = [number, number, number];
+
 /**
  * Gets the world ray (origin, direction) from the mouse position on the canvas.
  * The direction is a unit vector.
@@ -113,35 +123,74 @@ export function computeTriangleNormal(v0: vec3, v1: vec3, v2: vec3): vec3 {
     return normal;
 }
 
-export type Geometry = Triangle[];
+/**
+ * @param {vec3} pos - Position of cube
+ * @returns {Geometry} Triangles that make a cube
+ */
+export function computeTrianglesOfCube(pos: vec3): Geometry {
+    const vertices: Vertex[] = [
+        [pos[0],        pos[1],     pos[2]],        // 0
+        [pos[0] + 1,    pos[1],     pos[2]],        // 1
+        [pos[0],        pos[1],     pos[2] + 1],    // 2
+        [pos[0] + 1,    pos[1],     pos[2] + 1],    // 3
+        [pos[0],        pos[1] + 1, pos[2]],        // 4
+        [pos[0] + 1,    pos[1] + 1, pos[2]],        // 5
+        [pos[0],        pos[1] + 1, pos[2] + 1],    // 6
+        [pos[0] + 1,    pos[1] + 1, pos[2] + 1],    // 7
+    ]
 
-export type Triangle = [Vertex, Vertex, Vertex];
-
-export type Vertex = [number, number, number];
+    return [
+        // Front face
+        [vertices[2], vertices[3], vertices[7]],
+        [vertices[2], vertices[7], vertices[6]],
+        // Back face
+        [vertices[0], vertices[4], vertices[5]],
+        [vertices[0], vertices[5], vertices[1]],
+        // Top face
+        [vertices[4], vertices[6], vertices[7]],
+        [vertices[4], vertices[7], vertices[5]],
+        // Bottom face
+        [vertices[0], vertices[1], vertices[3]],
+        [vertices[0], vertices[3], vertices[2]],
+        // Right face
+        [vertices[1], vertices[5], vertices[7]],
+        [vertices[1], vertices[7], vertices[3]],
+        // Left face
+        [vertices[0], vertices[2], vertices[6]],
+        [vertices[0], vertices[6], vertices[4]]
+    ];
+}
 
 
 /**
- * @returns {Geometry} Triangles that make a cube
+ * Compute the camera position from its viewMatrix
+ * @param {mat4} viewMatrix View matrix used by camera
+ * @returns {vec3} Camera position
  */
-export function computeTrianglesOfCube(): Geometry {
-    return [
-        // Front face
-        [[-1, -1, 1], [1, -1, 1], [1, 1, 1]],
-        [[-1, -1, 1], [1, 1, 1], [-1, 1, 1]],
-        // Back face
-        [[-1, -1, -1], [-1, 1, -1], [1, 1, -1]],
-        [[-1, -1, -1], [1, 1, -1], [1, -1, -1]],
-        // Top face
-        [[-1, 1, -1], [-1, 1, 1], [1, 1, 1]],
-        [[-1, 1, -1], [1, 1, 1], [1, 1, -1]],
-        // Bottom face
-        [[-1, -1, -1], [1, -1, -1], [1, -1, 1]],
-        [[-1, -1, -1], [1, -1, 1], [-1, -1, 1]],
-        // Right face
-        [[1, -1, -1], [1, 1, -1], [1, 1, 1]],
-        [[1, -1, -1], [1, 1, 1], [1, -1, 1]],
-        // Left face
-        [[-1, -1, -1], [-1, -1, 1], [-1, 1, 1]],
-        [[-1, -1, -1], [-1, 1, 1], [-1, 1, -1]]
-    ];
+export function getCameraPosition(viewMatrix: mat4): vec3 {
+    const invView = mat4.create();
+    mat4.invert(invView, viewMatrix);
+
+    const cameraPos = vec3.fromValues(invView[12], invView[13], invView[14]);
+    return cameraPos;
+}
+
+/**
+ * Checks a list of meshes for intersection from the ray
+ * @param {Mesh[]} blocks - Blocks to check
+ * @param {vec3} ray - Unit vector denoting direction of ray
+ * @param {vec3} rayOrigin - Origin of ray
+ * @returns {number} Length of the ray
+ */
+export function checkBlocksForIntersect(blocks: Mesh[], ray: vec3, rayOrigin: vec3): number | null {
+    let minT = Infinity;
+    for (let i = 0; i < blocks.length; i++) {
+        for (let j = 0; j < blocks[i].geometry.length; j++) {
+            const t = rayIntersectsTriangle(rayOrigin, ray, blocks[i].geometry[j][0], blocks[i].geometry[j][1], blocks[i].geometry[j][2]);
+            if (t) {
+                minT = Math.min(t, minT);
+            }
+        }
+    }
+    return minT === Infinity ? null : minT;
 }

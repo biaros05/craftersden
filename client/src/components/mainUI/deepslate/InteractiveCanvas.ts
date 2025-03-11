@@ -3,6 +3,8 @@ import { mat4 } from "gl-matrix"
 export default class InteractiveCanvas {
     private xRotation = 0.8
     private yRotation = 0.5
+    public xPosition = 0;
+    public yPosition = 0;
 
     constructor(
         canvas: HTMLCanvasElement,
@@ -18,8 +20,14 @@ export default class InteractiveCanvas {
         })
         canvas.addEventListener('mousemove', evt => {
             if (dragPos) {
-                this.yRotation += (evt.clientX - dragPos[0]) / 100
-                this.xRotation += (evt.clientY - dragPos[1]) / 100
+                if (evt.shiftKey) {
+                    console.log('I WANT TO DRAG')
+                    this.xPosition += (evt.clientX - dragPos[0]) / 100
+                    this.yPosition += (evt.clientY - dragPos[1]) / 100
+                } else {
+                    this.yRotation += (evt.clientX - dragPos[0]) / 100
+                    this.xRotation += (evt.clientY - dragPos[1]) / 100
+                }
                 dragPos = [evt.clientX, evt.clientY]
                 this.redraw()
             }
@@ -47,6 +55,8 @@ export default class InteractiveCanvas {
 
         const view = mat4.create()
         mat4.translate(view, view, [0, 0, -this.viewDist])
+        mat4.translate(view, view, [0, -this.yPosition, 0])
+        mat4.translate(view, view, [this.xPosition, 0, 0])
         mat4.rotate(view, view, this.xRotation, [1, 0, 0])
         mat4.rotate(view, view, this.yRotation, [0, 1, 0])
         if (this.center) {
