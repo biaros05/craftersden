@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import Post from './Post';
 import '../styles/forum.css';
 import useNavigate from "./Navigation/useNavigate.tsx"
+import { useAuth } from '../hooks/useAuth';
 import { useBuildUpdate } from '../hooks/BuildContext.tsx';
 import { TextInput } from '@mantine/core';
 import { IconSearch } from '@tabler/icons-react';
@@ -27,11 +28,20 @@ export default function Forum(): React.ReactNode {
 
   const navigate = useNavigate();
   const { setBuild } = useBuildUpdate();
+  const {username, email} = useAuth() ?? {};
 
   const handlePostClick = (build: Post) => {
-    setBuild({ ...build });
+    console.log('username from useAuth:', username);
+    console.log('email from useAuth:', email);
+    console.log('build:', build);
+    setBuild(
+      {
+        ...build,
+        email: email,
+        username: username
+      }
+    );
     navigate('/den');
-    console.log('post clicked', build);
   }
 
   const [publishedBuilds, setPublishedBuilds] = useState<Post[]>([]);
