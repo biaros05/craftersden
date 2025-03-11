@@ -7,7 +7,11 @@ import '../../styles/CustomNotification.css';
 
 type CustomNotificationProps = ToastContentProps<{
   redirect: (arg0: string) => void,
-  content: string;
+  content: string,
+  confirmContent: string,
+  cancelContent: string,
+  onCancelClick?: () => void,
+  onConfirmClick?: () => void,
 }>;
 
 /**
@@ -17,7 +21,7 @@ type CustomNotificationProps = ToastContentProps<{
  * @param {JSON} props.toastProps - props to pass to the toast notification
  * @returns {React.ReactNode} - CustomNotification component
  */
-export default function CustomNotification({
+export default function ConfirmNotification({
   closeToast,
   data,
   toastProps,
@@ -34,21 +38,28 @@ export default function CustomNotification({
               'ml-auto transition-all text-xs  border rounded-md px-4 py-2 text-white active:scale-[.95]',
               isColored ? 'bg-transparent' : 'bg-zinc-900'
             )}
-            onClick={closeToast} 
+            onClick={() => {
+              closeToast();
+              if (data.onCancelClick) {
+                data.onCancelClick();
+              }
+            }}
             variant='transparent' color="rgba(186, 181, 181, 1)">
-                Cancel
+              {data.cancelContent}
             </Button>
             <Button variant='transparent'
             color="rgba(186, 181, 181, 1)"
             onClick={() => {
               closeToast()
-              data.redirect('/login');
+              if (data.onConfirmClick) {
+                data.onConfirmClick();
+              }
             }}
             className={cx(
               'ml-auto transition-all text-xs  border rounded-md px-4 py-2 text-white active:scale-[.95]',
               isColored ? 'bg-transparent' : 'bg-zinc-900'
             )}>
-              Login
+              {data.confirmContent}
             </Button>
           </div>
         </div>

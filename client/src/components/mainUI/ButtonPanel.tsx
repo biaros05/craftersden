@@ -3,7 +3,7 @@ import {Button} from '@mantine/core';
 import useNavigate from '../Navigation/useNavigate.tsx';
 import '../../styles/ButtonPanel.css';
 import { toast } from 'react-toastify';
-import CustomNotification from './CustomNotification.tsx'
+import ConfirmNotification from './ConfirmNotification.tsx'
 import { Slide } from 'react-toastify';
 import {jsonifyBlocks} from '../../utils/building_plane_utils.ts';
 import { BlockType } from '../../utils/building_plane_utils.ts';
@@ -14,21 +14,23 @@ type ButtonPanelProps = {
   savePost: (arg0: string) => void,
   isViewMode: boolean,
   email: string,
+  isBuildOwner: boolean,
   blocks: BlockType[]
 }
 
 /**
  * Displays Save and Toggle view mode buttons
  * @param {object} props React props
- * @param {React.RefObject} props.canvas React ref to canvas element
+ * @param {React.RefObject} props.canvas React ref Cto canvas element
  * @param {Function} props.setIsViewMode Callback to set isViewModel state 
  * @param {Function} props.savePost thumbnail url
  * @param {boolean} props.isViewMode isViewMode state.
  * @param {string} props.email email of current user.
+ * @param {boolean} props.isBuildOwner is current user the owner of the build.
  * @param {[]} props.blocks build blocks.
  * @returns {React.ReactNode} Button panel section with buttons
  */
-function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode, email, blocks}: ButtonPanelProps): React.ReactNode {
+function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode, email, isBuildOwner, blocks}: ButtonPanelProps): React.ReactNode {
   const navigate = useNavigate();
 
   return (
@@ -43,10 +45,13 @@ function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode, email, blocks
             console.log(serializedBlocks);
             localStorage.setItem("build", JSON.stringify({"blocks": serializedBlocks}));
 
-            toast.info(CustomNotification, {
+            toast.info(ConfirmNotification, {
               data: {
                 redirect: navigate,
                 content: 'Please login to save your build',
+                confirmContent: 'Login',
+                cancelContent: 'Cancel',
+                onConfirmClick: () => navigate('/login'),
               },
               ariaLabel: 'Something went wrong',
               position: "bottom-right",
