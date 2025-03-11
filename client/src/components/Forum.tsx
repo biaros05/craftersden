@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
 import Post from './Post';
 import '../styles/forum.css';
+import useNavigate from "./Navigation/useNavigate.tsx"
+import { useBuildUpdate } from '../hooks/BuildContext.tsx';
 import { TextInput } from '@mantine/core';
 import { IconSearch } from '@tabler/icons-react';
 import { errorMessage } from '../utils/notification_utils';
@@ -22,6 +24,15 @@ type Post = {
  * @returns {React.ReactNode} Forum page.
  */
 export default function Forum(): React.ReactNode {
+
+  const navigate = useNavigate();
+  const { setBuild } = useBuildUpdate();
+
+  const handlePostClick = (build: Post) => {
+    setBuild({ ...build });
+    navigate('/den');
+    console.log('post clicked', build);
+  }
 
   const [publishedBuilds, setPublishedBuilds] = useState<Post[]>([]);
   useEffect(() => {
@@ -67,6 +78,7 @@ export default function Forum(): React.ReactNode {
                 username={build.username}
                 liked={false}
                 saved={false}
+                onClick={() => handlePostClick(build)}
               />
             );
           })
