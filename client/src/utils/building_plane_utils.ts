@@ -154,9 +154,11 @@ type SerializedBlockType = {
   id: string,
   name: string,
   position: [number, number, number],
+  worldPosition?: [number, number, number] | undefined,
   geometry: object,
-  textures: object[],
-  textureURLs: string[]
+  textureURLs: string[],
+  rotation?: [number, number, number] | undefined,
+  rotationIndex?: number | undefined
 }
 
 /**
@@ -228,8 +230,11 @@ function jsonifyBlocks(blocks: BlockType[]) {
       id: block.id,
       name: block.name,
       position: block.position,
+      worldPosition: block.worldPosition,
       geometry: geomJSON,
       textureURLs: block.textureURLs,
+      rotation: block.rotation,
+      rotationIndex: block.rotationIndex,
     };
     return b;
   })
