@@ -63,10 +63,17 @@ export default function CraftersDen(): React.ReactNode {
   const [blocks, setBlocks] = useState<BlockType[]>([]);
   const [currentBlock, setCurrentBlock] = useState(null);
 
-  const build = useBuild();
+  // useBuild returns an object that contains build
+  const build = useBuild()?.build;
   const { setBuild } = useBuildUpdate();
 
-  const isBuildOwner = build.build?.user === id;
+  const isBuildOwner = build?.user === id;
+
+  let curBuildId = null;
+  
+  if(build && isBuildOwner) {
+    curBuildId = build._id;
+  }
 
   useEffect(() => {
     const serializedBlocks = JSON.parse(localStorage.getItem("build") ?? "{}");
@@ -74,19 +81,13 @@ export default function CraftersDen(): React.ReactNode {
       setBlocks(deserializeBlocks(serializedBlocks.blocks))
       localStorage.clear();
     }
-    else if (build.build !== undefined && build.build !== null) {
-      setBlocks(deserializeBlocks(build.build.buildJSON));
+    else if (build) {
+      setBlocks(deserializeBlocks(build.buildJSON));
     }
     else{
       setBlocks(deserializeBlocks([]));
     }
   }, []);
-
-  let curBuildId = null;
-
-  if(build.build !== undefined && build.build !== null && isBuildOwner) {
-    curBuildId = build.build._id;
-  }
 
     /**
      * Fetches the complete block data from the api, and stores it in CurrentBlockContext.
@@ -128,7 +129,7 @@ export default function CraftersDen(): React.ReactNode {
         throw err;
       }
 
-      setBuild({...{'_id': json.id}, ...build.build})
+      setBuild({...{'_id': json.id}, ...build})
       successMessage(json.message);
     } catch (e) {
       errorMessage(e.message);
