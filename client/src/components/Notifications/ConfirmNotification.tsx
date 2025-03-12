@@ -6,7 +6,6 @@ import '../../styles/CustomNotification.css';
 
 
 type CustomNotificationProps = ToastContentProps<{
-  redirect: (arg0: string) => void,
   content: string,
   confirmContent: string,
   cancelContent: string,

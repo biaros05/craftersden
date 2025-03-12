@@ -1,16 +1,14 @@
 import React from 'react';
 import {Button} from '@mantine/core';
-import useNavigate from '../Navigation/useNavigate.tsx';
 import '../../styles/ButtonPanel.css';
-import { toast } from 'react-toastify';
-import ConfirmNotification from './ConfirmNotification.tsx'
-import { Slide } from 'react-toastify';
+import useNavigate from '../Navigation/useNavigate.tsx';
+import {buildLoginNotification, buildCopyNotification} from '../Notifications/buildNotifications'
 import {jsonifyBlocks} from '../../utils/building_plane_utils.ts';
 import { BlockType } from '../../utils/building_plane_utils.ts';
 
 type ButtonPanelProps = { 
   setIsViewMode: (arg0: boolean) => void,
-  canvas: React.RefObject<null>,
+  canvas: React.RefObject<HTMLCanvasElement | null>,
   savePost: (arg0: string) => void,
   isViewMode: boolean,
   isUserLoggedIn: boolean,
@@ -32,7 +30,6 @@ type ButtonPanelProps = {
  */
 function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode, isUserLoggedIn, isBuildOwner, blocks}: ButtonPanelProps): React.ReactNode {
   const navigate = useNavigate();
-
   return (
     <section className="button-panel">
       <Button 
@@ -44,47 +41,9 @@ function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode, isUserLoggedI
             const serializedBlocks = jsonifyBlocks(blocks);
             console.log(serializedBlocks);
             localStorage.setItem("build", JSON.stringify({"blocks": serializedBlocks}));
-
-            toast.info(ConfirmNotification, {
-              data: {
-                redirect: navigate,
-                content: 'Please login to save your build',
-                confirmContent: 'Login',
-                cancelContent: 'Cancel',
-                onConfirmClick: () => navigate('/login'),
-              },
-              ariaLabel: 'Something went wrong',
-              position: "bottom-right",
-              autoClose: 10000,
-              hideProgressBar: false,
-              closeOnClick: false,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: "colored",
-              transition: Slide,
-            });
+            buildLoginNotification(() => navigate('/login'));
           } else if (!isBuildOwner) {
-            toast.info(ConfirmNotification, {
-              data: {
-                content: 'Would you like to make a copy of this build',
-                confirmContent: 'Yes',
-                cancelContent: 'Nah',
-                onConfirmClick: () => {
-                  savePost(canvas.current!.toDataURL('image/png')); 
-                }
-              },
-              ariaLabel: 'Something went wrong',
-              position: "bottom-right",
-              autoClose: 10000,
-              hideProgressBar: false,
-              closeOnClick: false,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: "colored",
-              transition: Slide,
-            });
+            buildCopyNotification(() => savePost(canvas.current!.toDataURL('image/png')));
           }
           else {
             savePost(canvas.current!.toDataURL('image/png'));
