@@ -1,9 +1,10 @@
 /* eslint-disable jsdoc/no-undefined-types */
 import React, { useEffect, useRef, useState } from 'react'
 import fetchResources from './ResourcesFetcher';
-import { Mesh, checkBlocksForIntersect, computePoint, computeTrianglesOfCube, screenToWorldRay } from './RaycastUtils';
+import { Mesh, checkBlocksForIntersect, computePoint, computeTriangleNormal, computeTrianglesOfCube, screenToWorldRay } from './RaycastUtils';
 import { PlacedBlock, Structure } from 'deepslate';
-import { mat4, vec3 } from 'gl-matrix';
+import { mat4, ReadonlyVec3, vec3 } from 'gl-matrix';
+import CloneableStructure from './CloneableStructure';
 
 interface PlaneBlock extends Mesh {
 	name: string;
@@ -15,7 +16,7 @@ interface PlaneBlock extends Mesh {
  */
 export default function DeepslatePlane(): React.ReactNode {
 	const canvas = useRef<HTMLCanvasElement>(null);
-	const [structure, setStructure] = useState<Structure>(new Structure([3, 2, 1]));
+	const [structure, setStructure] = useState<CloneableStructure>(new CloneableStructure([5, 5, 5]));
 	const [blocks, setBlocks] = useState<PlaneBlock[]>([]);
 	const [projectionMatrix, setProjectionMatrix] = useState<mat4>();
 	const [viewMatrix, setViewMatrix] = useState<mat4>();
@@ -31,7 +32,7 @@ export default function DeepslatePlane(): React.ReactNode {
 		structure.addBlock([1, 1, 0], 'minecraft:skeleton_skull', { rotation: '15' })
 		structure.addBlock([2, 1, 0], 'minecraft:acacia_fence', { waterlogged: 'true', north: 'true' })
 		structure.addBlock([0, 0, 0], 'minecraft:wall_torch', { facing: 'west' })
-		setStructure(Object.assign({}, structure));
+		setStructure(structure.clone());
 		setBlocks(structureBlockToPlaneBlock(structure.getBlocks()));
 	}, [])
 
@@ -52,10 +53,30 @@ export default function DeepslatePlane(): React.ReactNode {
 			const intersect = checkBlocksForIntersect(blocks, ray.direction, ray.origin);
 			console.log(intersect);
 			if (intersect) {
-				const point = computePoint(intersect, ray.origin, ray.direction).map(p => Math.floor(p));
-				console.log(point)
+				const point = computePoint(intersect.distance, ray.origin, ray.direction).map(p => Math.floor(p));
+				const normal = computeTriangleNormal(...intersect.triangle);
 				// Correct point using normal vector of triangle.
+				if (normal[0] === 1) {
+					point[0] -= 1;
+				}
+				if (normal[1] === 1) {
+					point[1] -= 1;
+				}
+				if (normal[2] === 1) {
+					point[2] -= 1;
+				}
+				
+				// Point is coordinates of the the block that was clicked on
+				const newBlockPosVec = vec3.add(vec3.create(), point as ReadonlyVec3, normal);
+				const newBlockPos: [number, number, number] = [newBlockPosVec[0], newBlockPosVec[1], newBlockPosVec[2]];
+				if (structure.isInside(newBlockPos)) {
+					structure.addBlock(newBlockPos, 'minecraft:stone')
+					setStructure(structure.clone());
+					setBlocks([...blocks, ...structureBlockToPlaneBlock([structure.getBlock(newBlockPos)!])])
+				}
 			}
+		} else {
+			console.log('Canvas is loading')
 		}
 	}
 
