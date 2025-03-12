@@ -10,7 +10,7 @@ type propTypes = {
   saved: boolean;
   imageURL: string
   username: string
-  onClick?: () => void
+  viewPostOnClick?: () => void
 }
 
 /**
@@ -23,16 +23,16 @@ type propTypes = {
  * Rida was here
  * @param {string} props.imageURL Snapshot of the build
  * @param {string} props.username Username of the creator
- * @param {Function} props.onClick - Function to call when the post is clicked
+ * @param {Function} props.viewPostOnClick - Function to call when the post is clicked
  * @returns {React.ReactNode} The Post
  */
 export default function Post(
-  { description, liked, saved, imageURL, username, onClick }: propTypes): React.ReactNode {
+  { description, liked, saved, imageURL, username, viewPostOnClick }: propTypes): React.ReactNode {
 
   const [isLiked, setIsLiked] = useState(liked);
   const [isSaved, setIsSaved] = useState(saved);
   return (
-    <div className="post" style={{ width: '250px' }} onClick={onClick}>
+    <div className="post" style={{ width: '250px' }}>
       <Carousel
         height={125}
         slideSize="100%"
@@ -40,6 +40,7 @@ export default function Post(
         slideGap="md"
         dragFree
         slidesToScroll={1}
+        onClick = {viewPostOnClick}
       >
         {
         <Carousel.Slide key={imageURL}>

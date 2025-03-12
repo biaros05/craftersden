@@ -78,7 +78,7 @@ export default function Forum(): React.ReactNode {
                 username={build.username}
                 liked={false}
                 saved={false}
-                onClick={() => handlePostClick(build)}
+                viewPostOnClick={() => handlePostClick(build)}
               />
             );
           })
