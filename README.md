@@ -190,5 +190,6 @@ nodemon api.mjs
 ## Tests
 To run the tests:
 ```
+cd server
 npm run test
 ```

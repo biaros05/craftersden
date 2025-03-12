@@ -1,81 +1,86 @@
-import React, { FormEvent, FormEventHandler, useEffect, useState } from "react";
-import { useAuth } from "../hooks/useAuth";
-import { Tabs, ActionIcon, Button, Modal } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
-import { IconEdit } from "@tabler/icons-react";
-import '../styles/profile.css'
-import Builds from './Builds';
+import React, { FormEvent, FormEventHandler, useState, useEffect } from 'react';
+import { useAuth } from '../hooks/useAuth';
+import { ActionIcon, Button, Modal } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
+import { IconEdit } from '@tabler/icons-react';
+import '../styles/profile.css';
+import ProfileBuilds from './ProfileBuilds.tsx';
+import { useBuild } from '../hooks/BuildContext.tsx';
+import { useLocation } from 'react-router-dom';
 
-export default function Profile() {
-    const {username, email, avatar} = useAuth() ?? {};
-    const [opened, {open, close}] = useDisclosure(false);
-    const [builds, setBuilds] = useState([]);
 
-    useEffect(() => {
-      async function getBuilds() {
-        const response = await fetch(`/api/user/${email}/builds`);
-        const json = await response.json();
-        console.log(json);
-        setBuilds(json.builds);
-      }
-      getBuilds();
-    },[]);
+/**
+ * Profile page component that displays list of users
+ * my builds, saved builds, liked builds
+ * @returns {React.ReactNode} Profile Page
+ */
+export default function Profile(): React.ReactNode {
+  // Detects route changes
+  // const location = useLocation(); 
+  const {username, email, avatar} = useAuth() ?? {};
+  const [opened, {open, close}] = useDisclosure(false);
 
-    const onSubmitHandler: FormEventHandler = async (event: FormEvent) => {
-      event.preventDefault();
-      const target = event.target as HTMLFormElement;
-      const formData = new FormData(target);
-      console.log(formData)
-      await fetch('/api/user/', { method: 'PUT', body: formData});
-      window.location.reload();
-      close();
-    };
+  const location = useLocation(); // Detects route changes
+  const build = useBuild();
 
-    return <div className="profile-page container">
-      <Modal opened={opened} onClose={close} title="Edit Profile" className="edit-profile-modal" centered >
-        <form onSubmit={onSubmitHandler}>
-          <label htmlFor="username">Username</label>
-          <input type="text" name="username" placeholder="Username" />
-          <label htmlFor="avatar">Upload an image!</label>
-          <input type="file" id="avatar" name="avatar" 
-            accept="image/png, image/jpeg, image/jpg, image/webp" />
-          <Button type="submit" className="form-submit">Submit</Button>
-        </form>
-      </Modal>
+  const [userBuilds, setUserBuilds] = useState<Build[]>([]);
 
-      <section className="user-info">
-        <div className="big-profile-image-wrapper">
-          <img src={avatar} alt="profile picture" className="big-profile-image" />
+  useEffect(() => {
+    /**
+     * Fetches all builds for a user and updates
+     * builds state
+     */
+    async function getBuilds() {
+      const response = await fetch(`/api/user/${email}/builds`);
+      const json = await response.json();
+      setUserBuilds([...json.builds]);
+    }
+
+    getBuilds();
+  }, [email, build, location.pathname]);
+
+
+  const onSubmitHandler: FormEventHandler = async (event: FormEvent) => {
+    event.preventDefault();
+    const target = event.target as HTMLFormElement;
+    const formData = new FormData(target);
+    await fetch('/api/user/', { method: 'PUT', body: formData});
+    window.location.reload();
+    close();
+  };
+
+  return <div className="profile-page container">
+    <Modal 
+      opened={opened} 
+      onClose={close} 
+      title="Edit Profile" 
+      className="edit-profile-modal" 
+      centered 
+    >
+      <form onSubmit={onSubmitHandler}>
+        <label htmlFor="username">Username</label>
+        <input type="text" name="username" placeholder="Username" maxLength={30}/>
+        <label htmlFor="avatar">Upload an image!</label>
+        <input type="file" id="avatar" name="avatar" 
+          accept="image/png, image/jpeg, image/jpg, image/webp" />
+        <Button type="submit" className="form-submit">Submit</Button>
+      </form>
+    </Modal>
+
+    <section className="user-info">
+      <div className="big-profile-image-wrapper">
+        <img src={avatar} alt="profile picture" className="big-profile-image" />
+      </div>
+      <div className="name-area">
+        <div>
+          <h2>{username}</h2>
+          <p>{email}</p>
         </div>
-        <div className="name-area">
-          <div>
-            <h2>{username}</h2>
-            <p>{email}</p>
-          </div>
-          <ActionIcon variant="filled" size="lg" aria-label="Edit Profile" onClick={open} >
-            <IconEdit />
-          </ActionIcon>
-        </div>
-      </section>
-      <section className="profile-builds">
-        <Tabs defaultValue="builds" >
-          <Tabs.List>
-            <Tabs.Tab value="builds">
-              <h2>Builds</h2>
-            </Tabs.Tab>
-            <Tabs.Tab value="saves">
-              <h2>Saves</h2>
-            </Tabs.Tab>
-          </Tabs.List>
-
-          <Tabs.Panel value="builds">
-            <Builds builds={builds}/>
-          </Tabs.Panel>
-
-          <Tabs.Panel value="saves">
-            Saves go here
-          </Tabs.Panel>
-        </Tabs>
-      </section>
-    </div>
+        <ActionIcon variant="filled" size="lg" aria-label="Edit Profile" onClick={open} >
+          <IconEdit />
+        </ActionIcon>
+      </div>
+    </section>
+    <ProfileBuilds userBuilds={userBuilds} setUserBuilds={setUserBuilds} email={email}/>
+  </div>;
 }

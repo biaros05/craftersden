@@ -2,24 +2,13 @@ import Post from '../models/Post.js';
 import User from '../models/User.mjs';
 import dotenv from 'dotenv';
 import { validationResult } from 'express-validator';
-import { BlobServiceClient} from '@azure/storage-blob';
+import { decode } from '@msgpack/msgpack';
+import BlobServiceProvider from '../utils/BlobService.mjs';
 
 dotenv.config();
 
-const sasToken = process.env.AZURE_SAS;
-const containerName = process.env.AZURE_BLOB_CONTAINER || 'imageblob';
-const storageAccountName = process.env.AZURE_STORAGE_ACCOUNT || 'nameofyourstorageaccount';
-const blobPublicUrl = `https://${storageAccountName}.blob.core.windows.net/${containerName}/`;
+const blobService = new BlobServiceProvider();
 
-const blobService = new BlobServiceClient(
-  `https://${storageAccountName}.blob.core.windows.net/?${sasToken}`
-);
-const containerClient = blobService.getContainerClient(containerName);
-
-/**
- * Calls validationResult method to ensure all validation has passed. Throws an error 
- * on account of any failed validation.
- */
 /**
  * Calls validationResult method to ensure all validation has passed. Throws an error 
  * on account of any failed validation.
@@ -30,10 +19,10 @@ const containerClient = blobService.getContainerClient(containerName);
 function uploadValidation(req, res, next) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    const error = new Error();
+    const error = new Error(JSON.stringify({ errors: errors.array() })); 
     error.status = 422;
-    error.message = { errors: errors.array() };
     next(error);
+    
   }
   next();
 }
@@ -47,21 +36,23 @@ function uploadValidation(req, res, next) {
  * @returns {JSON} - JSON with status code
  */
 async function saveBuild(req, res, next) {
-  const build = req.body.build;
+  const encoded = req.files['blocks'][0];
+  const buffer = Buffer.from(encoded.buffer, encoded.byteOffset, encoded.byteLength);
+  const blocks = decode(buffer);
   const email = req.body.email;
   try {
     if (req.body.buildId !== 'null' && req.body.buildId !== undefined) {
       req.post = await Post.findOneAndUpdate(
-        {_id: req.body.buildId}, 
-        {buildJSON: build},
-        {returnDocument: 'after'}
+        { _id: req.body.buildId },
+        { buildJSON: blocks },
+        { returnDocument: 'after' }
       );
 
     } else {
-      const user = await User.findOne({email: email});
+      const user = await User.findOne({ email: email });
       const post = new Post({
-        buildJSON: build, 
-        user: user._id, 
+        buildJSON: blocks,
+        user: user._id,
         description: '',
         thumbnails: [],
         isPublished: false,
@@ -73,9 +64,161 @@ async function saveBuild(req, res, next) {
       req.post = post;
     }
     next();
-  } catch (e){
+  } catch (e) {
     e.status = 500;
     next(e);
+  }
+}
+
+/**
+ * This function deletes a build from DB given a buildID. 
+ * @param {*} req - Request object 
+ * @param {*} res - Respond object
+ * @param {*} next - Next 
+ * @returns {JSON} - JSON with status code
+ */
+async function deleteBuild(req, res, next){
+  const buildId = req.params.buildId;
+  try {
+
+    const deletedPost = await Post.findByIdAndDelete(
+      buildId
+    );
+
+    if (!deletedPost) {
+      const error = new Error('This post does not exist');
+      error.status = 404;
+      return next(error);
+    }
+
+    req.url = deletedPost.progressPicture;
+    next();
+
+  } catch(err) {
+    err.status = 500;
+    next(err);
+  }
+}
+
+/**
+ * This function takes a build id to update the build's isPublished field to true. 
+ * Updates description if there is one.
+ * @param {object} req - The request object.
+ * @param {object} res - The response object.
+ * @param {*} next - Next
+ * @returns {Response} - The response object
+ */
+async function publishBuild(req, res, next) {
+  try{
+    if(!req.body.buildId){
+      return res.status(404).json({ message: 'Invalid build ID'});
+    }
+
+    const updateData = { isPublished : true };
+    if(req.body.description){
+      updateData.description = req.body.description;
+    }
+
+    const publishedBuild = await Post.findOneAndUpdate(
+      {_id: req.body.buildId},
+      updateData,
+      { returnDocument: 'after'}
+    );
+
+    if(!publishedBuild){
+      return res.json(404).json({ message: 'Not able to publish build'});
+    }
+
+    return res.status(200).json({ message: 'Build published successfully!'});
+  }catch(err){
+    err.status = 500;
+    next(err);
+  }
+}
+
+/**
+ * Takes the progressPicture from recently deleted post and removes it from azure
+ * @param {*} req -
+ * @param {*} res -
+ * @param {*} next -
+ * @returns {JSON} - status of the request
+ */
+async function deleteImageFromAzure(req, res, next) {
+  try {
+    const splitLink = req.url.split('/');
+    const blobName = splitLink[splitLink.length - 1];
+    await blobService.deleteFile(blobName);
+    return res.status(204).send();
+  } catch (err) {
+    err.status = 500;
+    next(err);
+  }
+}
+
+/**
+ * This function unpublishes a build using the buildId
+ * @param {object} req - The request object.
+ * @param {object} res - The response object.
+ * @param {*} next - Next
+ * @returns {Response} - The response object
+ */
+async function unpublishBuild(req, res, next){
+  try{
+    if(!req.body.buildId){
+      return res.status(404).json({ message: 'Invalid build ID'});
+    }
+
+    const unpublishedBuild = await Post.findOneAndUpdate(
+      {_id: req.body.buildId},
+      {isPublished: false},
+      { returnDocument: 'after'}
+    );
+
+    if(!unpublishedBuild){
+      return res.status(404).json({ message: 'Unable to unpublish post'});
+    }
+
+    return res.status(200).json({ message: 'Build unpublished successfully!'});
+
+  }catch(err){
+    err.status = 500;
+    next(err);
+  }
+}
+
+/**
+ * This function gets all the published builds and returns them.
+ * If there are no published builds, then it returns a 100 with a neutral message.
+ * @param {object} req  - The request object.
+ * @param {object} res - The respond object.
+ * @param {*} next - Next
+ * @returns {Response} - The respones of the function.
+ */
+async function getPublishedBuilds(req, res, next){
+  try{
+    const publishedBuilds = await Post.find({isPublished : true});
+
+    if(publishedBuilds.length === 0){
+      return res.status(100).json({ message: 'There are no published builds at this moment.'});
+    }
+
+    const publishBuildsWithUsername = await Promise.all(
+      publishedBuilds.map( async (build) => {
+        const username = await User.findOne({_id : build.user}).select({ username: 1, _id: 0});
+        return{
+          ...build.toObject(),
+          username: username ? username.username : 'Unknown'
+        };
+      })
+    );
+
+    return res.status(200).json({ 
+      message: 'Published builds fetched!', 
+      builds : publishBuildsWithUsername});
+
+  }catch(err){
+    err.status = 500;
+    next(err);
   }
 }
 
@@ -88,19 +231,15 @@ async function saveBuild(req, res, next) {
  */
 async function uploadImage(req, res, next) {
   // set as single file upload in router
-  const file = req.file; 
+  const file = req.files['png'][0];
   //moves the file to the current folder
   const blobName = `${req.post._id}.png`;
 
   try {
-    const blobClient = containerClient.getBlockBlobClient(blobName);
-    // set mimetype as determined from browser with file upload control
-    const options = { blobHTTPHeaders: { blobContentType: file.mimetype }, overwrite: true };
-    await blobClient.uploadData(file.buffer, options);
-    const fullUrl = blobPublicUrl + blobName;
+    const fullUrl = await blobService.overrideFile(file, blobName);
     req.url = fullUrl;
     next();
-  } catch (e){
+  } catch (e) {
     e.status = 500;
     next(e);
   }
@@ -115,16 +254,21 @@ async function uploadImage(req, res, next) {
  */
 async function updatePostPicture(req, res, next) {
   try {
-    await Post.findOneAndUpdate({_id: req.post._id},
-      {progressPicture: req.url}
+    await Post.findOneAndUpdate({ _id: req.post._id },
+      { progressPicture: req.url }
     );
 
-    res.status(200).json({status : 'success'});
+    res.status(200).json({message : 'Build successfully saved!', id: req.post._id});
     return;
-  } catch (e){
+  } catch (e) {
     e.status = 500;
     next(e);
   }
 }
 
-export {saveBuild, uploadValidation, uploadImage, updatePostPicture};
+export { 
+  saveBuild, uploadValidation, uploadImage, updatePostPicture, 
+  deleteBuild, deleteImageFromAzure,
+  publishBuild, 
+  getPublishedBuilds,
+  unpublishBuild };

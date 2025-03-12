@@ -1,5 +1,6 @@
 import { CredentialResponse } from '@react-oauth/google';
 import { useState, createContext, useContext, useEffect } from 'react';
+import {successMessage, errorMessage as errorPopup} from '../utils/notification_utils';
 import React from 'react';
 
 type ContextProviderProps = {
@@ -24,6 +25,9 @@ export const AuthProvider = ({ children }: ContextProviderProps) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    /**
+     *
+     */
     async function query() {
       if (loading) {
         if (!username) {
@@ -70,10 +74,17 @@ export const AuthProvider = ({ children }: ContextProviderProps) => {
   };
 
   const logout = async () => {
-    await fetch('/api/logout');
-    setUsername('');
-    setEmail('');
-    setAvatar('');
+    try {
+      await fetch('/api/logout');
+      setUsername('');
+      setEmail('');
+      setAvatar('');
+      successMessage("Successfully logged out");
+    } catch (e) {
+      errorPopup('Error logging out!');
+      console.error(e);
+      return;
+    }
   };
 
   const value = { username, email, avatar, loading, login, logout };

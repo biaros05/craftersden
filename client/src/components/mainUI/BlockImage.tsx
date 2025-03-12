@@ -1,15 +1,22 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import '../../App.css';
 import {Image, ActionIcon} from '@mantine/core';
 import { IconPlus } from '@tabler/icons-react';
+import { CurrentBlockContext } from '../../context/currentBlockContext';
+import { BlockType } from '../../../server/models/BlockType';
 
 /**
  * Displays an image with an action icon.
- * @param src image source
- * @param alt image alt text
- * @returns React.JSX.Element
+ * @param {object} props - React props
+ * @param {BlockType} props.block Block to render
+ * @returns {React.ReactNode} Image of block with action button
  */
-export default function BlockImage({ src = null, alt = undefined }: { src?: string | null; alt?: string | undefined}) {
+export default function BlockImage({block}: { block: BlockType; }): React.ReactNode {
+
+  const {
+    storeBlock
+  } = useContext(CurrentBlockContext);
+
 
   return (
     <div className="block-image" style={{ position: 'relative'}}>
@@ -17,16 +24,17 @@ export default function BlockImage({ src = null, alt = undefined }: { src?: stri
       size="sm"
       style={{ position: 'absolute', top: "10px", right: "10px", zIndex: 2 }}
       aria-label="Add to inventory"
+      onClick={() => storeBlock(block)}
     >
       <IconPlus/>
     </ActionIcon>
       <Image
-        src={src}
-        alt={alt}
+        src={block.inventoryTexture}
+        alt={block.name}
         fallbackSrc="https://placehold.co/600x400?text=Placeholder"
       />
-      {alt}
+      <div className="block-name"> {block.name} </div>
     </div>
     
-  )
+  );
 }
