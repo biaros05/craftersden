@@ -155,7 +155,7 @@ export default function CraftersDen(): React.ReactNode {
         canvas={canvas} 
         savePost={savePost} 
         isViewMode={isViewMode}
-        isUserLoggedIn={true}
+        isUserLoggedIn={id !== null}
         isBuildOwner={isBuildOwner} />
       </div>
     </CurrentBlockContext.Provider>

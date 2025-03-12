@@ -13,7 +13,7 @@ type ButtonPanelProps = {
   canvas: React.RefObject<null>,
   savePost: (arg0: string) => void,
   isViewMode: boolean,
-  email: string,
+  isUserLoggedIn: boolean,
   isBuildOwner: boolean,
   blocks: BlockType[]
 }
@@ -25,12 +25,12 @@ type ButtonPanelProps = {
  * @param {Function} props.setIsViewMode Callback to set isViewModel state 
  * @param {Function} props.savePost thumbnail url
  * @param {boolean} props.isViewMode isViewMode state.
- * @param {string} props.email email of current user.
+ * @param {string} props.isUserLoggedIn email of current user.
  * @param {boolean} props.isBuildOwner is current user the owner of the build.
  * @param {[]} props.blocks build blocks.
  * @returns {React.ReactNode} Button panel section with buttons
  */
-function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode, email, isBuildOwner, blocks}: ButtonPanelProps): React.ReactNode {
+function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode, isUserLoggedIn, isBuildOwner, blocks}: ButtonPanelProps): React.ReactNode {
   const navigate = useNavigate();
 
   return (
@@ -40,7 +40,7 @@ function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode, email, isBuil
         color="green" radius="md" 
         className="save-button"
         onClick={() => {
-          if (!email) {
+          if (!isUserLoggedIn) {
             const serializedBlocks = jsonifyBlocks(blocks);
             console.log(serializedBlocks);
             localStorage.setItem("build", JSON.stringify({"blocks": serializedBlocks}));
