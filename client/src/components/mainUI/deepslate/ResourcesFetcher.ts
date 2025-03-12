@@ -1,35 +1,22 @@
 /* eslint-disable jsdoc/no-undefined-types */
 import React from 'react';
-import type { NbtTag, Resources } from 'deepslate'
-import { BlockDefinition, ItemModel, BlockModel, Identifier, jsonToNbt, Structure, TextureAtlas, upperPowerOfTwo } from 'deepslate'
-import InteractiveCanvas from "./InteractiveCanvas";
-import InteractiveStructureRenderer from './InteractiveStructureRenderer';
-import { mat4, vec3 } from 'gl-matrix';
-import { getCameraPosition } from './RaycastUtils';
+import type { Resources } from 'deepslate'
+import { BlockDefinition, BlockModel, Identifier, TextureAtlas, upperPowerOfTwo } from 'deepslate'
 
 const MCMETA = 'https://raw.githubusercontent.com/misode/mcmeta/';
 
 /**
+ * @param {React.Dispatch<React.SetStateAction<Resources | undefined>>} setResources setState callback for resources
  * @param {React.RefObject<HTMLCanvasElement | null>} canvas html canvas
  * @param {Structure} structure the structure to render
  * @param {React.Dispatch<React.SetStateAction<mat4>>} setProjMat setState callback for projection matrix
  * @param {React.Dispatch<React.SetStateAction<mat4 | undefined>>} setViewMat setState callback for view matrix
  * @param {React.Dispatch<React.SetStateAction<vec3 | undefined>>} setCameraPosition setState callback for camera position
  */
-export default async function fetchResources(
-        canvas: React.RefObject<HTMLCanvasElement | null>, 
-        structure: Structure, 
-        setProjMat: React.Dispatch<React.SetStateAction<mat4 | undefined>>, 
-        setViewMat: React.Dispatch<React.SetStateAction<mat4 | undefined>>,
-        setCameraPosition: React.Dispatch<React.SetStateAction<vec3 | undefined>>
-    ) {
-    if (!canvas?.current) return;
+export default async function fetchResources(setResources: React.Dispatch<React.SetStateAction<Resources | undefined>>) {
     Promise.all([
-        fetch(`${MCMETA}registries/item/data.min.json`).then(r => r.json()),
         fetch(`${MCMETA}summary/assets/block_definition/data.min.json`).then(r => r.json()),
         fetch(`${MCMETA}summary/assets/model/data.min.json`).then(r => r.json()),
-        fetch(`${MCMETA}summary/assets/item_definition/data.min.json`).then(r => r.json()),
-        fetch(`${MCMETA}summary/item_components/data.min.json`).then(r => r.json()),
         fetch(`${MCMETA}atlas/all/data.min.json`).then(r => r.json()),
         new Promise<HTMLImageElement>(res => {
             const image = new Image()
@@ -37,19 +24,8 @@ export default async function fetchResources(
             image.crossOrigin = 'Anonymous'
             image.src = `${MCMETA}atlas/all/atlas.png`
         }),
-    ]).then(([items, blockstates, models, item_models, item_components, uvMap, atlas]) => {
-        
-        // === Prepare assets for item and structure rendering ===
-    
-        const itemList = document.createElement('datalist')
-        itemList.id = 'item-list'
-        items.forEach(item => {
-            const option = document.createElement('option')
-            option.textContent = item
-            itemList.append(option)
-        })
-        document.getElementById('item-input')?.after(itemList)
-    
+    ]).then(([blockstates, models, uvMap, atlas]) => {
+        // === Prepare assets for item and structure rendering ===    
         const blockDefinitions: Record<string, BlockDefinition> = {}
         Object.keys(blockstates).forEach(id => {
             blockDefinitions['minecraft:' + id] = BlockDefinition.fromJson(blockstates[id])
@@ -61,21 +37,6 @@ export default async function fetchResources(
         })
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Object.values(blockModels).forEach((m: any) => m.flatten({ getBlockModel: id => blockModels[id] }))
-    
-    
-        const itemModels: Record<string, ItemModel> = {}
-        Object.keys(item_models).forEach(id => {
-            itemModels['minecraft:' + id] = ItemModel.fromJson(item_models[id].model)
-        })
-    
-        const itemComponents: Record<string, Map<string, NbtTag>> = {}
-        Object.keys(item_components).forEach(id => {
-            const components = new Map<string, NbtTag>()
-            Object.keys(item_components[id]).forEach(c_id => {
-                components.set(c_id, jsonToNbt(item_components[id][c_id]))
-            })
-            itemComponents['minecraft:' + id] = components
-        })
     
         const atlasCanvas = document.createElement('canvas')
         const atlasSize = upperPowerOfTwo(Math.max(atlas.width, atlas.height))
@@ -102,20 +63,6 @@ export default async function fetchResources(
             getDefaultBlockProperties() { return null },
         }
     
-        // === Structure rendering ===
-    
-        const structureGl = canvas?.current?.getContext('webgl');
-        if (structureGl) {
-            const structureRenderer = new InteractiveStructureRenderer(structureGl, structure, resources)
-		    const size = structure.getSize()
-
-            new InteractiveCanvas(canvas.current!, view => {
-                structureRenderer.drawStructure(view);
-                structureRenderer.drawGrid(view);
-                setViewMat(view);
-                setProjMat(structureRenderer.getPerspectiveMatrix());
-                setCameraPosition(getCameraPosition(view));
-            }, [size[0] / 2, size[1] / 2, size[2] / 2])
-        }
+        setResources(resources);
     })
 }
