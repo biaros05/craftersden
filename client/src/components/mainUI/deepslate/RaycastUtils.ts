@@ -182,15 +182,19 @@ export function getCameraPosition(viewMatrix: mat4): vec3 {
  * @param {vec3} rayOrigin - Origin of ray
  * @returns {number} Length of the ray
  */
-export function checkBlocksForIntersect(blocks: Mesh[], ray: vec3, rayOrigin: vec3): number | null {
+export function checkBlocksForIntersect(blocks: Mesh[], ray: vec3, rayOrigin: vec3): {distance: number, triangle: Triangle} | null {
     let minT = Infinity;
+    let triangle: Triangle | null = null;
     for (let i = 0; i < blocks.length; i++) {
         for (let j = 0; j < blocks[i].geometry.length; j++) {
             const t = rayIntersectsTriangle(rayOrigin, ray, blocks[i].geometry[j][0], blocks[i].geometry[j][1], blocks[i].geometry[j][2]);
             if (t) {
-                minT = Math.min(t, minT);
+                if (t < minT) {
+                    minT = t;
+                    triangle = blocks[i].geometry[j];
+                }
             }
         }
     }
-    return minT === Infinity ? null : minT;
+    return minT === Infinity ? null : {distance: minT, triangle: triangle!};
 }
