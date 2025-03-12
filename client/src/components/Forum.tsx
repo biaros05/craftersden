@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import Post from './Post';
 import '../styles/forum.css';
 import useNavigate from "./Navigation/useNavigate.tsx"
-import { useAuth } from '../hooks/useAuth';
 import { useBuildUpdate } from '../hooks/BuildContext.tsx';
 import { TextInput } from '@mantine/core';
 import { IconSearch } from '@tabler/icons-react';
