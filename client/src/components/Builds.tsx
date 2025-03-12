@@ -97,7 +97,7 @@ export default function Builds({ builds, updateBuildStatus, setBuilds }: propTyp
   return (
     <section className="posts">
       {
-        builds.map((build, i) => {
+        builds.map((build) => {
           return (
             <div key={build._id} className="saved-builds" style={{ width: '250px' }}>
               <Image
