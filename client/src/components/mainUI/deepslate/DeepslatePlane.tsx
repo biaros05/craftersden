@@ -1,9 +1,11 @@
 /* eslint-disable jsdoc/no-undefined-types */
 import React, { useEffect, useRef, useState } from 'react'
 import fetchResources from './ResourcesFetcher';
-import { Mesh, checkBlocksForIntersect, computePoint, computeTriangleNormal, computeTrianglesOfCube, screenToWorldRay } from './RaycastUtils';
-import { PlacedBlock, Structure } from 'deepslate';
+import { Mesh, getCameraPosition, checkBlocksForIntersect, computePoint, computeTriangleNormal, computeTrianglesOfCube, screenToWorldRay } from './RaycastUtils';
+import { PlacedBlock, Resources, StructureRenderer } from 'deepslate';
 import { mat4, ReadonlyVec3, vec3 } from 'gl-matrix';
+import InteractiveCanvas from './InteractiveCanvas';
+import InteractiveStructureRenderer from './InteractiveStructureRenderer';
 import CloneableStructure from './CloneableStructure';
 
 interface PlaneBlock extends Mesh {
@@ -21,9 +23,9 @@ export default function DeepslatePlane(): React.ReactNode {
 	const [projectionMatrix, setProjectionMatrix] = useState<mat4>();
 	const [viewMatrix, setViewMatrix] = useState<mat4>();
 	const [cameraPosition, setCameraPosition] = useState<vec3>();
-	// When a block is added compute its triangles
-	// store the triangles in the state
-	// Check the triangles for intersect
+	const [resources, setResources] = useState<Resources>();
+	const [interactiveCanvas, setInteractiveCanvas] = useState<InteractiveCanvas>();
+	const [structureRenderer, setStructureRenderer] = useState<InteractiveStructureRenderer>();
 	
 	// Setup structure on first load
 	useEffect(() => {
@@ -39,8 +41,35 @@ export default function DeepslatePlane(): React.ReactNode {
 	useEffect(() => {console.log(blocks)}, [blocks]);
 
 	useEffect(() => {
-		fetchResources(canvas, structure!, setProjectionMatrix, setViewMatrix, setCameraPosition);
-	}, [canvas, structure, setProjectionMatrix, setViewMatrix, setCameraPosition]);
+		fetchResources(setResources);
+	}, [setResources]);
+
+	useEffect(() => {
+		const structureGl = canvas?.current?.getContext('webgl');
+        if (structureGl && resources) {
+			setStructureRenderer(new InteractiveStructureRenderer(structureGl, structure, resources));
+        }
+	}, [canvas, structure, resources])
+
+	useEffect(() => {
+		if (structureRenderer) {
+			// function that renders the structure
+			const onRender = (view: mat4) => {
+				structureRenderer.drawStructure(view);
+				structureRenderer.drawGrid(view);
+				setViewMatrix(view);
+				setProjectionMatrix(structureRenderer.getPerspectiveMatrix());
+				setCameraPosition(getCameraPosition(view));
+			}
+			
+			if (!interactiveCanvas) {
+				const size = structure.getSize()
+				setInteractiveCanvas(new InteractiveCanvas(canvas.current!, onRender, [size[0] / 2, size[1] / 2, size[2] / 2]));
+			} else {
+				setInteractiveCanvas(interactiveCanvas.cloneAndDelete(onRender));
+			}
+		}
+	}, [structureRenderer])
 
 	/**
 	 * Places a block at click coordinates
@@ -48,10 +77,12 @@ export default function DeepslatePlane(): React.ReactNode {
 	 */
 	function placeBlock(e: React.MouseEvent<HTMLCanvasElement>) {
 		if (viewMatrix && projectionMatrix && cameraPosition) {
-			console.log(e.clientX, e.clientY - 400)
-			const ray = screenToWorldRay(e.clientX, e.clientY - 400, viewMatrix, projectionMatrix, {width: 400, height: 400}, cameraPosition);
+			const canvasRect = canvas.current!.getBoundingClientRect();
+			const mousePos = [e.clientX - canvasRect.left, e.clientY - canvasRect.top];
+
+			const ray = screenToWorldRay(mousePos[0], mousePos[1], viewMatrix, projectionMatrix, {width: 800, height: 800}, cameraPosition);
 			const intersect = checkBlocksForIntersect(blocks, ray.direction, ray.origin);
-			console.log(intersect);
+
 			if (intersect) {
 				const point = computePoint(intersect.distance, ray.origin, ray.direction).map(p => Math.floor(p));
 				const normal = computeTriangleNormal(...intersect.triangle);
@@ -80,7 +111,7 @@ export default function DeepslatePlane(): React.ReactNode {
 		}
 	}
 
-	return <canvas ref={canvas} width={400} height={400} onMouseDown={placeBlock}></canvas>
+	return <canvas ref={canvas} width={800} height={800} onMouseDown={placeBlock}></canvas>
 }
 
 /**
