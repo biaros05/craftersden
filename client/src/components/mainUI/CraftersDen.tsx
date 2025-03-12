@@ -58,7 +58,7 @@ function deserializeBlocks(blocks: SerializedBlockType[]): BlockType[] {
  */
 export default function CraftersDen(): React.ReactNode {
   const canvas = useRef(null);
-  const {email} = useAuth() ?? {};
+  const {id, email} = useAuth() ?? {};
   const [isViewMode, setIsViewMode] = useState(true);
   const [blocks, setBlocks] = useState<BlockType[]>([]);
   const [currentBlock, setCurrentBlock] = useState(null);
@@ -66,7 +66,7 @@ export default function CraftersDen(): React.ReactNode {
   const build = useBuild();
   const { setBuild } = useBuildUpdate();
 
-  const isBuildOwner = build.build?.email === email;
+  const isBuildOwner = build.build?.user === id;
 
   useEffect(() => {
     const serializedBlocks = JSON.parse(localStorage.getItem("build") ?? "{}");
@@ -155,7 +155,8 @@ export default function CraftersDen(): React.ReactNode {
         canvas={canvas} 
         savePost={savePost} 
         isViewMode={isViewMode}
-        email={email}/>
+        isUserLoggedIn={true}
+        isBuildOwner={isBuildOwner} />
       </div>
     </CurrentBlockContext.Provider>
   );
