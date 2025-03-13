@@ -44,11 +44,12 @@ export default function DeepslatePlane(): React.ReactNode {
 	// Can be removed
 	useEffect(() => {console.log(blocks)}, [blocks]);
 
+	// Fetches resources
 	useEffect(() => {
 		fetchResources(setResources);
 	}, [setResources]);
 
-
+	// Initializes and updates structure renderer
 	useEffect(() => {
 		const structureGl = canvas?.current?.getContext('webgl');
         if (structureGl && resources) {
@@ -56,6 +57,7 @@ export default function DeepslatePlane(): React.ReactNode {
         }
 	}, [canvas, structure, resources, setStructureRenderer])
 
+	// Initializes and updates Interactive canvas
 	useEffect(() => {
 		if (structureRenderer) {
 			// function that renders the structure
@@ -75,6 +77,32 @@ export default function DeepslatePlane(): React.ReactNode {
 			}
 		}
 	}, [structureRenderer, setInteractiveCanvas])
+
+	/**
+	 * Cast a ray to mouse position on canvas and return point and normal.
+	 * @param {React.MouseEvent<HTMLCanvasElement>} e - Mouse event object
+	 * @param {mat4} viewMatrix - View matrix used by the camera
+	 * @param {mat4} projectionMatrix - Projection matrix used by the renderer
+	 * @param {vec3} camPos - Camera position
+	 * @returns {{point: vec3, normal: vec3} | null} intersect information
+	 */
+	function rayCast(e: React.MouseEvent<HTMLCanvasElement>, viewMatrix: mat4, projectionMatrix: mat4, camPos: vec3): {point: [number, number, number], normal: ReadonlyVec3} | null {
+		const canvasRect = canvas.current!.getBoundingClientRect();
+		const mousePos = [e.clientX - canvasRect.left, e.clientY - canvasRect.top];
+
+		const ray = screenToWorldRay(mousePos[0], mousePos[1], viewMatrix, projectionMatrix, {width: 800, height: 800}, camPos);
+		const intersect = checkBlocksForIntersect(blocks, ray.direction, ray.origin);
+
+		if (intersect) {
+			const point = computePoint(intersect.distance, ray.origin, ray.direction).map(p => Math.floor(p));
+			const normal = computeTriangleNormal(...intersect.triangle);
+			return {
+				point: point as [number, number, number],
+				normal: normal
+			}
+		}
+		return null;
+	}
 
 	/**
 	 * Places a block at click coordinates
@@ -97,9 +125,9 @@ export default function DeepslatePlane(): React.ReactNode {
 				}
 				
 				// Point is coordinates of the the block that was clicked on
-				const newBlockPosVec = vec3.add(vec3.create(), point as ReadonlyVec3, normal);
+				const newBlockPosVec = vec3.add(vec3.create(), point, normal);
 				const newBlockPos: [number, number, number] = [newBlockPosVec[0], newBlockPosVec[1], newBlockPosVec[2]];
-				if (structure.isInside(newBlockPos)) {
+				if (structure.isBlockAt(point) && structure.isInside(point)) {
 					structure.addBlock(newBlockPos, 'minecraft:stone')
 					setStructure(structure.clone());
 					setBlocks([...blocks, ...structureBlockToPlaneBlock([structure.getBlock(newBlockPos)!])])
@@ -108,32 +136,6 @@ export default function DeepslatePlane(): React.ReactNode {
 		} else {
 			console.log('Canvas is loading')
 		}
-	}
-
-	/**
-	 * Cast a ray to mouse position on canvas and return point and normal.
-	 * @param {React.MouseEvent<HTMLCanvasElement>} e - Mouse event object
-	 * @param {mat4} viewMatrix - View matrix used by the camera
-	 * @param {mat4} projectionMatrix - Projection matrix used by the renderer
-	 * @param {vec3} camPos - Camera position
-	 * @returns {{point: vec3, normal: vec3} | null} intersect information
-	 */
-	function rayCast(e: React.MouseEvent<HTMLCanvasElement>, viewMatrix: mat4, projectionMatrix: mat4, camPos: vec3): {point: vec3, normal: vec3} | null {
-		const canvasRect = canvas.current!.getBoundingClientRect();
-		const mousePos = [e.clientX - canvasRect.left, e.clientY - canvasRect.top];
-
-		const ray = screenToWorldRay(mousePos[0], mousePos[1], viewMatrix, projectionMatrix, {width: 800, height: 800}, camPos);
-		const intersect = checkBlocksForIntersect(blocks, ray.direction, ray.origin);
-
-		if (intersect) {
-			const point = computePoint(intersect.distance, ray.origin, ray.direction).map(p => Math.floor(p));
-			const normal = computeTriangleNormal(...intersect.triangle);
-			return {
-				point: point as vec3,
-				normal: normal
-			}
-		}
-		return null;
 	}
 
 	/**
@@ -156,8 +158,8 @@ export default function DeepslatePlane(): React.ReactNode {
 					point[2] -= 1;
 				}
 				
-				setStructure(structure.removeBlockAndClone(point as [number, number, number]));
-				setBlocks([...blocks.filter(b => !BlockPos.equals(b.position, point as [number, number, number]))])
+				setStructure(structure.removeBlockAndClone(point));
+				setBlocks([...blocks.filter(b => !BlockPos.equals(b.position, point))]);
 			}
 		} else {
 			console.log('Canvas is loading')

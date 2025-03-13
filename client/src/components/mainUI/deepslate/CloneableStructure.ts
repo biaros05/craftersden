@@ -1,4 +1,4 @@
-import { BlockPos, BlockState, NbtCompound, Structure } from "deepslate";
+import { BlockPos, BlockState, Identifier, NbtCompound, Structure } from "deepslate";
 
 export default class CloneableStructure extends Structure {
     protected getPalette(): BlockState[] {
@@ -14,21 +14,21 @@ export default class CloneableStructure extends Structure {
     }
 
     public removeBlockAndClone(pos: BlockPos) {
-        const placedBlocks = this.getPlacedBlocks();
-        const blockIndex = placedBlocks.findIndex(b => BlockPos.equals(b.pos, pos));
-        const blockCount = placedBlocks.reduce((prev, curr) => {
-            if (curr.state === placedBlocks[blockIndex].state) {
-                return prev + 1;
-            }
-            return prev;
-        }, 0);
+        const blocks = this.getPlacedBlocks().filter(b => !BlockPos.equals(b.pos, pos));
 
-        if (blockCount === 1) {
-            return this.clone();
+        return new CloneableStructure(this.getSize(), this.getPalette(), blocks)
+    }
+
+    public isBlockAt(pos: BlockPos) {
+        const blocks = this.getPlacedBlocks().find(b => BlockPos.equals(b.pos, pos));
+
+        return blocks !== undefined;
+    }
+
+    public addBlock(pos: BlockPos, name: Identifier | string, properties?: { [key: string]: string; }, nbt?: NbtCompound): this {
+        if (this.isBlockAt(pos)) {
+            console.error(`Block already at ${pos}`)
         }
-
-        // If multiple blocks use same palette entry just remove block from placed blocks
-        placedBlocks.splice(blockIndex, 1);
-        return new CloneableStructure(this.getSize(), this.getPalette(), placedBlocks)
+        return super.addBlock(pos, name, properties, nbt);
     }
 }
