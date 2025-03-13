@@ -2,7 +2,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import fetchResources from './ResourcesFetcher';
 import { Mesh, getCameraPosition, checkBlocksForIntersect, computePoint, computeTriangleNormal, computeTrianglesOfCube, screenToWorldRay } from './RaycastUtils';
-import { PlacedBlock, Resources } from 'deepslate';
+import { BlockPos, PlacedBlock, Resources } from 'deepslate';
 import { mat4, ReadonlyVec3, vec3 } from 'gl-matrix';
 import InteractiveCanvas from './InteractiveCanvas';
 import InteractiveStructureRenderer from './InteractiveStructureRenderer';
@@ -29,13 +29,16 @@ export default function DeepslatePlane(): React.ReactNode {
 	
 	// Setup placeholder structure on first load. Load the saved structure here or in the useState(HERE)
 	useEffect(() => {
-		structure.addBlock([1, 0, 0], 'minecraft:grass_block', { snowy: 'false' })
-		structure.addBlock([2, 0, 0], 'minecraft:stone')
-		structure.addBlock([1, 1, 0], 'minecraft:skeleton_skull', { rotation: '15' })
-		structure.addBlock([2, 1, 0], 'minecraft:acacia_fence', { waterlogged: 'true', north: 'true' })
-		structure.addBlock([0, 0, 0], 'minecraft:wall_torch', { facing: 'west' })
-		setStructure(structure.clone());
-		setBlocks(structureBlockToPlaneBlock(structure.getBlocks()));
+		// Strict mode is making the add fire multiple times per click
+		if (structure.getBlocks().length === 0) {
+			structure.addBlock([1, 0, 0], 'minecraft:grass_block', { snowy: 'false' })
+			structure.addBlock([2, 0, 0], 'minecraft:stone')
+			structure.addBlock([1, 1, 0], 'minecraft:skeleton_skull', { rotation: '15' })
+			structure.addBlock([2, 1, 0], 'minecraft:acacia_fence', { waterlogged: 'true', north: 'true' })
+			structure.addBlock([0, 0, 0], 'minecraft:wall_torch', { facing: 'west' })
+			setStructure(structure.clone());
+			setBlocks(structureBlockToPlaneBlock(structure.getBlocks()));
+		}
 	}, [])
 
 	// Can be removed
@@ -79,15 +82,9 @@ export default function DeepslatePlane(): React.ReactNode {
 	 */
 	function placeBlock(e: React.MouseEvent<HTMLCanvasElement>) {
 		if (viewMatrix && projectionMatrix && cameraPosition) {
-			const canvasRect = canvas.current!.getBoundingClientRect();
-			const mousePos = [e.clientX - canvasRect.left, e.clientY - canvasRect.top];
+			const {point, normal} = rayCast(e, viewMatrix, projectionMatrix, cameraPosition) ?? {};
 
-			const ray = screenToWorldRay(mousePos[0], mousePos[1], viewMatrix, projectionMatrix, {width: 800, height: 800}, cameraPosition);
-			const intersect = checkBlocksForIntersect(blocks, ray.direction, ray.origin);
-
-			if (intersect) {
-				const point = computePoint(intersect.distance, ray.origin, ray.direction).map(p => Math.floor(p));
-				const normal = computeTriangleNormal(...intersect.triangle);
+			if (point && normal) {
 				// Correct point using normal vector of triangle.
 				if (normal[0] === 1) {
 					point[0] -= 1;
@@ -113,7 +110,74 @@ export default function DeepslatePlane(): React.ReactNode {
 		}
 	}
 
-	return <canvas ref={canvas} width={800} height={800} onMouseDown={placeBlock}></canvas>
+	/**
+	 * Cast a ray to mouse position on canvas and return point and normal.
+	 * @param {React.MouseEvent<HTMLCanvasElement>} e - Mouse event object
+	 * @param {mat4} viewMatrix - View matrix used by the camera
+	 * @param {mat4} projectionMatrix - Projection matrix used by the renderer
+	 * @param {vec3} camPos - Camera position
+	 * @returns {{point: vec3, normal: vec3} | null} intersect information
+	 */
+	function rayCast(e: React.MouseEvent<HTMLCanvasElement>, viewMatrix: mat4, projectionMatrix: mat4, camPos: vec3): {point: vec3, normal: vec3} | null {
+		const canvasRect = canvas.current!.getBoundingClientRect();
+		const mousePos = [e.clientX - canvasRect.left, e.clientY - canvasRect.top];
+
+		const ray = screenToWorldRay(mousePos[0], mousePos[1], viewMatrix, projectionMatrix, {width: 800, height: 800}, camPos);
+		const intersect = checkBlocksForIntersect(blocks, ray.direction, ray.origin);
+
+		if (intersect) {
+			const point = computePoint(intersect.distance, ray.origin, ray.direction).map(p => Math.floor(p));
+			const normal = computeTriangleNormal(...intersect.triangle);
+			return {
+				point: point as vec3,
+				normal: normal
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Destroys blocks at mouse coordinates
+	 * @param {React.MouseEvent<HTMLCanvasElement>} e - Mouse event object
+	 */
+	function destroyBlock(e: React.MouseEvent<HTMLCanvasElement>) {
+		if (viewMatrix && projectionMatrix && cameraPosition) {
+			const {point, normal} = rayCast(e, viewMatrix, projectionMatrix, cameraPosition) ?? {};
+
+			if (point && normal) {
+				// Correct point using normal vector of triangle.
+				if (normal[0] === 1) {
+					point[0] -= 1;
+				}
+				else if (normal[1] === 1) {
+					point[1] -= 1;
+				}
+				else if (normal[2] === 1) {
+					point[2] -= 1;
+				}
+				
+				setStructure(structure.removeBlockAndClone(point as [number, number, number]));
+				setBlocks([...blocks.filter(b => !BlockPos.equals(b.position, point as [number, number, number]))])
+			}
+		} else {
+			console.log('Canvas is loading')
+		}
+	}
+
+	/**
+	 * Destroy block at mouse click
+	 * @param {React.MouseEvent<HTMLCanvasElement>} e - Mouse event object
+	 */
+	function handleClick(e: React.MouseEvent<HTMLCanvasElement>) {
+		e.preventDefault();
+		if (e.button === 2) {
+			placeBlock(e);
+		} else if (e.button === 0) {
+			destroyBlock(e);
+		}
+	}
+
+	return <canvas ref={canvas} width={800} height={800} onMouseDown={handleClick}></canvas>
 }
 
 /**
