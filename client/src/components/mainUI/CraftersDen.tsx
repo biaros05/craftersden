@@ -147,7 +147,6 @@ export default function CraftersDen(): React.ReactNode {
     <CurrentBlockContext.Provider value={{currentBlock, storeBlock}}>
       <div id="main-ui">
         <section className="build-tools">
-          {/* <BuildPlane canvasRef={canvas} blocks={blocks} setBlocks={setBlocks}/> */}
           <DeepslatePlane />
           {!isViewMode && <BlockSelection />}
         </section>
