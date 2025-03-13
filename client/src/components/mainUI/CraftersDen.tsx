@@ -14,6 +14,7 @@ import { BlockType, SerializedBlockType, StatusError } from '../../utils/buildin
 import { CurrentBlockContext } from '../../context/currentBlockContext';
 
 import {jsonifyBlocks} from '../../utils/building_plane_utils.ts';
+import DeepslatePlane from './deepslate/DeepslatePlane.tsx';
 
 /**
  * Takes an array of objects and takes care of serializing their THREE objects
@@ -138,14 +139,15 @@ export default function CraftersDen(): React.ReactNode {
     <CurrentBlockContext.Provider value={{currentBlock, storeBlock}}>
       <div id="main-ui">
         <section className="build-tools">
-          <BuildPlane 
+          {/* <BuildPlane 
             canvasRef={canvas} 
             blocks={blocks} 
             setBlocks={setBlocks} 
             isViewMode={isViewMode} 
             setIsViewMode={setIsViewMode}
             style={{width: "75%"}}
-            />
+            /> */}
+            <DeepslatePlane />
           {!isViewMode && <BlockSelection />}
         </section>
         <ButtonPanel 
