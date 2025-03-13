@@ -22,7 +22,7 @@ export default class CloneableStructure extends Structure {
             }
             return prev;
         }, 0);
-        console.log(blockCount);
+
         if (blockCount === 1) {
             return this.clone();
         }
