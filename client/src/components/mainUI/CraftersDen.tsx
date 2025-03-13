@@ -138,7 +138,6 @@ export default function CraftersDen(): React.ReactNode {
     <CurrentBlockContext.Provider value={{currentBlock, storeBlock}}>
       <div id="main-ui">
         <section className="build-tools">
-<<<<<<< HEAD
           <BuildPlane 
             canvasRef={canvas} 
             blocks={blocks} 
@@ -147,10 +146,6 @@ export default function CraftersDen(): React.ReactNode {
             setIsViewMode={setIsViewMode}
             style={{width: "75%"}}
             />
-=======
-          {/* <BuildPlane canvasRef={canvas} blocks={blocks} setBlocks={setBlocks}/> */}
-          <DeepslatePlane />
->>>>>>> ba4a76a (Add basic hardcoded plane)
           {!isViewMode && <BlockSelection />}
         </section>
         <ButtonPanel 

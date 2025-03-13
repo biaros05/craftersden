@@ -22,11 +22,7 @@ import '@mantine/carousel/styles.css';
 import CraftersDen from './components/mainUI/CraftersDen.jsx';
 import { BuildProvider } from './hooks/BuildContext.tsx';
 import { ToastContainer, Slide } from 'react-toastify';
-<<<<<<< HEAD
 import '@mantine/core/styles.css';
-=======
-
->>>>>>> ba4a76a (Add basic hardcoded plane)
 import { MantineProvider, createTheme } from '@mantine/core';
 import React from 'react';
 

@@ -2,7 +2,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import fetchResources from './ResourcesFetcher';
 import { Mesh, getCameraPosition, checkBlocksForIntersect, computePoint, computeTriangleNormal, computeTrianglesOfCube, screenToWorldRay } from './RaycastUtils';
-import { PlacedBlock, Resources, StructureRenderer } from 'deepslate';
+import { PlacedBlock, Resources } from 'deepslate';
 import { mat4, ReadonlyVec3, vec3 } from 'gl-matrix';
 import InteractiveCanvas from './InteractiveCanvas';
 import InteractiveStructureRenderer from './InteractiveStructureRenderer';
@@ -27,7 +27,7 @@ export default function DeepslatePlane(): React.ReactNode {
 	const [interactiveCanvas, setInteractiveCanvas] = useState<InteractiveCanvas>();
 	const [structureRenderer, setStructureRenderer] = useState<InteractiveStructureRenderer>();
 	
-	// Setup structure on first load
+	// Setup placeholder structure on first load. Load the saved structure here or in the useState(HERE)
 	useEffect(() => {
 		structure.addBlock([1, 0, 0], 'minecraft:grass_block', { snowy: 'false' })
 		structure.addBlock([2, 0, 0], 'minecraft:stone')
@@ -38,18 +38,20 @@ export default function DeepslatePlane(): React.ReactNode {
 		setBlocks(structureBlockToPlaneBlock(structure.getBlocks()));
 	}, [])
 
+	// Can be removed
 	useEffect(() => {console.log(blocks)}, [blocks]);
 
 	useEffect(() => {
 		fetchResources(setResources);
 	}, [setResources]);
 
+
 	useEffect(() => {
 		const structureGl = canvas?.current?.getContext('webgl');
         if (structureGl && resources) {
 			setStructureRenderer(new InteractiveStructureRenderer(structureGl, structure, resources));
         }
-	}, [canvas, structure, resources])
+	}, [canvas, structure, resources, setStructureRenderer])
 
 	useEffect(() => {
 		if (structureRenderer) {
@@ -69,7 +71,7 @@ export default function DeepslatePlane(): React.ReactNode {
 				setInteractiveCanvas(interactiveCanvas.cloneAndDelete(onRender));
 			}
 		}
-	}, [structureRenderer])
+	}, [structureRenderer, setInteractiveCanvas])
 
 	/**
 	 * Places a block at click coordinates
@@ -90,10 +92,10 @@ export default function DeepslatePlane(): React.ReactNode {
 				if (normal[0] === 1) {
 					point[0] -= 1;
 				}
-				if (normal[1] === 1) {
+				else if (normal[1] === 1) {
 					point[1] -= 1;
 				}
-				if (normal[2] === 1) {
+				else if (normal[2] === 1) {
 					point[2] -= 1;
 				}
 				
