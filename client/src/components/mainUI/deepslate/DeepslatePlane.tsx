@@ -169,7 +169,6 @@ export default function DeepslatePlane(): React.ReactNode {
 	 * @param {React.MouseEvent<HTMLCanvasElement>} e - Mouse event object
 	 */
 	function handleClick(e: React.MouseEvent<HTMLCanvasElement>) {
-		e.preventDefault();
 		if (e.button === 2) {
 			placeBlock(e);
 		} else if (e.button === 0) {
@@ -177,7 +176,7 @@ export default function DeepslatePlane(): React.ReactNode {
 		}
 	}
 
-	return <canvas ref={canvas} width={800} height={800} onMouseDown={handleClick}></canvas>
+	return <canvas ref={canvas} width={800} height={800} onMouseDown={handleClick} onContextMenu={(e) => e.preventDefault()}></canvas>
 }
 
 /**
