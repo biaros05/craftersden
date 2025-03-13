@@ -8,6 +8,7 @@ type ContextProviderProps = {
 };
 
 type AuthContextType = {
+    id: string,
     username: string,
     email: string,
     avatar: string,
@@ -19,6 +20,7 @@ type AuthContextType = {
 const AuthContext = createContext<null | AuthContextType>(null);
 
 export const AuthProvider = ({ children }: ContextProviderProps) => {
+  const [id, setId] = useState('');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [avatar, setAvatar] = useState('');
@@ -35,6 +37,7 @@ export const AuthProvider = ({ children }: ContextProviderProps) => {
           if (resp.ok) {
             const data = await resp.json();
             if (data) {
+              setId(data.user._id);
               setUsername(data.user.username);
               setEmail(data.user.email);
               setAvatar(data.user.avatar);
@@ -49,7 +52,7 @@ export const AuthProvider = ({ children }: ContextProviderProps) => {
   }, []);
 
   const login = async (googleData: CredentialResponse) => {
-    let data: {user: {username: string, email: string, avatar: string}};
+    let data: {user: {_id: string, username: string, email: string, avatar: string}};
     try {
       const res = await fetch('/api/auth', {
         method: 'POST',
@@ -64,10 +67,12 @@ export const AuthProvider = ({ children }: ContextProviderProps) => {
         throw new Error('Failed to connect- HTTP status ' + res.status);
       }
       data = await res.json();
+      console.log(data);
     } catch (e) {
       console.error(e);
       return;
     }
+    setId(data.user._id);
     setUsername(data.user.username);
     setEmail(data.user.email);
     setAvatar(data.user.avatar);
@@ -76,6 +81,7 @@ export const AuthProvider = ({ children }: ContextProviderProps) => {
   const logout = async () => {
     try {
       await fetch('/api/logout');
+      setId('');
       setUsername('');
       setEmail('');
       setAvatar('');
@@ -87,7 +93,7 @@ export const AuthProvider = ({ children }: ContextProviderProps) => {
     }
   };
 
-  const value = { username, email, avatar, loading, login, logout };
+  const value = { id, username, email, avatar, loading, login, logout };
 
   return (
   // Using the provider so that ANY component in our application can 
