@@ -72,7 +72,8 @@ export default [
       'space-unary-ops': 'error',
       'semi': 'error',
       'semi-spacing': 'error',
-      'jsdoc/require-description': 'warn'
+      'jsdoc/require-description': 'warn',
+      "jsdoc/check-tag-names": ["error", { "definedTags": ["swagger"] }],
     }
   },
 ];

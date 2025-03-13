@@ -45,6 +45,24 @@ class BlobServiceProvider {
 
     return fullUrl;
   }
+
+  async overrideFile(file, blobName) {
+    const blobClient = this.#containerClient.getBlockBlobClient(blobName);
+    const options = { blobHTTPHeaders: { blobContentType: file.mimetype }, overwrite: true };
+    await blobClient.uploadData(file.buffer, options);
+    const fullUrl = BlobServiceProvider.blobPublicUrl + blobName;
+    return fullUrl;
+  }
+
+  async deleteFile(blobName) {
+    const options = {
+      deleteSnapshots: 'include'
+    };
+  
+    const blockBlobClient = this.#containerClient.getBlockBlobClient(blobName);
+  
+    await blockBlobClient.delete(options);
+  }
 }
 
 export default BlobServiceProvider;

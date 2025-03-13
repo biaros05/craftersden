@@ -1,34 +1,44 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useRef} from 'react';
 import { ScrollArea, Pagination } from '@mantine/core';
-import BlockImage from './BlockImage';
 import BlockSearchBar from './BlockSearchBar';
 import BlockPage from './BlockPage';
 import useSWR from 'swr';
-import { BlockType } from '../../../server/models/BlockType';
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 /**
  * Scrollable area for displaying grid of BlockImage. Contains BlockSearchBar.
- * @returns React.JSX.Element
+ * @param {style} style - CSS style object
+ * @returns {React.ReactNode} Block scroll area component
  */
-export default function BlockScrollArea() {
+export default function BlockScrollArea({ style = {}}): React.ReactNode {
 
+  const scrollViewport = useRef<HTMLDivElement>(null);
   const [pageIndex, setPageIndex] = useState<number>(1);
 
+  const scrollToTop = () => scrollViewport.current!.scrollTo({ top: 0, behavior: 'smooth' });
+
+  const handlePageChange = (index: number) => {
+    setPageIndex(index);
+    scrollToTop();
+  };
+
+  // TODO do we still need these errors, remove eslint ignore
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { data: pageCountData, error: pageCountError } = useSWR('/api/blocks/page-count', fetcher);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { data: blockData, error: blockDataError } = useSWR('/api/blocks', fetcher);
 
   const pageCount = pageCountData?.totalPages;
 
   return (
-    <section id="block-scroll-area">
+    <section id="block-scroll-area" style={style}>
       <BlockSearchBar blockList={blockData?.blocks}/>
       {/* Cache next page */}
       {pageIndex < pageCount &&
         <div style={{ display: 'none' }}><BlockPage index={ pageIndex + 1 }/></div> }
-      {pageCount && <Pagination total={pageCount} value={pageIndex} onChange={setPageIndex} withPages={true}/>}
-      <ScrollArea h={250} type="always" scrollbarSize={12} style={{ padding: '1em'}}>
+      {pageCount && <Pagination total={pageCount} value={pageIndex} onChange={handlePageChange} withPages={true}/>}
+      <ScrollArea h={"30vw"} type="always" scrollbarSize={12} style={{ padding: '1em'}} viewportRef={scrollViewport}>
         <BlockPage index={pageIndex}/>
       </ScrollArea>
     </section>
