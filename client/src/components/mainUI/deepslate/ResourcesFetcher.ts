@@ -1,4 +1,3 @@
-/* eslint-disable jsdoc/no-undefined-types */
 import React from 'react';
 import type { Resources } from 'deepslate'
 import { BlockDefinition, BlockModel, Identifier, TextureAtlas, upperPowerOfTwo } from 'deepslate'
@@ -6,12 +5,8 @@ import { BlockDefinition, BlockModel, Identifier, TextureAtlas, upperPowerOfTwo 
 const MCMETA = 'https://raw.githubusercontent.com/misode/mcmeta/';
 
 /**
+ * Fetches resources from MCMETA repository and sets a Resources state
  * @param {React.Dispatch<React.SetStateAction<Resources | undefined>>} setResources setState callback for resources
- * @param {React.RefObject<HTMLCanvasElement | null>} canvas html canvas
- * @param {Structure} structure the structure to render
- * @param {React.Dispatch<React.SetStateAction<mat4>>} setProjMat setState callback for projection matrix
- * @param {React.Dispatch<React.SetStateAction<mat4 | undefined>>} setViewMat setState callback for view matrix
- * @param {React.Dispatch<React.SetStateAction<vec3 | undefined>>} setCameraPosition setState callback for camera position
  */
 export default async function fetchResources(setResources: React.Dispatch<React.SetStateAction<Resources | undefined>>) {
     Promise.all([

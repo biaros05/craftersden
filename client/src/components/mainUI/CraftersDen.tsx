@@ -1,4 +1,3 @@
-import BuildPlane from './BuildPlane';
 import BlockSelection from './BlockSelection';
 import ButtonPanel from './ButtonPanel';
 import { useAuth } from '../../hooks/useAuth';
