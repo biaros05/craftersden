@@ -1,36 +1,35 @@
 import React from 'react';
 import {Button} from '@mantine/core';
-import useNavigate from '../Navigation/useNavigate.tsx';
 import '../../styles/ButtonPanel.css';
-import { toast } from 'react-toastify';
-import CustomNotification from './CustomNotification.tsx'
-import { Slide } from 'react-toastify';
+import useNavigate from '../Navigation/useNavigate.tsx';
+import {buildLoginNotification, buildCopyNotification} from '../Notifications/buildNotifications'
 import {jsonifyBlocks} from '../../utils/building_plane_utils.ts';
 import { BlockType } from '../../utils/building_plane_utils.ts';
 
 type ButtonPanelProps = { 
   setIsViewMode: (arg0: boolean) => void,
-  canvas: React.RefObject<null>,
+  canvas: React.RefObject<HTMLCanvasElement | null>,
   savePost: (arg0: string) => void,
   isViewMode: boolean,
-  email: string,
+  isUserLoggedIn: boolean,
+  isBuildOwner: boolean,
   blocks: BlockType[]
 }
 
 /**
  * Displays Save and Toggle view mode buttons
  * @param {object} props React props
- * @param {React.RefObject} props.canvas React ref to canvas element
+ * @param {React.RefObject} props.canvas React ref Cto canvas element
  * @param {Function} props.setIsViewMode Callback to set isViewModel state 
  * @param {Function} props.savePost thumbnail url
  * @param {boolean} props.isViewMode isViewMode state.
- * @param {string} props.email email of current user.
+ * @param {string} props.isUserLoggedIn email of current user.
+ * @param {boolean} props.isBuildOwner is current user the owner of the build.
  * @param {[]} props.blocks build blocks.
  * @returns {React.ReactNode} Button panel section with buttons
  */
-function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode, email, blocks}: ButtonPanelProps): React.ReactNode {
+function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode, isUserLoggedIn, isBuildOwner, blocks}: ButtonPanelProps): React.ReactNode {
   const navigate = useNavigate();
-
   return (
     <section className="button-panel">
       <Button 
@@ -38,28 +37,15 @@ function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode, email, blocks
         color="green" radius="md" 
         className="save-button"
         onClick={() => {
-          if (!email) {
+          if (!isUserLoggedIn) {
             const serializedBlocks = jsonifyBlocks(blocks);
             console.log(serializedBlocks);
             localStorage.setItem("build", JSON.stringify({"blocks": serializedBlocks}));
-
-            toast.info(CustomNotification, {
-              data: {
-                redirect: navigate,
-                content: 'Please login to save your build',
-              },
-              ariaLabel: 'Something went wrong',
-              position: "bottom-right",
-              autoClose: 10000,
-              hideProgressBar: false,
-              closeOnClick: false,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: "colored",
-              transition: Slide,
-            });
-          } else {
+            buildLoginNotification(() => navigate('/login'));
+          } else if (!isBuildOwner) {
+            buildCopyNotification(() => savePost(canvas.current!.toDataURL('image/png')));
+          }
+          else {
             savePost(canvas.current!.toDataURL('image/png'));
           }
         }}

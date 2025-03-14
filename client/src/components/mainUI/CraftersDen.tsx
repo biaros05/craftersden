@@ -13,13 +13,6 @@ import { successMessage, errorMessage } from '../../utils/notification_utils';
 import { BlockType, SerializedBlockType, StatusError } from '../../utils/building_plane_utils';
 import { CurrentBlockContext } from '../../context/currentBlockContext';
 
-export type BlockType = {
-  id: string,
-  position: [number,number,number],
-  geometry: THREE.BufferGeometry,
-  texture: THREE.Texture,
-  textureURL: string
-}
 import {jsonifyBlocks} from '../../utils/building_plane_utils.ts';
 
 /**
@@ -44,14 +37,18 @@ function deserializeBlocks(blocks: SerializedBlockType[]): BlockType[] {
   const geoLoader = new THREE.BufferGeometryLoader();
   console.log('blocks in deserializeBlocks', blocks);
   return blocks.map(block => {
-    return {
+    const newBlock: BlockType = {
       id: block.id,
       name: block.name,
-      position: block.position,
+      position: [...block.position],
+      worldPosition: block.worldPosition ? [...block.worldPosition] : undefined,
       geometry: geoLoader.parse(block.geometry),
       textureURLs: block.textureURLs,
       textures: (block.textureURLs || []).map(url => textureLoader.load(url)),
-    }
+      rotation: block.rotation ? [...block.rotation] : undefined, // ERROR OCCURS
+      rotationIndex: block.rotationIndex
+    };
+    return newBlock;
   });
 }
 
@@ -61,34 +58,37 @@ function deserializeBlocks(blocks: SerializedBlockType[]): BlockType[] {
  */
 export default function CraftersDen(): React.ReactNode {
   const canvas = useRef(null);
-  const {email} = useAuth() ?? {};
-  const [isViewMode, setIsViewMode] = useState(false);
+  const {id, email} = useAuth() ?? {};
+  const [isViewMode, setIsViewMode] = useState(true);
   const [blocks, setBlocks] = useState<BlockType[]>([]);
   const [currentBlock, setCurrentBlock] = useState(null);
 
-  const build = useBuild();
+  // useBuild returns an object that contains build
+  const build = useBuild()?.build;
   const { setBuild } = useBuildUpdate();
+
+  // A null build signifies a new build
+  const isBuildOwner = build?.user === id || build === null;
+
+  let curBuildId = null;
+  
+  if(build && isBuildOwner) {
+    curBuildId = build._id;
+  }
 
   useEffect(() => {
     const serializedBlocks = JSON.parse(localStorage.getItem("build") ?? "{}");
-
     if (Object.keys(serializedBlocks).length && Object.keys(serializedBlocks.blocks).length) {
       setBlocks(deserializeBlocks(serializedBlocks.blocks))
       localStorage.clear();
     }
-    else if (build.build !== undefined && build.build !== null) {
-      setBlocks(deserializeBlocks(build.build.buildJSON));
+    else if (build) {
+      setBlocks(deserializeBlocks(build.buildJSON));
     }
     else{
       setBlocks(deserializeBlocks([]));
     }
   }, []);
-
-  let curBuildId = null;
-
-  if(build.build !== undefined && build.build !== null){
-    curBuildId = build.build._id;
-  }
 
     /**
      * Fetches the complete block data from the api, and stores it in CurrentBlockContext.
@@ -130,7 +130,7 @@ export default function CraftersDen(): React.ReactNode {
         throw err;
       }
 
-      setBuild({...{'_id': json.id}, ...build.build})
+      setBuild({...{'_id': json.id}, ...build})
       successMessage(json.message);
     } catch (e) {
       errorMessage(e.message);
@@ -157,7 +157,8 @@ export default function CraftersDen(): React.ReactNode {
         canvas={canvas} 
         savePost={savePost} 
         isViewMode={isViewMode}
-        email={email}/>
+        isUserLoggedIn={id !== null}
+        isBuildOwner={isBuildOwner} />
       </div>
     </CurrentBlockContext.Provider>
   );

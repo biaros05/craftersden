@@ -13,6 +13,7 @@ type propTypes = {
   username: string
   buildId: string,
   userId: string
+  viewPostOnClick?: () => void
 }
 
 /**
@@ -25,12 +26,13 @@ type propTypes = {
  * Rida was here
  * @param {string} props.imageURL Snapshot of the build
  * @param {string} props.username Username of the creator
+ * @param {Function} props.viewPostOnClick - Function to call when the post is clicked
  * @param {string} props.buildId the id of the build
  * @param {string} props.userId the id of the user.
  * @returns {React.ReactNode} The Post
  */
 export default function Post(
-  { description, liked, saved, imageURL, username, buildId, userId }: propTypes): React.ReactNode {
+  { description, liked, saved, imageURL, username, viewPostOnClick, buildId, userId }: propTypes): React.ReactNode {
 
   const [isLiked, setIsLiked] = useState(liked);
   const [isSaved, setIsSaved] = useState(saved);
@@ -72,6 +74,7 @@ export default function Post(
         slideGap="md"
         dragFree
         slidesToScroll={1}
+        onClick = {viewPostOnClick}
       >
         {
         <Carousel.Slide key={imageURL}>
