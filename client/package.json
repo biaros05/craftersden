@@ -55,6 +55,7 @@
     "eslint-plugin-react-refresh": "^0.4.12",
     "globals": "^16.0.0",
     "jsdom": "^26.0.0",
+    "msw": "^2.7.3",
     "postcss": "^8.5.2",
     "postcss-preset-mantine": "^1.17.0",
     "postcss-simple-vars": "^7.0.1",
