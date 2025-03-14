@@ -36,7 +36,7 @@ export function screenToWorldRay(x: number, y: number, viewMatrix: mat4, projMat
     const invProj = mat4.invert(mat4.create(), projMatrix);
     const viewCoords = vec4.transformMat4(vec4.create(), clipCoords, invProj);
     // Force direction
-    viewCoords[2] = -1.0; 
+    viewCoords[2] = -1.0;
     // No translation
     viewCoords[3] = 0.0;
 

@@ -13,70 +13,75 @@ interface PlaneBlock extends Mesh {
 	position: [number, number, number];
 }
 
+const baseStructure = new CloneableStructure([20, 20, 20]);
+for (let x = 0; x < 20; x++) {
+    for (let z = 0; z < 20; z++) {
+        baseStructure.addBlock([x, 0, z], 'minecraft:grass_block', {snowy: 'false'});
+    }
+}
+
+
 /**
  * @returns {React.ReactNode} Plane using deepslate
  */
 export default function DeepslatePlane(): React.ReactNode {
 	const canvas = useRef<HTMLCanvasElement>(null);
-	const [structure, setStructure] = useState<CloneableStructure>(new CloneableStructure([5, 5, 5]));
+	const [structure, setStructure] = useState<CloneableStructure>(baseStructure);
 	const [blocks, setBlocks] = useState<PlaneBlock[]>([]);
 	const [projectionMatrix, setProjectionMatrix] = useState<mat4>();
 	const [viewMatrix, setViewMatrix] = useState<mat4>();
 	const [cameraPosition, setCameraPosition] = useState<vec3>();
 	const [resources, setResources] = useState<Resources>();
 	const [interactiveCanvas, setInteractiveCanvas] = useState<InteractiveCanvas>();
-	const [structureRenderer, setStructureRenderer] = useState<InteractiveStructureRenderer>();
-	
+	const [, setStructureRenderer] = useState<InteractiveStructureRenderer>();
+
 	// Setup placeholder structure on first load. Load the saved structure here or in the useState(HERE)
 	useEffect(() => {
 		// Strict mode is making the add fire multiple times per click
-		if (structure.getBlocks().length === 0) {
-			structure.addBlock([1, 0, 0], 'minecraft:grass_block', { snowy: 'false' })
-			structure.addBlock([2, 0, 0], 'minecraft:stone')
-			structure.addBlock([1, 1, 0], 'minecraft:skeleton_skull', { rotation: '15' })
-			structure.addBlock([2, 1, 0], 'minecraft:acacia_fence', { waterlogged: 'true', north: 'true' })
-			structure.addBlock([0, 0, 0], 'minecraft:wall_torch', { facing: 'west' })
-			setStructure(structure.clone());
-			setBlocks(structureBlockToPlaneBlock(structure.getBlocks()));
-		}
+		fetchResources(setResources);
+		setBlocks(structureBlockToPlaneBlock(structure.getBlocks()));
 	}, [])
 
-	// Can be removed
-	useEffect(() => {console.log(blocks)}, [blocks]);
-
-	// Fetches resources
-	useEffect(() => {
-		fetchResources(setResources);
-	}, [setResources]);
-
-	// Initializes and updates structure renderer
+	// Initializes structure renderer and Interactive canvas
 	useEffect(() => {
 		const structureGl = canvas?.current?.getContext('webgl');
         if (structureGl && resources) {
-			setStructureRenderer(new InteractiveStructureRenderer(structureGl, structure, resources));
-        }
-	}, [canvas, structure, resources, setStructureRenderer])
+			const newRenderer = new InteractiveStructureRenderer(structureGl, structure, resources);
+			setStructureRenderer(newRenderer);
 
-	// Initializes and updates Interactive canvas
-	useEffect(() => {
-		if (structureRenderer) {
 			// function that renders the structure
 			const onRender = (view: mat4) => {
-				structureRenderer.drawStructure(view);
-				structureRenderer.drawGrid(view);
+				newRenderer.drawStructure(view);
+				newRenderer.drawGrid(view);
 				setViewMatrix(view);
-				setProjectionMatrix(structureRenderer.getPerspectiveMatrix());
+				setProjectionMatrix(newRenderer.getPerspectiveMatrix());
+				setCameraPosition(getCameraPosition(view));
+			}
+
+			const size = structure.getSize()
+			setInteractiveCanvas(new InteractiveCanvas(canvas.current!, onRender, [size[0] / 2, size[1] / 2, size[2] / 2]));
+        }
+	}, [resources]);
+
+	// Update Interactive canvas and Structure renderer
+	useEffect(() => {
+		const structureGl = canvas?.current?.getContext('webgl');
+		if (structureGl && resources) {
+			const newRenderer = new InteractiveStructureRenderer(structureGl, structure, resources);
+			setStructureRenderer(newRenderer);
+
+			// function that renders the structure
+			const onRender = (view: mat4) => {
+				newRenderer.drawStructure(view);
+				newRenderer.drawGrid(view);
+				setViewMatrix(view);
+				setProjectionMatrix(newRenderer.getPerspectiveMatrix());
 				setCameraPosition(getCameraPosition(view));
 			}
 			
-			if (!interactiveCanvas) {
-				const size = structure.getSize()
-				setInteractiveCanvas(new InteractiveCanvas(canvas.current!, onRender, [size[0] / 2, size[1] / 2, size[2] / 2]));
-			} else {
-				setInteractiveCanvas(interactiveCanvas.cloneAndDelete(onRender));
-			}
+			setInteractiveCanvas(interactiveCanvas!.cloneAndDelete(onRender));
 		}
-	}, [structureRenderer, setInteractiveCanvas])
+	}, [structure])
 
 	/**
 	 * Cast a ray to mouse position on canvas and return point and normal.
@@ -84,9 +89,10 @@ export default function DeepslatePlane(): React.ReactNode {
 	 * @param {mat4} viewMatrix - View matrix used by the camera
 	 * @param {mat4} projectionMatrix - Projection matrix used by the renderer
 	 * @param {vec3} camPos - Camera position
+	 * @param {boolean} correct - whether to get the clicked block's position
 	 * @returns {{point: vec3, normal: vec3} | null} intersect information
 	 */
-	function rayCast(e: React.MouseEvent<HTMLCanvasElement>, viewMatrix: mat4, projectionMatrix: mat4, camPos: vec3): {point: [number, number, number], normal: ReadonlyVec3} | null {
+	function rayCast(e: React.MouseEvent<HTMLCanvasElement>, viewMatrix: mat4, projectionMatrix: mat4, camPos: vec3, correct: boolean = true): {point: [number, number, number], normal: ReadonlyVec3} | null {
 		const canvasRect = canvas.current!.getBoundingClientRect();
 		const mousePos = [e.clientX - canvasRect.left, e.clientY - canvasRect.top];
 
@@ -96,6 +102,20 @@ export default function DeepslatePlane(): React.ReactNode {
 		if (intersect) {
 			const point = computePoint(intersect.distance, ray.origin, ray.direction).map(p => Math.floor(p));
 			const normal = computeTriangleNormal(...intersect.triangle);
+
+			// Correct point using normal vector of triangle.
+			if (correct) {
+				if (normal[0] === 1) {
+					point[0] -= 1;
+				}
+				else if (normal[1] === 1) {
+					point[1] -= 1;
+				}
+				else if (normal[2] === 1) {
+					point[2] -= 1;
+				}
+			}
+
 			return {
 				point: point as [number, number, number],
 				normal: normal
@@ -111,23 +131,11 @@ export default function DeepslatePlane(): React.ReactNode {
 	function placeBlock(e: React.MouseEvent<HTMLCanvasElement>) {
 		if (viewMatrix && projectionMatrix && cameraPosition) {
 			const {point, normal} = rayCast(e, viewMatrix, projectionMatrix, cameraPosition) ?? {};
-
-			if (point && normal) {
-				// Correct point using normal vector of triangle.
-				if (normal[0] === 1) {
-					point[0] -= 1;
-				}
-				else if (normal[1] === 1) {
-					point[1] -= 1;
-				}
-				else if (normal[2] === 1) {
-					point[2] -= 1;
-				}
-				
+			if (point && normal) {				
 				// Point is coordinates of the the block that was clicked on
 				const newBlockPosVec = vec3.add(vec3.create(), point, normal);
 				const newBlockPos: [number, number, number] = [newBlockPosVec[0], newBlockPosVec[1], newBlockPosVec[2]];
-				if (structure.isBlockAt(point) && structure.isInside(point)) {
+				if (!structure.getBlock(newBlockPos) && structure.isInside(point)) {
 					structure.addBlock(newBlockPos, 'minecraft:stone')
 					setStructure(structure.clone());
 					setBlocks([...blocks, ...structureBlockToPlaneBlock([structure.getBlock(newBlockPos)!])])
@@ -147,17 +155,6 @@ export default function DeepslatePlane(): React.ReactNode {
 			const {point, normal} = rayCast(e, viewMatrix, projectionMatrix, cameraPosition) ?? {};
 
 			if (point && normal) {
-				// Correct point using normal vector of triangle.
-				if (normal[0] === 1) {
-					point[0] -= 1;
-				}
-				else if (normal[1] === 1) {
-					point[1] -= 1;
-				}
-				else if (normal[2] === 1) {
-					point[2] -= 1;
-				}
-				
 				setStructure(structure.removeBlockAndClone(point));
 				setBlocks([...blocks.filter(b => !BlockPos.equals(b.position, point))]);
 			}
