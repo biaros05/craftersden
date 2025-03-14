@@ -3,6 +3,7 @@ import { Tabs } from "@mantine/core";
 import Builds from "./Builds";
 import { useEffect } from "react";
 import { FunctionExpression } from "mongoose";
+import '../styles/ProfileBuilds.css';
 
 /**
  * This component represents the builds section of the profile page.

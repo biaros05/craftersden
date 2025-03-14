@@ -61,11 +61,6 @@ form input {
   justify-content: space-between;
 }
 
-body, html {
-  width: 100%;
-  height: 100%;
-}
-
 .posts {
   height: 100%;
   width: 100%;
@@ -74,4 +69,22 @@ body, html {
   gap: 30px 20px;
   justify-items: center;
   padding: 10px;
+}
+
+body, * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body, html, #root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.Toastify {
+  height: 0;
 }
