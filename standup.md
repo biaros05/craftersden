@@ -38,6 +38,12 @@
 - **Axel Brochu:** Worked on investigating deepslate to see if it's possible to import and export files to minecraft. Going to look to see if we can use deep slate as our plane in replacement.
 - **Marin Melentii:** Push MR to select blocks.
 
+## March 14 2025 
+- **Amy Nguyen:** Working on the like and save, almost done, the backend should be good, missing the front-end integration, will move onto comments. 
+- **Bianca Rossetti:** Finished the form bug with mobile css, working on the loading page, integrating and polishing ui. 
+- **Axel Brochu:** Implemented fixing and breaking block into deep slate, looked into how to change state of their blocks.
+- **Marin Melentii:** Worked on saving other people's build and editing it, setting up the front-end tests.
+
 ### Template 
 - **Amy Nguyen:** 
 - **Bianca Rossetti:** 
