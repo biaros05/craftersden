@@ -1,8 +1,9 @@
-import { describe, it, expect, afterEach, afterAll, beforeAll } from 'vitest'
+import { describe, it, expect, afterEach, afterAll, beforeAll, vi } from 'vitest'
 import '@testing-library/jest-dom';
 import { http, HttpResponse } from 'msw';
 import  { setupServer } from 'msw/node';
-import { render, screen } from './test-utils';
+import { render, screen, userEvent, renderHook, act } from './test-utils';
+import { useAuth } from '../hooks/useAuth';
 
 import Welcome from "../components/Welcome";
 import React from 'react';
@@ -13,6 +14,14 @@ const server = setupServer(
     }
   )
 )
+
+const loggedInUser = {
+  id: '1',
+  username: 'test',
+  email: 'test@test.com',
+  avatar: 'test',
+  loading: false,
+}
 
   // If you want to see the DOM structure
   //screen.debug();
@@ -36,5 +45,13 @@ describe('Welcome', () => {
     expect(loginButton).toBeInTheDocument();
     expect(signUpButton).toBeInTheDocument();
 
+  });
+
+  it('displays sign out when logged in', async () => {
+
+    render(<Welcome />, loggedInUser);
+
+    const signOutButton = screen.getByRole('button', { name: /sign out/i });
+    expect(signOutButton).toBeInTheDocument();
   });
 });
