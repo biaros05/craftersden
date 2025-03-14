@@ -23,8 +23,9 @@ import CraftersDen from './components/mainUI/CraftersDen.jsx';
 import { BuildProvider } from './hooks/BuildContext.tsx';
 import { ToastContainer, Slide } from 'react-toastify';
 import '@mantine/core/styles.css';
-import { MantineProvider, createTheme } from '@mantine/core';
+import { MantineProvider} from '@mantine/core';
 import React from 'react';
+import { theme } from './theme';
 
 /**
  * Main layout of the app. Renders header
@@ -87,10 +88,6 @@ const router = createBrowserRouter([
   }
 ]);
 
-export const theme = createTheme({
-  primaryColor: 'green',
-  primaryShade: 7,
-});
 
 createRoot(document.getElementById('root')!).
   render(
