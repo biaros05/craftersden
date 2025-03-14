@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest"
   },
   "dependencies": {
     "@mantine/carousel": "^7.16.3",
@@ -39,6 +40,8 @@
   "devDependencies": {
     "@eslint/js": "^9.11.1",
     "@react-three/eslint-plugin": "^0.1.2",
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/react": "^16.2.0",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
     "@types/three": "^0.173.0",
@@ -50,6 +53,7 @@
     "globals": "^16.0.0",
     "postcss": "^8.5.2",
     "postcss-preset-mantine": "^1.17.0",
-    "postcss-simple-vars": "^7.0.1"
+    "postcss-simple-vars": "^7.0.1",
+    "vitest": "^3.0.8"
   }
 }
