@@ -1,34 +1,11 @@
-import { describe, it, expect, afterEach, beforeEach, afterAll, beforeAll } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react';
+import { describe, it, expect, afterEach, afterAll, beforeAll } from 'vitest'
 import '@testing-library/jest-dom';
 import { http, HttpResponse } from 'msw';
 import  { setupServer } from 'msw/node';
-import { BrowserRouter } from 'react-router-dom';
-import { MantineProvider } from '@mantine/core';
-import { GoogleOAuthProvider } from '@react-oauth/google';
-import { AuthProvider } from '../hooks/useAuth.tsx';
-import { BuildProvider } from '../hooks/BuildContext.tsx';
-
+import { render, screen } from './test-utils';
 
 import Welcome from "../components/Welcome";
 import React from 'react';
-
-const ProviderWrapper = ({children}) => {
-  return (
-          <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-            <MantineProvider>
-              <AuthProvider >
-                <BuildProvider>
-                  <BrowserRouter>
-                    {children}
-                  </BrowserRouter>
-                </BuildProvider>
-              </AuthProvider>
-            </MantineProvider>
-          </GoogleOAuthProvider>
-  )
-
-}
 
 const server = setupServer(
   http.get('/api/query', () => {
@@ -37,24 +14,8 @@ const server = setupServer(
   )
 )
 
-Object.defineProperty(window, 'matchMedia', {
-  writable: true,
-  value: (query => ({
-    matches: false,
-    media: query,
-    onchange: null,
-    addEventListener: () => {},
-    removeEventListener: () => {},
-    dispatchEvent: () => {},
-  })),
-});
-
   // If you want to see the DOM structure
   //screen.debug();
-
-  // If you want to see the DOM structure
-  //screen.debug();
-
 describe('Welcome', () => {
 
   beforeAll(() => server.listen());
@@ -66,12 +27,14 @@ describe('Welcome', () => {
   afterAll(() => server.close());
 
   it('renders login and sign up when logged out', async () => {
-    render(<Welcome />, {wrapper: ProviderWrapper});
+    render(<Welcome />);
 
-    const loginButton = screen.getByText('Login');
+    const loginButton = screen.getByRole('button', { name: /login/i });
+    const signUpButton = screen.getByRole('button', { name: /sign up/i });
 
 
     expect(loginButton).toBeInTheDocument();
+    expect(signUpButton).toBeInTheDocument();
 
   });
 });
