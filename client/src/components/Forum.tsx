@@ -7,7 +7,7 @@ import { TextInput } from '@mantine/core';
 import { IconSearch } from '@tabler/icons-react';
 import { errorMessage } from '../utils/notification_utils';
 import { useState } from 'react';
-
+import ZombieChaseLoad from './Loader/ZombieChaseLoad.tsx';
 
 type Post = {
   progressPicture: string,
@@ -66,9 +66,9 @@ export default function Forum(): React.ReactNode {
         leftSection={<IconSearch size={18} />}
         w={200}
       />
+      {publishedBuilds.length !== 0 ? (
       <div className="posts">
-        {publishedBuilds.length !== 0 ? (
-          publishedBuilds.map((build, i) => {
+          {publishedBuilds.map((build, i) => {
             return (
               <Post
                 key={`publishing-${i}`}
@@ -81,11 +81,11 @@ export default function Forum(): React.ReactNode {
               />
             );
           })
-        ) : (
-          <p>Fetching builds...</p>
-        )
         }
-      </div>
+        </div>
+      ) : (
+        <ZombieChaseLoad/>
+      )}
     </section>
   );
 }
