@@ -4,7 +4,8 @@ import { StrictMode } from 'react';
 import {
   createBrowserRouter,
   RouterProvider,
-  Outlet
+  Outlet,
+  useLocation
 } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { AuthProvider } from './hooks/useAuth.tsx';
@@ -26,6 +27,12 @@ import '@mantine/core/styles.css';
 import { MantineProvider} from '@mantine/core';
 import React from 'react';
 import { theme } from './theme';
+
+export const LocationDisplay = () => {
+  const location = useLocation()
+
+  return <div data-testid="location-display" style={{}}>{location.pathname}</div>
+}
 
 /**
  * Main layout of the app. Renders header
@@ -51,6 +58,7 @@ function Main(): React.ReactNode {
     theme="colored"
     transition={Slide}
     />
+    <LocationDisplay/>
   </>
 }
 
