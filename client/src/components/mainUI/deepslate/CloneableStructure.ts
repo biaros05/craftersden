@@ -20,14 +20,8 @@ export default class CloneableStructure extends Structure {
         return new CloneableStructure(this.getSize(), this.getPalette(), blocks)
     }
 
-    public isBlockAt(pos: BlockPos) {
-        const blocks = this.getPlacedBlocks().find(b => BlockPos.equals(b.pos, pos));
-
-        return blocks !== undefined;
-    }
-
     public addBlock(pos: BlockPos, name: Identifier | string, properties?: { [key: string]: string; }, nbt?: NbtCompound): this {
-        if (this.isBlockAt(pos)) {
+        if (this.getBlock(pos)) {
             console.error(`Block already at ${pos}`)
         }
         return super.addBlock(pos, name, properties, nbt);
