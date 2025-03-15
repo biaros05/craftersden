@@ -1,7 +1,21 @@
-body, * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+@font-face {
+  font-family: "Minecraft";
+  src: url('/assets/MinecraftTen-VGORe.ttf'); 
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: "Minecraft";
+  src: url('/assets/MinecraftTen-VGORe.ttf');
+  font-weight: normal;
+}
+
+h1, h2, h3, .mantine-Button-label, .mantine-UnstyledButton-root {
+  font-family: "Minecraft";
+}
+
+.mantine-Button-label {
+  letter-spacing: 1px;
 }
 
 html, body{
@@ -83,8 +97,4 @@ body, html, #root {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-}
-
-.Toastify {
-  height: 0;
 }

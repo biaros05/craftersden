@@ -92,6 +92,7 @@ export const theme = createTheme({
   primaryShade: 7,
 });
 
+
 createRoot(document.getElementById('root')!).
   render(
     <StrictMode>
