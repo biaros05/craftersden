@@ -7,26 +7,19 @@ import { mat4, ReadonlyVec3, vec3 } from 'gl-matrix';
 import InteractiveCanvas from './InteractiveCanvas';
 import InteractiveStructureRenderer from './InteractiveStructureRenderer';
 import CloneableStructure from './CloneableStructure';
+import { STONE_PLANE } from './PlanePresets';
 
 interface PlaneBlock extends Mesh {
 	name: string;
 	position: [number, number, number];
 }
 
-const baseStructure = new CloneableStructure([20, 20, 20]);
-for (let x = 0; x < 20; x++) {
-    for (let z = 0; z < 20; z++) {
-        baseStructure.addBlock([x, 0, z], 'minecraft:grass_block', {snowy: 'false'});
-    }
-}
-
-
 /**
  * @returns {React.ReactNode} Plane using deepslate
  */
 export default function DeepslatePlane(): React.ReactNode {
 	const canvas = useRef<HTMLCanvasElement>(null);
-	const [structure, setStructure] = useState<CloneableStructure>(baseStructure);
+	const [structure, setStructure] = useState<CloneableStructure>(STONE_PLANE);
 	const [blocks, setBlocks] = useState<PlaneBlock[]>([]);
 	const [projectionMatrix, setProjectionMatrix] = useState<mat4>();
 	const [viewMatrix, setViewMatrix] = useState<mat4>();
@@ -62,26 +55,6 @@ export default function DeepslatePlane(): React.ReactNode {
 			setInteractiveCanvas(new InteractiveCanvas(canvas.current!, onRender, [size[0] / 2, size[1] / 2, size[2] / 2]));
         }
 	}, [resources]);
-
-	// Update Interactive canvas and Structure renderer
-	useEffect(() => {
-		const structureGl = canvas?.current?.getContext('webgl');
-		if (structureGl && resources) {
-			const newRenderer = new InteractiveStructureRenderer(structureGl, structure, resources);
-			setStructureRenderer(newRenderer);
-
-			// function that renders the structure
-			const onRender = (view: mat4) => {
-				newRenderer.drawStructure(view);
-				newRenderer.drawGrid(view);
-				setViewMatrix(view);
-				setProjectionMatrix(newRenderer.getPerspectiveMatrix());
-				setCameraPosition(getCameraPosition(view));
-			}
-			
-			setInteractiveCanvas(interactiveCanvas!.cloneAndDelete(onRender));
-		}
-	}, [structure])
 
 	/**
 	 * Cast a ray to mouse position on canvas and return point and normal.
@@ -137,8 +110,11 @@ export default function DeepslatePlane(): React.ReactNode {
 				const newBlockPos: [number, number, number] = [newBlockPosVec[0], newBlockPosVec[1], newBlockPosVec[2]];
 				if (!structure.getBlock(newBlockPos) && structure.isInside(point)) {
 					structure.addBlock(newBlockPos, 'minecraft:stone')
-					setStructure(structure.clone());
-					setBlocks([...blocks, ...structureBlockToPlaneBlock([structure.getBlock(newBlockPos)!])])
+					const newStructure = structure.clone()
+					setStructure(newStructure);
+					setBlocks([...blocks, ...structureBlockToPlaneBlock([newStructure.getBlock(newBlockPos)!])])
+
+					updateRendererAndCanvas(newStructure);
 				}
 			}
 		} else {
@@ -155,8 +131,11 @@ export default function DeepslatePlane(): React.ReactNode {
 			const {point, normal} = rayCast(e, viewMatrix, projectionMatrix, cameraPosition) ?? {};
 
 			if (point && normal) {
-				setStructure(structure.removeBlockAndClone(point));
+				const newStructure = structure.removeBlockAndClone(point);
+				setStructure(newStructure);
 				setBlocks([...blocks.filter(b => !BlockPos.equals(b.position, point))]);
+
+				updateRendererAndCanvas(newStructure);
 			}
 		} else {
 			console.log('Canvas is loading')
@@ -172,6 +151,30 @@ export default function DeepslatePlane(): React.ReactNode {
 			placeBlock(e);
 		} else if (e.button === 0) {
 			destroyBlock(e);
+		}
+	}
+
+	/**
+	 * Updates renderer and canvas with new structure
+	 * @param {CloneableStructure} newStructure new structure to use
+	 */
+	function updateRendererAndCanvas(newStructure: CloneableStructure) {
+		const structureGl = canvas?.current?.getContext('webgl');
+
+		if (structureGl && resources) {
+			const newRenderer = new InteractiveStructureRenderer(structureGl, newStructure, resources);
+			setStructureRenderer(newRenderer);
+
+			// function that renders the structure
+			const onRender = (view: mat4) => {
+				newRenderer.drawStructure(view);
+				newRenderer.drawGrid(view);
+				setViewMatrix(view);
+				setProjectionMatrix(newRenderer.getPerspectiveMatrix());
+				setCameraPosition(getCameraPosition(view));
+			}
+			
+			setInteractiveCanvas(interactiveCanvas!.cloneAndDelete(onRender));
 		}
 	}
 
