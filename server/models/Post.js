@@ -2,9 +2,13 @@ import { Schema, model } from 'mongoose';
 
 const blockBuildSchema = new Schema({
   id: String,
+  name: String,
   position: [Number, Number, Number],
+  worldPosition: [Number, Number, Number],
   geometry: {},
   textureURLs: [String],
+  rotation: [Number, Number, Number],
+  rotationIndex: Number
 });
 
 // Define a schema

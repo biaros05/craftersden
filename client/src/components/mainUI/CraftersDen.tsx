@@ -1,4 +1,3 @@
-import BuildPlane from './BuildPlane';
 import BlockSelection from './BlockSelection';
 import ButtonPanel from './ButtonPanel';
 import { useAuth } from '../../hooks/useAuth';
@@ -13,14 +12,8 @@ import { successMessage, errorMessage } from '../../utils/notification_utils';
 import { BlockType, SerializedBlockType, StatusError } from '../../utils/building_plane_utils';
 import { CurrentBlockContext } from '../../context/currentBlockContext';
 
-export type BlockType = {
-  id: string,
-  position: [number,number,number],
-  geometry: THREE.BufferGeometry,
-  texture: THREE.Texture,
-  textureURL: string
-}
 import {jsonifyBlocks} from '../../utils/building_plane_utils.ts';
+import DeepslatePlane from './deepslate/DeepslatePlane.tsx';
 
 /**
  * Takes an array of objects and takes care of serializing their THREE objects
@@ -44,14 +37,18 @@ function deserializeBlocks(blocks: SerializedBlockType[]): BlockType[] {
   const geoLoader = new THREE.BufferGeometryLoader();
   console.log('blocks in deserializeBlocks', blocks);
   return blocks.map(block => {
-    return {
+    const newBlock: BlockType = {
       id: block.id,
       name: block.name,
-      position: block.position,
+      position: [...block.position],
+      worldPosition: block.worldPosition ? [...block.worldPosition] : undefined,
       geometry: geoLoader.parse(block.geometry),
       textureURLs: block.textureURLs,
       textures: (block.textureURLs || []).map(url => textureLoader.load(url)),
-    }
+      rotation: block.rotation ? [...block.rotation] : undefined, // ERROR OCCURS
+      rotationIndex: block.rotationIndex
+    };
+    return newBlock;
   });
 }
 
@@ -141,14 +138,15 @@ export default function CraftersDen(): React.ReactNode {
     <CurrentBlockContext.Provider value={{currentBlock, storeBlock}}>
       <div id="main-ui">
         <section className="build-tools">
-          <BuildPlane 
+          {/* <BuildPlane 
             canvasRef={canvas} 
             blocks={blocks} 
             setBlocks={setBlocks} 
             isViewMode={isViewMode} 
             setIsViewMode={setIsViewMode}
             style={{width: "75%"}}
-            />
+            /> */}
+            <DeepslatePlane />
           {!isViewMode && <BlockSelection />}
         </section>
         <ButtonPanel 
