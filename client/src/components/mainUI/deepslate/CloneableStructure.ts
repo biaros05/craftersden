@@ -26,4 +26,20 @@ export default class CloneableStructure extends Structure {
         }
         return super.addBlock(pos, name, properties, nbt);
     }
+
+    public toJson() {
+        return JSON.stringify({
+            size: this.getSize(),
+            palette: this.getPalette(),
+            placedBlocks: this.getPlacedBlocks(),
+        });
+    }
+
+    public static fromJson(json: string) {
+        const obj = JSON.parse(json);
+        
+        obj.palette = obj.palette.map(b => new BlockState(`${b.name.namespace}:${b.name.path}`, b.properties));
+
+        return new CloneableStructure(obj.size, obj.palette, obj.placedBlocks);
+    }
 }
