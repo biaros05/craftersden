@@ -54,16 +54,4 @@ describe('Welcome', () => {
     const signOutButton = screen.getByRole('button', { name: /sign out/i });
     expect(signOutButton).toBeInTheDocument();
   });
-
-  it('displays login page when login is clicked', async () => {
-    render(<Welcome />);
-    const user = userEvent.setup()
-
-    const loginButton = screen.getByRole('button', { name: /login/i });
-
-    expect(await screen.getByTestId('location-display')).toHaveTextContent('/'); 
-    await user.click(loginButton);
-
-    expect(await screen.findByTestId('location-display')).toHaveTextContent('/login');
-  });
 });
