@@ -54,4 +54,22 @@ describe('Welcome', () => {
     const signOutButton = screen.getByRole('button', { name: /sign out/i });
     expect(signOutButton).toBeInTheDocument();
   });
+
+  it('displays image', () => {
+    render(<Welcome/>);
+
+    const image = screen.getByRole('img');
+
+    expect(image).toBeInTheDocument();
+  })
+
+  it('displays welcome message', () => {
+    render(<Welcome/>)
+
+    const welcome = screen.getByRole('heading', {level: 1});
+    const subwelcome = screen.getByRole('heading', {level: 2});
+
+    expect(welcome).toBeInTheDocument();
+    expect(subwelcome).toBeInTheDocument();
+  });
 });
