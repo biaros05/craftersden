@@ -21,43 +21,6 @@ export default function Profile(): React.ReactNode {
   const {username, email, avatar} = useAuth() ?? {};
   const [opened, {open, close}] = useDisclosure(false);
 
-  const location = useLocation(); // Detects route changes
-  const build = useBuild();
-
-  const [userBuilds, setUserBuilds] = useState<Build[]>([]);
-  const [savedPosts, setSavedPosts] = useState<Build[]>([]);
-
-  useEffect(() => {
-    /**
-     * Fetches all builds for a user and updates
-     * builds state
-     */
-    async function getBuilds() {
-      const response = await fetch(`/api/user/${email}/builds`);
-      const json = await response.json();
-      setUserBuilds([...json.builds]);
-    }
-
-    getBuilds();
-  }, [email, build, location.pathname]);
-
-  const getSavedPosts = async () => {
-    try{
-      const response = await fetch(`/api/user/${email}/saved-posts`);
-      const json = await response.json();
-
-      if(!response.ok){
-        const error = new Error(json.message);
-        errorMessage(error.message);
-        throw error;
-      }
-
-      setSavedPosts([...json.savedBuilds])
-    } catch(e){
-      console.error(e);
-      errorMessage(e.message);
-    }
-  }
 
   const onSubmitHandler: FormEventHandler = async (event: FormEvent) => {
     event.preventDefault();
@@ -100,6 +63,6 @@ export default function Profile(): React.ReactNode {
         </ActionIcon>
       </div>
     </section>
-    <ProfileBuilds userBuilds={userBuilds} setUserBuilds={setUserBuilds} email={email}/>
+    <ProfileBuilds email={email}/>
   </div>;
 }
