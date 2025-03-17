@@ -4,6 +4,8 @@ import { IconBookmark, IconBookmarkFilled, IconHeart, IconHeartFilled } from '@t
 import { Image, Text, Box, ActionIcon } from '@mantine/core';
 import '../styles/Post.css';
 import { errorMessage, successMessage } from '../utils/notification_utils';
+import { useAuth } from '../hooks/useAuth';
+import { request } from 'http';
 
 type propTypes = {
   description: string,
@@ -12,7 +14,6 @@ type propTypes = {
   imageURL: string
   username: string
   buildId: string,
-  userId: string
   viewPostOnClick?: () => void
 }
 
@@ -32,23 +33,28 @@ type propTypes = {
  * @returns {React.ReactNode} The Post
  */
 export default function Post(
-  { description, liked, saved, imageURL, username, viewPostOnClick, buildId, userId }: propTypes): React.ReactNode {
+  { description, liked, saved, imageURL, username, viewPostOnClick, buildId}: propTypes): React.ReactNode {
 
   const [isLiked, setIsLiked] = useState(liked);
   const [isSaved, setIsSaved] = useState(saved);
+  const {id} = useAuth() ?? {};
 
-  const toggleLike = async (isLiked, buildId, userId) => {
-    const data = new FormData();
+  const toggleLike = async (isLiked, buildId, user_id) => {
+    const data = {
+      isLiked,
+      buildId,
+      user_id
+    }
+
     try{
-        data.append('isLiked', isLiked);
-        data.append('buildId', buildId);
-        data.append('userId', userId);
-
         const requestOptions = {
           method: 'POST',
-          body: data
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
         };
-
+        console.log(requestOptions);
         const response = await fetch('/api/post/like', requestOptions);
         const json = await response.json();
 
@@ -65,6 +71,7 @@ export default function Post(
       errorMessage(err.message);
     }
   }
+
   return (
     <div className="post">
       <Carousel
@@ -113,6 +120,7 @@ export default function Post(
             aria-label="Settings"
             onClick={() => {
               setIsLiked(!isLiked);
+              toggleLike(!isLiked, buildId, id);
             }}
           >
             {

@@ -35,7 +35,6 @@ export function serializeBlocks(blocks: BlockType[]): Uint8Array<ArrayBufferLike
 function deserializeBlocks(blocks: SerializedBlockType[]): BlockType[] {
   const textureLoader = new THREE.TextureLoader();
   const geoLoader = new THREE.BufferGeometryLoader();
-  console.log('blocks in deserializeBlocks', blocks);
   return blocks.map(block => {
     const newBlock: BlockType = {
       id: block.id,

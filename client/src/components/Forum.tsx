@@ -48,7 +48,6 @@ export default function Forum(): React.ReactNode {
           const err = new Error('Error while fetching published builds');
           throw err;
         }
-        console.log(json);
         setPublishedBuilds(json.builds);
       } catch (err) {
         console.error(err);
@@ -78,7 +77,6 @@ export default function Forum(): React.ReactNode {
                 description={build.description}
                 username={build.username}
                 buildId={build._id}
-                userId={build.user}
                 liked={false}
                 saved={false}
                 viewPostOnClick={() => handlePostClick(build)}
