@@ -310,6 +310,51 @@ async function toggleLikeBuild(req, res, next){
   }
 };
 
+async function toggleSaveBuild(req, res, next){
+  try{
+    const user = User.findOne({_id: req.body.user_id});
+
+    if(!user){
+      const error = new Error('User does not exist in database.');
+      error.status = 404;
+      next(err);
+    }
+
+    const post = Post.findOne({_id: req.body.buildId});
+
+    if(!post){
+      const error = new Error('Post does not exist in the database');
+      error.status = 404;
+      next(err);
+    }
+
+    const updateUserSaved = req.body.isSaved
+    ? {$addToSet: {saved: req.body.buildId}}
+    : {$pull: {saved: req.body.buildId}};
+
+    const updatePostSaves = req.body.isSaved
+    ? {$addToSet: {savedBy: req.body.user_id }}
+    : {$$pull: {savedBy: req.body.user_id}};
+
+    await User.findOneAndUpdate(
+      {_id: req.body.user_id},
+      updateUserSaved
+    );
+
+    await Post.findOneAndUpdate(
+      {_id: req.body.buildId},
+      updatePostSaves
+    );
+
+    const message = req.body.isSaved? 'Saved successfully!' : "Unsaved successfully!";
+    res.status(200).json({message: message});
+
+  } catch(e){
+    e.status = 500;
+    next(e);
+  }
+}
+
 
 export { 
   saveBuild, 
