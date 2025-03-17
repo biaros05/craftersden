@@ -128,5 +128,6 @@ export {
   uploadImage, 
   storeImageWithName, 
   uploadValidation, 
-  getUsersSavedBuilds
+  getUsersSavedBuilds,
+  getUserSavedPosts
 };

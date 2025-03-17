@@ -7,6 +7,7 @@ import '../styles/profile.css';
 import ProfileBuilds from './ProfileBuilds.tsx';
 import { useBuild } from '../hooks/BuildContext.tsx';
 import { useLocation } from 'react-router-dom';
+import { errorMessage } from '../utils/notification_utils.ts';
 
 
 /**
@@ -24,6 +25,7 @@ export default function Profile(): React.ReactNode {
   const build = useBuild();
 
   const [userBuilds, setUserBuilds] = useState<Build[]>([]);
+  const [savedPosts, setSavedPosts] = useState<Build[]>([]);
 
   useEffect(() => {
     /**
@@ -39,6 +41,23 @@ export default function Profile(): React.ReactNode {
     getBuilds();
   }, [email, build, location.pathname]);
 
+  const getSavedPosts = async () => {
+    try{
+      const response = await fetch(`/api/user/${email}/saved-posts`);
+      const json = await response.json();
+
+      if(!response.ok){
+        const error = new Error(json.message);
+        errorMessage(error.message);
+        throw error;
+      }
+
+      setSavedPosts([...json.savedBuilds])
+    } catch(e){
+      console.error(e);
+      errorMessage(e.message);
+    }
+  }
 
   const onSubmitHandler: FormEventHandler = async (event: FormEvent) => {
     event.preventDefault();

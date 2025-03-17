@@ -39,11 +39,11 @@ export default function Post(
   const [isSaved, setIsSaved] = useState(saved);
   const {id} = useAuth() ?? {};
 
-  const toggleLike = async (isLiked, buildId, user_id) => {
+  const toggleLike = async () => {
     const data = {
-      isLiked,
+      isLiked: !isLiked,
       buildId,
-      user_id
+      id
     }
 
     try{
@@ -72,11 +72,11 @@ export default function Post(
     }
   }
 
-  const toggleSave = async (isSaved, buildId, user_id) => {
+  const toggleSave = async () => {
     const data = {
-      isSaved,
+      isSaved: !isSaved,
       buildId, 
-      user_id
+      id
     }
 
     try{
@@ -134,7 +134,7 @@ export default function Post(
             aria-label="Settings"
             onClick={() => {
               setIsSaved(!isSaved);
-              toggleSave(!isSaved, buildId, id);
+              toggleSave();
             }}
           >
             {
@@ -154,7 +154,7 @@ export default function Post(
             aria-label="Settings"
             onClick={() => {
               setIsLiked(!isLiked);
-              toggleLike(!isLiked, buildId, id);
+              toggleLike();
             }}
           >
             {

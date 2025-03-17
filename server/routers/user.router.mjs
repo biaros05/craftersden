@@ -5,6 +5,7 @@ import
   storeImageWithName,
   uploadValidation,
   getUsersSavedBuilds,
+  getUserSavedPosts
 } from '../controllers/user.controller.mjs';
 import { body } from 'express-validator';
 import multer from 'multer';
@@ -94,5 +95,7 @@ userRouter.put('/', isAuthenticated,
  */
 userRouter.get('/:email/builds', isAuthenticated,
   upload.none(), getUsersSavedBuilds);
+
+userRouter.get('/:email/saved-posts', isAuthenticated, upload.none(), getUserSavedPosts);
 
 export default userRouter;
