@@ -268,7 +268,7 @@ async function updatePostPicture(req, res, next) {
 
 async function toggleLikeBuild(req, res, next){
   try{
-    const user = User.findOne({_id: req.body.user_id});
+    const user = User.findOne({_id: req.body.id});
 
     if(!user){
       const error = new Error('User does not exist in database.');
@@ -289,11 +289,11 @@ async function toggleLikeBuild(req, res, next){
     : {$pull: {liked: req.body.buildId} };
 
     const updatePostLikes = req.body.isLiked
-    ? {$addToSet: {likedBy: req.body.user_id} } 
-    : {$pull : {likedBy: req.body.user_id} };
+    ? {$addToSet: {likedBy: req.body.id} } 
+    : {$pull : {likedBy: req.body.id} };
 
     await User.findOneAndUpdate(
-      {_id: req.body.user_id},
+      {_id: req.body.id},
       updateUserLiked
     );
 
@@ -333,11 +333,11 @@ async function toggleSaveBuild(req, res, next){
     : {$pull: {saved: req.body.buildId}};
 
     const updatePostSaves = req.body.isSaved
-    ? {$addToSet: {savedBy: req.body.user_id }}
-    : {$$pull: {savedBy: req.body.user_id}};
+    ? {$addToSet: {savedBy: req.body.id }}
+    : {$pull: {savedBy: req.body.id}};
 
     await User.findOneAndUpdate(
-      {_id: req.body.user_id},
+      {_id: req.body.id},
       updateUserSaved
     );
 
