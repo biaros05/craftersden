@@ -7,6 +7,7 @@ import { TextInput } from '@mantine/core';
 import { IconSearch } from '@tabler/icons-react';
 import { errorMessage } from '../utils/notification_utils';
 import { useState } from 'react';
+import { useAuth } from '../hooks/useAuth.tsx';
 
 
 type Post = {
@@ -18,6 +19,8 @@ type Post = {
   buildJSON: object,
   isPublished: boolean,
   thumnails: [],
+  likedBy: (string | undefined)[];
+  savedBy: (string | undefined)[]
 }
 
 /**
@@ -29,6 +32,7 @@ export default function Forum(): React.ReactNode {
 
   const navigate = useNavigate();
   const { setBuild } = useBuildUpdate();
+  const { id } = useAuth() ?? {};
 
   const handlePostClick = (build: Post) => {
     setBuild(build)
@@ -77,8 +81,8 @@ export default function Forum(): React.ReactNode {
                 description={build.description}
                 username={build.username}
                 buildId={build._id}
-                liked={false}
-                saved={false}
+                liked={build.likedBy.includes(id)}
+                saved={build.savedBy.includes(id)}
                 viewPostOnClick={() => handlePostClick(build)}
               />
             );
