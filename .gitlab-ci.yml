@@ -103,6 +103,22 @@ build-app-archive:
     paths:
       - $RELEASE_FILE
 
+build-image:
+  stage: release
+  image: docker:28.0.0
+  # dind starts the docker daemon so we can use docker commands
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+  services:
+    - docker:28.0.0-dind
+  variables:
+    IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+  before_script: []
+  script:
+    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+    - docker build -t ${IMAGE_TAG} . build-arg artifact=true
+    - docker push ${IMAGE_TAG}
+
 deploy:
   stage: deploy
   image:  mcr.microsoft.com/azure-cli
