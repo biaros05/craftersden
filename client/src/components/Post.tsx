@@ -72,6 +72,40 @@ export default function Post(
     }
   }
 
+  const toggleSave = async (isSaved, buildId, user_id) => {
+    const data = {
+      isSaved,
+      buildId, 
+      user_id
+    }
+
+    try{
+      const requestOptions = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      };
+
+
+      const response = await fetch('/api/post/save', requestOptions);
+      const json = await response.json();
+      
+      if(!response.ok){
+        const error = new Error(json.message);
+        errorMessage(error.message);
+        throw error;
+      }
+
+      successMessage(json.message);
+
+    } catch(err){
+      console.error(err);
+      errorMessage(err.message);
+    }
+  }
+
   return (
     <div className="post">
       <Carousel
@@ -100,7 +134,7 @@ export default function Post(
             aria-label="Settings"
             onClick={() => {
               setIsSaved(!isSaved);
-
+              toggleSave(!isSaved, buildId, id);
             }}
           >
             {

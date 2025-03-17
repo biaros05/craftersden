@@ -9,7 +9,8 @@ import {
   publishBuild,
   getPublishedBuilds,
   unpublishBuild,
-  toggleLikeBuild
+  toggleLikeBuild,
+  toggleSaveBuild
 } from '../controllers/post.controller.mjs';
 import multer from 'multer';
 import { body } from 'express-validator';
@@ -99,6 +100,8 @@ publishBuild,
 );
 
 postRouter.post('/like', isAuthenticated, toggleLikeBuild);
+
+postRouter.post('/save', isAuthenticated, toggleSaveBuild )
 
 postRouter.get('/', getPublishedBuilds);
 

@@ -366,5 +366,6 @@ export {
   publishBuild, 
   getPublishedBuilds,
   unpublishBuild,
-  toggleLikeBuild
+  toggleLikeBuild,
+  toggleSaveBuild
  };
