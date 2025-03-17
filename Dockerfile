@@ -1,15 +1,17 @@
+# Client
 FROM node:lts-bookworm-slim AS build-client
+ARG artifact=false
 
 USER node
 
 WORKDIR /app/client
 
 COPY --chown=node:node client/package*.json .
-RUN npm ci --omit=dev
+RUN if [[ "${artifact}" = "false" ]]; then npm ci --omit=dev; fi
 
 COPY --chown=node:node client/ .
 
-RUN npm run build
+RUN if [[ "${artifact}" = "false" ]]; then npm run build; fi
 
 
 # Server
