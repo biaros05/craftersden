@@ -101,7 +101,7 @@ publishBuild,
 
 postRouter.post('/like', isAuthenticated, toggleLikeBuild);
 
-postRouter.post('/save', isAuthenticated, toggleSaveBuild )
+postRouter.post('/save', isAuthenticated, toggleSaveBuild);
 
 postRouter.get('/', getPublishedBuilds);
 

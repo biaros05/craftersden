@@ -347,7 +347,7 @@ async function toggleSaveBuild(req, res, next){
     );
 
     const message = req.body.isSaved? 'Saved successfully!' : "Unsaved successfully!";
-    res.status(200).json({message: message});
+    return res.status(200).json({message: message});
 
   } catch(e){
     e.status = 500;

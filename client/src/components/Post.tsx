@@ -88,7 +88,7 @@ export default function Post(
         body: JSON.stringify(data)
       };
 
-
+      console.log(requestOptions);
       const response = await fetch('/api/post/save', requestOptions);
       const json = await response.json();
       
