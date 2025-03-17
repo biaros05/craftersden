@@ -105,6 +105,24 @@ async function getUsersSavedBuilds(req, res, next) {
   }
 }
 
+async function getUserSavedPosts(req, res, next){
+  try{
+    const user = await User.findOne({email: req.params.email});
+    if(!user){
+      const error = new Error('User does not exist');
+      error.status = 404;
+      next(eror);
+    }
+
+    const savedBuilds = await Post.find({likedBy: user._id});
+
+    return res.status(200).json({message: 'Saved builds retrieved!', savedBuilds: savedBuilds});
+  } catch (e){
+    e.status = 500;
+    next(e);
+  }
+}
+
 
 export {
   uploadImage, 
