@@ -114,11 +114,6 @@ app.get('/api/helloworld', (req, res) => {
   res.send('hello world!');
 });
 
-// Browser cache for API responses
-app.use(function (req, res, next) {
-  res.set('Cache-control', 'public, max-age=31536000');
-  next();
-});
 
 app.use('/api', authRouter);
 app.use('/api', blockRouter);
@@ -132,6 +127,7 @@ app.get('*', html, (req, res) => {
   res.sendFile(path.join(__dirname, '../client/dist/index.html'));
   return;
 });
+
 
 // not found middleware
 app.use((req, res, next) => {
