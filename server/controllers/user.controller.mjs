@@ -83,7 +83,7 @@ async function storeImageWithName(req, res, next) {
  * @param {*} req -
  * @param {*} res -
  * @param {*} next -
- * @returns {JSON} - JSON with status code
+ * @returns {JSON} - JSON with status code, message, and builds
  */
 async function getUsersSavedBuilds(req, res, next) {
   try {
@@ -105,4 +105,49 @@ async function getUsersSavedBuilds(req, res, next) {
   }
 }
 
-export {uploadImage, storeImageWithName, uploadValidation, getUsersSavedBuilds};
+/**
+ * Ths function gets all the posts the user has saved from the forum
+ * and returns it.
+ * @param {object} req - The request object
+ * @param {object} res - The response object
+ * @param {*} next -
+ * @returns {JSON} - JSON with status code, message, and savedBuilds
+ */
+async function getUserSavedPosts(req, res, next){
+  try{
+    const user = await User.findOne({email: req.params.email});
+    if(!user){
+      const error = new Error('User does not exist');
+      error.status = 404;
+      next(error);
+    }
+    const savedBuilds = await Post.find({savedBy: user._id});
+
+    const savedBuildsWithUsername = await Promise.all(
+      savedBuilds.map( async (build) => {
+        const username = await User.findOne({_id : build.user}).select({ username: 1, _id: 0});
+        return{
+          ...build.toObject(),
+          username: username ? username.username : 'Unknown'
+        };
+      })
+    );
+
+
+    return res.status(200).json({
+      message: 'Saved builds retrieved!', 
+      savedBuilds: savedBuildsWithUsername});
+  } catch (e){
+    e.status = 500;
+    next(e);
+  }
+}
+
+
+export {
+  uploadImage, 
+  storeImageWithName, 
+  uploadValidation, 
+  getUsersSavedBuilds,
+  getUserSavedPosts
+};

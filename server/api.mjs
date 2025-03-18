@@ -84,7 +84,7 @@ app.use(session({
     collection: 'sessions'
   }) : null,
   cookie: { 
-    maxAge: 1000 * 60 * 20,
+    maxAge: 1000 * 60 * 60,
     secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
     sameSite: 'strict'
@@ -114,6 +114,7 @@ app.get('/api/helloworld', (req, res) => {
   res.send('hello world!');
 });
 
+
 app.use('/api', authRouter);
 app.use('/api', blockRouter);
 
@@ -132,6 +133,7 @@ app.use((req, res, next) => {
   res.status(404).json({message: 'not found'});
   return;
 });
+
 
 app.use(function (err, req, res, next) {
   console.error(err);

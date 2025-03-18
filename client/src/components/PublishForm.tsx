@@ -36,7 +36,6 @@ export default function PublishForm({ opened, close, buildId, updateBuildStatus 
       const response = await fetch('/api/post/publish', requestOptions);
       const json = await response.json();
 
-      console.log(json);
 
       if (!response.ok) {
         const err = new Error(`${json.message}`);
@@ -58,20 +57,25 @@ export default function PublishForm({ opened, close, buildId, updateBuildStatus 
           backgroundOpacity: 0.22,
           blur: 3,
         }} centered>
-        <form>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault(); 
+            publishPost(buildId);
+            close();
+          }}
+        >
           <TextInput
-            label='Description:'
-            placeholder='Build description'
+            label="Description:"
+            placeholder="Build description"
             value={description}
-            onChange={(e) => { setDescription(e.target.value) }}
+            onChange={(e) => {
+              setDescription(e.target.value);
+            }}
             maxLength={50}
           />
           <Button
-            variant='filled'
-            onClick={() => {
-              publishPost(buildId);
-              close();
-            }}
+            type="submit" 
+            variant="filled"
           >
             Submit
           </Button>
