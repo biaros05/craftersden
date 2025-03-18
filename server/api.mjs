@@ -11,6 +11,7 @@ import userRouter from './routers/user.router.mjs';
 import postRouter from './routers/post.router.mjs'
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
+import mongoose from 'mongoose';
 
 dotenv.config();
 const app = express();
@@ -121,6 +122,16 @@ app.use('/api', blockRouter);
 app.use('/api/user', userRouter);
 
 app.use('/api/post', postRouter);
+
+app.get('/api/health', (req, res) => {
+  res.set('Cache-Control', 'max-age=300');
+  const healthData = {};
+
+  healthData.alive = true;
+  healthData.db = mongoose.STATES[mongoose.connection.readyState];
+
+  return res.json(healthData);
+});
 
 // Serve index.html for all other routes
 app.get('*', html, (req, res) => {
