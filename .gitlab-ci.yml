@@ -98,7 +98,7 @@ build-image:
   script:
     - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
     - docker build -t ${IMAGE_TAG} . --build-arg artifact=true
-    - docker push ${DOCKER_TAG}
+    - docker push ${IMAGE_TAG}
 
 config-dev:
   stage: deploy
