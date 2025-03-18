@@ -7,8 +7,58 @@ This app will let users unleash their minecraft creativity by building anything 
 ![forum](./screenshots/forum.png)
 ![profile](./screenshots/profile.png)
 
-## Deployment URL
-[Deployment URL](proof-of-concept-drgeagazfdfvhsa6.canadacentral-01.azurewebsites.net)
+## Production Deployment
+[Production Deployment URL](https://crafters-den-heenbqe7fcejcdfd.canadacentral-01.azurewebsites.net/)
+
+### Why containers?
+We containerized our app to make our app as platform agnostic as possible. It now only relies on a few environment variables. The container image is pushed to the gitlab container registry for deployment when tags are added to staging or main. It is then deployed as part of the pipeline. The app consists of a single container running the server. This allows us to easily change cloud providers as our needs change or go into self hosting. We also have the option of containerizing our database by adding a simple compose file if Atlas no longer meets our needs.
+
+### Why azure?
+Azure was chosen for its extensive documentation. The existence of a student subscription also played a big role in our decision. We still wanted to keep some flexibility so we moved to containers to allow for an easy migration if it is ever needed.
+
+### Environment Variables
+```
+# DB
+ATLAS_URI
+
+# BLOB
+AZURE_SAS
+AZURE_BLOB_CONTAINER
+AZURE_STORAGE_ACCOUNT
+
+# AUTH
+GOOGLE_CLIENT_ID
+GOOGLE_CLIENT_SECRET
+SECRET
+```
+
+## Development Deployment
+[Development Deployment URL](https://crafters-den-dev-heenbqe7fcejcdfd.canadacentral-01.azurewebsites.net/)
+
+### Why containers?
+Using containers allows us to ensure that both our production and development deployments end up the same. This is important to account for any differences in machine configuration which could cause issues that would be hard to diagnose before a production deployment.
+
+### Why azure?
+Azure was chosen for its extensive documentation. The existence of a student subscription also played a big role in our decision. We still wanted to keep some flexibility so we moved to containers to allow for an easy migration if it is ever needed. Since this is just a development deployment we might look into very low cost hosting options since we dont expect heavy load.
+
+### Environment Variables
+Note that we chose to use a different mongo cluster and azure blob in case a bug was to damage some of the data in our database.
+We want to keep both deployments as isolated as possible. However we chose to keep the google auth credentials the same as we only read from it so it poses no risk of accidental destruction.
+```
+# DB
+ATLAS_URI
+
+# BLOB
+AZURE_SAS
+AZURE_BLOB_CONTAINER
+AZURE_STORAGE_ACCOUNT
+
+# AUTH
+GOOGLE_CLIENT_ID
+GOOGLE_CLIENT_SECRET
+SECRET
+```
+
 
 ## Authors: Amy Nguyen, Axel Brochu, Bianca Rossetti, Marin Melentii
 
