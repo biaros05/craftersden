@@ -115,7 +115,30 @@ export default function ProfileBuilds({ email } : propTypes
         </Tabs.List>
 
         <Tabs.Panel value="builds">
-          <Builds builds={userBuilds} setBuilds={setUserBuilds} updateBuildStatus={updateBuildStatus} />
+          {userBuilds.length !== 0 ? (
+            <Builds builds={userBuilds} setBuilds={setUserBuilds} updateBuildStatus={updateBuildStatus} />
+          ):
+          (
+            <div style={{ 
+              display: "flex", 
+              justifyContent: "center", 
+              alignItems: "center", 
+              height: "100%", 
+              minHeight: "300px", 
+              textAlign: "center" 
+            }}>
+              <Text 
+                size="xl"
+                fw={900}
+                variant="gradient"
+                gradient={{ from: 'green', to: 'lime', deg: 90 }}
+              >
+                You have no creations saved. Navigate to the den to start!
+              </Text>
+            </div>
+          )
+        }
+          
         </Tabs.Panel>
 
         <Tabs.Panel value="saves">
