@@ -109,8 +109,6 @@ config-dev:
   variables:
     #the zip file that was created
     RELEASE_FILE: release-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA.zip
-  dependencies:
-    - build-app-archive
   before_script:
     - "az login --allow-no-subscriptions --service-principal -u $AZ_SP_ID -p $AZ_SP_SECRET --tenant $AZ_TENANT"
   script:
@@ -153,8 +151,6 @@ config-prod:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
       when: never
     - if: $CI_COMMIT_TAG
-  dependencies:
-    - build-app-archive
   before_script:
     - "az login --allow-no-subscriptions --service-principal -u $AZ_SP_ID -p $AZ_SP_SECRET --tenant $AZ_TENANT"
   script:
