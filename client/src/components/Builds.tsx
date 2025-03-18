@@ -112,7 +112,7 @@ export default function Builds({ builds, updateBuildStatus, setBuilds }: propTyp
                 className='delete-save-button'
                 color="rgb(178, 14, 14)"
                 onClick={async () => {
-                  (build);
+                  setBuild(build);
                   const buildId = build._id;
                   await deleteBuild(buildId);
                   setBuilds(builds.filter(build => build._id !== buildId));

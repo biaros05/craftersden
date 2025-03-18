@@ -5,7 +5,6 @@ import useNavigate from "./Navigation/useNavigate.tsx"
 import { useBuildUpdate } from '../hooks/BuildContext.tsx';
 import { TextInput } from '@mantine/core';
 import { IconSearch } from '@tabler/icons-react';
-import { errorMessage } from '../utils/notification_utils';
 import { useState } from 'react';
 import { useAuth } from '../hooks/useAuth.tsx';
 
@@ -45,8 +44,10 @@ export default function Forum(): React.ReactNode {
   useEffect(() => {
     const controller = new AbortController();
 
+    /**
+     * Retrieves all the builds that are published.
+     */
     async function getPublishedBuilds() {
-
         const response = await fetch('/api/post/', { method: 'GET' });
         const json = await response.json();
 

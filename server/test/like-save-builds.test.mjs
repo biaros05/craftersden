@@ -1,8 +1,8 @@
 import request from 'supertest';
 import * as chai from 'chai';
-import { describe, it, before, after } from 'mocha';
+import { describe, it, before, after, afterEach } from 'mocha';
 const expect = chai.expect;
-import  app  from '../api.mjs';
+import app from '../api.mjs';
 import Sinon from 'sinon';
 import mongoose from 'mongoose';
 import { OAuthService } from '../utils/auth.mjs';
@@ -19,7 +19,7 @@ const testPostIsLiked = {
   '_id': '1111',
   'description': 'This is my first build on den!',
   'user': '656a3c9d5d42a2d9b3c5e2f4',
-  'buildJSON' : [{}],
+  'buildJSON': [{}],
   'isPublished': false,
   'thumbnails': [],
   'progressPicture': 'myPictureUrl',
@@ -31,7 +31,7 @@ const testPostNotLiked = {
   '_id': '1111',
   'description': 'This is my first build on den!',
   'user': '656a3c9d5d42a2d9b3c5e2f4',
-  'buildJSON' : [{}],
+  'buildJSON': [{}],
   'isPublished': true,
   'thumbnails': [],
   'progressPicture': 'myPictureUrl',
@@ -43,13 +43,13 @@ const testPostIsSaved = {
   '_id': '1111',
   'description': 'This is my first build on den!',
   'user': '656a3c9d5d42a2d9b3c5e2f4',
-  'buildJSON' : [{}],
+  'buildJSON': [{}],
   'isPublished': false,
   'thumbnails': [],
   'progressPicture': 'myPictureUrl',
   'likedBy': ['656a3c9d5d42a2d9b3c5e2f4'],
   'savedBy': ['656a3c9d5d42a2d9b3c5e2f4']
-}
+};
 
 
 const initialTestUser = {
@@ -76,23 +76,23 @@ describe('POST /api/post/toggle-like', () => {
     findOneAndUpdateStub.resolves(testPostNotLiked);
 
     findUserStub = Sinon.stub(mongoose.Model, 'findOne');
-    findUserStub.resolves({_id: '656a3c9d5d42a2d9b3c5e2f4'});
+    findUserStub.resolves({ _id: '656a3c9d5d42a2d9b3c5e2f4' });
 
     findBuildsStub = Sinon.stub(mongoose.Model, 'find');
     findBuildsStub.resolves(testPostNotLiked);
 
     const loginResp = await request(app).post('/api/auth').
-      send({token: 'faketoken'});
+      send({ token: 'faketoken' });
     cookie = loginResp.headers['set-cookie'][0].split(';')[0];
 
     const response = await request(app).
-    post('/api/post/toggle-like').
-    send({
-      id: '656a3c9d5d42a2d9b3c5e2f4',
-      buildId: '1111',
-      isLiked: false
-    }).
-    set('Cookie', cookie);
+      post('/api/post/toggle-like').
+      send({
+        id: '656a3c9d5d42a2d9b3c5e2f4',
+        buildId: '1111',
+        isLiked: false
+      }).
+      set('Cookie', cookie);
 
     const query = await request(app).
       get('/api/user/user@test.com/builds').
@@ -112,23 +112,23 @@ describe('POST /api/post/toggle-like', () => {
     findOneAndUpdateStub.resolves(testPostIsLiked);
 
     findUserStub = Sinon.stub(mongoose.Model, 'findOne');
-    findUserStub.resolves({_id: '656a3c9d5d42a2d9b3c5e2f4'});
+    findUserStub.resolves({ _id: '656a3c9d5d42a2d9b3c5e2f4' });
 
     findBuildsStub = Sinon.stub(mongoose.Model, 'find');
     findBuildsStub.resolves(testPostIsLiked);
 
     const loginResp = await request(app).post('/api/auth').
-      send({token: 'faketoken'});
+      send({ token: 'faketoken' });
     cookie = loginResp.headers['set-cookie'][0].split(';')[0];
 
     const response = await request(app).
-    post('/api/post/toggle-like').
-    send({
-      id: '656a3c9d5d42a2d9b3c5e2f4',
-      buildId: '1111',
-      isLiked: true
-    }).
-    set('Cookie', cookie);
+      post('/api/post/toggle-like').
+      send({
+        id: '656a3c9d5d42a2d9b3c5e2f4',
+        buildId: '1111',
+        isLiked: true
+      }).
+      set('Cookie', cookie);
 
     const query = await request(app).
       get('/api/user/user@test.com/builds').
@@ -138,17 +138,17 @@ describe('POST /api/post/toggle-like', () => {
     expect(response.body.message).to.equal('Liked post');
     expect(query.body.message).to.equal('Builds retrieved!');
     expect(query.body.builds).to.deep.equal(testPostIsLiked);
-    expect(query.body.builds.likedBy).to.deep.equal(["656a3c9d5d42a2d9b3c5e2f4"]);
+    expect(query.body.builds.likedBy).to.deep.equal(['656a3c9d5d42a2d9b3c5e2f4']);
     return;
-  })
+  });
 
-    after(() => {
-      findOneAndUpdateStub.restore();
-      findUserStub.restore();
-      findBuildsStub.restore();
-      OAuthClientCreateClientStub.restore();
-      OAuthClientStub.restore();
-    })
+  after(() => {
+    findOneAndUpdateStub.restore();
+    findUserStub.restore();
+    findBuildsStub.restore();
+    OAuthClientCreateClientStub.restore();
+    OAuthClientStub.restore();
+  });
 });
 
 describe('POST /api/post/toggle-save', () => {
@@ -169,23 +169,23 @@ describe('POST /api/post/toggle-save', () => {
     findOneAndUpdateStub.resolves(testPostIsLiked);
 
     findUserStub = Sinon.stub(mongoose.Model, 'findOne');
-    findUserStub.resolves({_id: '656a3c9d5d42a2d9b3c5e2f4'});
+    findUserStub.resolves({ _id: '656a3c9d5d42a2d9b3c5e2f4' });
 
     findBuildsStub = Sinon.stub(mongoose.Model, 'find');
     findBuildsStub.resolves(testPostIsLiked);
 
     const loginResp = await request(app).post('/api/auth').
-      send({token: 'faketoken'});
+      send({ token: 'faketoken' });
     cookie = loginResp.headers['set-cookie'][0].split(';')[0];
 
     const response = await request(app).
-    post('/api/post/toggle-save').
-    send({
-      id: '656a3c9d5d42a2d9b3c5e2f4',
-      buildId: '1111',
-      isSaved: false
-    }).
-    set('Cookie', cookie);
+      post('/api/post/toggle-save').
+      send({
+        id: '656a3c9d5d42a2d9b3c5e2f4',
+        buildId: '1111',
+        isSaved: false
+      }).
+      set('Cookie', cookie);
 
     const query = await request(app).
       get('/api/user/user@test.com/builds').
@@ -205,13 +205,13 @@ describe('POST /api/post/toggle-save', () => {
     findOneAndUpdateStub.resolves(testPostIsSaved);
 
     findUserStub = Sinon.stub(mongoose.Model, 'findOne');
-    findUserStub.resolves({_id: '656a3c9d5d42a2d9b3c5e2f4'});
+    findUserStub.resolves({ _id: '656a3c9d5d42a2d9b3c5e2f4' });
 
     findBuildsStub = Sinon.stub(mongoose.Model, 'find');
     findBuildsStub.resolves(testPostIsSaved);
 
     const loginResp = await request(app).post('/api/auth').
-      send({token: 'faketoken'});
+      send({ token: 'faketoken' });
     cookie = loginResp.headers['set-cookie'][0].split(';')[0];
 
     const response = await request(app).
@@ -227,7 +227,7 @@ describe('POST /api/post/toggle-save', () => {
       get('/api/user/user@test.com/builds').
       set('Cookie', cookie);
 
-      
+
     expect(response.status).to.equal(200);
     expect(response.body.message).to.equal('Saved successfully!');
     expect(query.body.message).to.equal('Builds retrieved!');

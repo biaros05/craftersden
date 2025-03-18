@@ -1,13 +1,10 @@
-import React, { FormEvent, FormEventHandler, useState, useEffect } from 'react';
+import React, { FormEvent, FormEventHandler } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { ActionIcon, Button, Modal } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconEdit } from '@tabler/icons-react';
 import '../styles/profile.css';
 import ProfileBuilds from './ProfileBuilds.tsx';
-import { useBuild } from '../hooks/BuildContext.tsx';
-import { useLocation } from 'react-router-dom';
-import { errorMessage } from '../utils/notification_utils.ts';
 
 
 /**

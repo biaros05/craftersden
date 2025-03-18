@@ -2,11 +2,9 @@ import React from "react";
 import { Tabs } from "@mantine/core";
 import Builds from "./Builds";
 import { useEffect } from "react";
-import { FunctionExpression } from "mongoose";
 import Post from "./Post";
 import { useAuth } from "../hooks/useAuth";
 import { useState } from "react";
-import { errorMessage } from "../utils/notification_utils";
 import { Text } from '@mantine/core';
 import '../styles/builds.css';
 import SavedPosts from "./SavedPosts";
@@ -33,7 +31,7 @@ type propTypes = {
 /**
  * This component represents the builds section of the profile page.
  * @param {string} email - The user email
- * @returns {Function} - Cleanup function to abort the fetch
+ * @returns {React.ReactNode} - The section containing the tabs for builds created/saved, and posts from forum saved.
  */
 export default function ProfileBuilds({ email } : propTypes
 ) {

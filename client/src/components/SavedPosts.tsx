@@ -16,6 +16,11 @@ type Post = {
   savedBy: (string | undefined)[];
 };
 
+/**
+ * This component returns a section of Posts that the user has saved, to be displayed in their profile.
+ * @param {Post[]}  savedPosts - The posts that are saved by the user.
+ * @returns {React.ReactNode} - A section of all the posts the user has saved.
+ */
 export default function SavedPosts({ savedPosts, id }: { savedPosts: Post[], id: string | undefined }) {
   const { setBuild } = useBuildUpdate();
   const navigate = useNavigate();

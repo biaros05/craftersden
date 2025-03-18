@@ -5,7 +5,6 @@ import { Image, Text, Box, ActionIcon } from '@mantine/core';
 import '../styles/Post.css';
 import { errorMessage, successMessage } from '../utils/notification_utils';
 import { useAuth } from '../hooks/useAuth';
-import { request } from 'http';
 
 type propTypes = {
   description: string,
@@ -29,7 +28,6 @@ type propTypes = {
  * @param {string} props.username Username of the creator
  * @param {Function} props.viewPostOnClick - Function to call when the post is clicked
  * @param {string} props.buildId the id of the build
- * @param {string} props.userId the id of the user.
  * @returns {React.ReactNode} The Post
  */
 export default function Post(

@@ -83,7 +83,7 @@ async function storeImageWithName(req, res, next) {
  * @param {*} req -
  * @param {*} res -
  * @param {*} next -
- * @returns {JSON} - JSON with status code
+ * @returns {JSON} - JSON with status code, message, and builds
  */
 async function getUsersSavedBuilds(req, res, next) {
   try {
@@ -105,13 +105,21 @@ async function getUsersSavedBuilds(req, res, next) {
   }
 }
 
+/**
+ * Ths function gets all the posts the user has saved from the forum
+ * and returns it.
+ * @param {object} req - The request object
+ * @param {object} res - The response object
+ * @param {*} next -
+ * @returns {JSON} - JSON with status code, message, and savedBuilds
+ */
 async function getUserSavedPosts(req, res, next){
   try{
     const user = await User.findOne({email: req.params.email});
     if(!user){
       const error = new Error('User does not exist');
       error.status = 404;
-      next(eror);
+      next(error);
     }
     const savedBuilds = await Post.find({savedBy: user._id});
 
@@ -126,7 +134,9 @@ async function getUserSavedPosts(req, res, next){
     );
 
 
-    return res.status(200).json({message: 'Saved builds retrieved!', savedBuilds: savedBuildsWithUsername});
+    return res.status(200).json({
+      message: 'Saved builds retrieved!', 
+      savedBuilds: savedBuildsWithUsername});
   } catch (e){
     e.status = 500;
     next(e);
