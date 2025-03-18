@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Carousel } from '@mantine/carousel';
 import { IconBookmark, IconBookmarkFilled, IconHeart, IconHeartFilled } from '@tabler/icons-react';
 import { Image, Text, Box, ActionIcon } from '@mantine/core';
@@ -35,40 +35,61 @@ export default function Post(
 
   const [isLiked, setIsLiked] = useState(liked);
   const [isSaved, setIsSaved] = useState(saved);
+  const [likes, setLikes] = useState(null);
+  const [saves, setSaves] = useState(null);
   const {id} = useAuth() ?? {};
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function getLikesSaves(){
+      const response = await fetch(`/api/post/${buildId}/likes-saves`, { method: 'GET' });
+      const json = await response.json();
+      setLikes(json.likedBy.length);
+      setSaves(json.savedBy.length);
+    }
+
+
+    getLikesSaves();
+
+    return () => {
+      controller.abort();
+    }
+  }, [isLiked, isSaved]);
 
   const toggleLike = async () => {
     const data = {
       isLiked: !isLiked,
       buildId,
       id
-    }
-
-    try{
-        const requestOptions = {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(data)
-        };
-        console.log(requestOptions);
-        const response = await fetch('/api/post/toggle-like', requestOptions);
-        const json = await response.json();
-
-        if(!response.ok){
-          const err = new Error(json.message);
-          errorMessage(err.message);
-          throw err;
-        }
-
-        successMessage(json.message);
-
-    }catch(err){
+    };
+  
+    try {
+      const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      };
+  
+      const response = await fetch('/api/post/toggle-like', requestOptions);
+      const json = await response.json();
+  
+      if (!response.ok) {
+        const err = new Error(json.message);
+        errorMessage(err.message);
+        throw err;
+      }
+  
+      setIsLiked(!isLiked);
+      setLikes(prevLikes => (isLiked ? prevLikes - 1 : prevLikes + 1)); 
+  
+      successMessage(json.message);
+    } catch (err) {
       console.error(err);
       errorMessage(err.message);
     }
-  }
+  };
+  
 
   const toggleSave = async () => {
     const data = {
@@ -95,6 +116,9 @@ export default function Post(
         errorMessage(error.message);
         throw error;
       }
+
+      setIsSaved(!isSaved);
+      setSaves(prevSaves => (isSaved ? prevSaves - 1 : prevSaves + 1));
 
       successMessage(json.message);
 
@@ -125,14 +149,13 @@ export default function Post(
       </Carousel>
       <section className="post-information">
         <div className="post-actions">
-
+          <p>{saves}</p>
           <ActionIcon
             className="icons"
             color="rgba(74, 173, 24, 1)"
             variant="subtle"
             aria-label="Settings"
             onClick={() => {
-              setIsSaved(!isSaved);
               toggleSave();
             }}
           >
@@ -143,14 +166,13 @@ export default function Post(
                 <IconBookmark style={{ width: '70%', height: '70%' }} stroke={1.5} />
             }
           </ActionIcon>
-
+          <p>{likes}</p>
           <ActionIcon
             className="icons"
             color="rgba(74, 173, 24, 1)"
             variant="subtle"
             aria-label="Settings"
             onClick={() => {
-              setIsLiked(!isLiked);
               toggleLike();
             }}
           >

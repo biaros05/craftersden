@@ -373,6 +373,36 @@ async function toggleSaveBuild(req, res, next) {
   }
 }
 
+/**
+ * This function returns the likedBy and savedBy of the post.
+ * @param {object} req  - The request object.
+ * @param {object} res - The respond object.
+ * @param {*} next - Next
+ * @returns {Response} - The response of the function.
+ */
+async function getLikesSaves(req, res, next){
+  try{
+      const post = await Post.findOne({_id: req.params.buildId}).select({likedBy: 1, savedBy: 1, _id: 0});
+      
+      if(!post){
+        const error = new Error('Cannot find post in the database');
+        error.status = 404;
+        next(error);
+      }
+
+      console.log(post);
+
+      return res.status(200).json({
+        message: 'Likes and saves retrieved successfully',
+        likedBy: post.likedBy,
+        savedBy: post.savedBy
+      });
+  } catch(error){
+    error.status = 500;
+    next(error);
+  }
+};
+
 
 export {
   saveBuild,
@@ -385,5 +415,6 @@ export {
   getPublishedBuilds,
   unpublishBuild,
   toggleLikeBuild,
-  toggleSaveBuild
+  toggleSaveBuild,
+  getLikesSaves
 };
