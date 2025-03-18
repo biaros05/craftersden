@@ -5,17 +5,21 @@ import useNavigate from "./Navigation/useNavigate.tsx"
 import { useBuildUpdate } from '../hooks/BuildContext.tsx';
 import { TextInput } from '@mantine/core';
 import { IconSearch } from '@tabler/icons-react';
-import { errorMessage } from '../utils/notification_utils';
 import { useState } from 'react';
+import { useAuth } from '../hooks/useAuth.tsx';
 
 
 type Post = {
+  _id: string,
+  user: string,
   progressPicture: string,
   username: string,  
   description: string,
   buildJSON: object,
   isPublished: boolean,
   thumnails: [],
+  likedBy: (string | undefined)[];
+  savedBy: (string | undefined)[]
 }
 
 /**
@@ -27,6 +31,7 @@ export default function Forum(): React.ReactNode {
 
   const navigate = useNavigate();
   const { setBuild } = useBuildUpdate();
+  const { id } = useAuth() ?? {};
 
   const handlePostClick = (build: Post) => {
     setBuild(build)
@@ -34,25 +39,22 @@ export default function Forum(): React.ReactNode {
   }
 
   const [publishedBuilds, setPublishedBuilds] = useState<Post[]>([]);
+
+  
   useEffect(() => {
     const controller = new AbortController();
 
-    (async function getPublishedBuilds() {
-      try {
+    /**
+     * Retrieves all the builds that are published.
+     */
+    async function getPublishedBuilds() {
         const response = await fetch('/api/post/', { method: 'GET' });
         const json = await response.json();
 
-        if (!response.ok) {
-          const err = new Error('Error while fetching published builds');
-          throw err;
-        }
-        console.log(json);
-        setPublishedBuilds(json.builds);
-      } catch (err) {
-        console.error(err);
-        errorMessage(err.message);
-      }
-    })();
+        setPublishedBuilds([...json.builds]);
+    };
+
+    getPublishedBuilds();
 
     return () => {
       controller.abort();
@@ -75,8 +77,9 @@ export default function Forum(): React.ReactNode {
                 imageURL={build.progressPicture}
                 description={build.description}
                 username={build.username}
-                liked={false}
-                saved={false}
+                buildId={build._id}
+                liked={build.likedBy.includes(id)}
+                saved={build.savedBy.includes(id)}
                 viewPostOnClick={() => handlePostClick(build)}
               />
             );
