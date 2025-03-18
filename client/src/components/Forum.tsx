@@ -40,24 +40,20 @@ export default function Forum(): React.ReactNode {
   }
 
   const [publishedBuilds, setPublishedBuilds] = useState<Post[]>([]);
+
+  
   useEffect(() => {
     const controller = new AbortController();
 
-    (async function getPublishedBuilds() {
-      try {
+    async function getPublishedBuilds() {
+
         const response = await fetch('/api/post/', { method: 'GET' });
         const json = await response.json();
 
-        if (!response.ok) {
-          const err = new Error('Error while fetching published builds');
-          throw err;
-        }
-        setPublishedBuilds(json.builds);
-      } catch (err) {
-        console.error(err);
-        errorMessage(err.message);
-      }
-    })();
+        setPublishedBuilds([...json.builds]);
+    };
+
+    getPublishedBuilds();
 
     return () => {
       controller.abort();

@@ -108,6 +108,7 @@ export default function Post(
 
   return (
     <div className="post">
+      <p style={{textAlign: 'center'}}>{username}</p>
       <Carousel
         height={125}
         slideSize="100%"
@@ -144,8 +145,6 @@ export default function Post(
                 <IconBookmark style={{ width: '70%', height: '70%' }} stroke={1.5} />
             }
           </ActionIcon>
-
-          <p>{username}</p>
 
           <ActionIcon
             className="icons"

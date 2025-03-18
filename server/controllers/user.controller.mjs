@@ -113,10 +113,20 @@ async function getUserSavedPosts(req, res, next){
       error.status = 404;
       next(eror);
     }
+    const savedBuilds = await Post.find({savedBy: user._id});
 
-    const savedBuilds = await Post.find({likedBy: user._id});
+    const savedBuildsWithUsername = await Promise.all(
+      savedBuilds.map( async (build) => {
+        const username = await User.findOne({_id : build.user}).select({ username: 1, _id: 0});
+        return{
+          ...build.toObject(),
+          username: username ? username.username : 'Unknown'
+        };
+      })
+    );
 
-    return res.status(200).json({message: 'Saved builds retrieved!', savedBuilds: savedBuilds});
+
+    return res.status(200).json({message: 'Saved builds retrieved!', savedBuilds: savedBuildsWithUsername});
   } catch (e){
     e.status = 500;
     next(e);

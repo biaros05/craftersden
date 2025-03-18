@@ -5,11 +5,11 @@ import { useEffect } from "react";
 import { FunctionExpression } from "mongoose";
 import Post from "./Post";
 import { useAuth } from "../hooks/useAuth";
-import { useBuildUpdate } from "../hooks/BuildContext";
-import useNavigate from "./Navigation/useNavigate";
 import { useState } from "react";
 import { errorMessage } from "../utils/notification_utils";
 import { Text } from '@mantine/core';
+import '../styles/builds.css';
+import SavedPosts from "./SavedPosts";
 
 type Post = {
   _id: string,
@@ -38,16 +38,9 @@ type propTypes = {
 export default function ProfileBuilds({ email } : propTypes
 ) {
   const { id } = useAuth() ?? {};
-  const { setBuild } = useBuildUpdate();
-  const navigate = useNavigate();
   const [savedPosts, setSavedPosts] = useState<Post[]>([]);
   const [userBuilds, setUserBuilds] = useState<Post[]>([]);
 
-
-  const handlePostClick = (build: Post) => {
-    setBuild(build)
-    navigate('/den');
-  }
 
   useEffect(() => {
     const controller = new AbortController();
@@ -63,21 +56,10 @@ export default function ProfileBuilds({ email } : propTypes
 
     
   const getSavedPosts = async () => {
-    try{
       const response = await fetch(`/api/user/${email}/saved-posts`);
       const json = await response.json();
 
-      if(!response.ok){
-        const error = new Error(json.message);
-        errorMessage(error.message);
-        throw error;
-      }
-
-      setSavedPosts([...json.savedBuilds])
-    } catch(e){
-      console.error(e);
-      errorMessage(e.message);
-    }
+      setSavedPosts([...json.savedBuilds]);
   }
 
     getBuilds();
@@ -142,21 +124,10 @@ export default function ProfileBuilds({ email } : propTypes
         </Tabs.Panel>
 
         <Tabs.Panel value="saves">
-          {savedPosts.length !== 0 ? (savedPosts.map((build, i) => {
-            return (
-              <Post
-                key={`saved-${i}`}
-                imageURL={build.progressPicture}
-                description={build.description}
-                username={build.username}
-                buildId={build._id}
-                liked={build.likedBy.includes(id)}
-                saved={build.savedBy.includes(id)}
-                viewPostOnClick={() => handlePostClick(build)}
-              />
-            )
-          }) 
-        ) : (
+          {savedPosts.length !== 0 ? (
+            <SavedPosts savedPosts={savedPosts} id={id}/>
+          )          
+           : (
           <div style={{ 
             display: "flex", 
             justifyContent: "center", 

@@ -93,7 +93,7 @@ export default function Builds({ builds, updateBuildStatus, setBuilds }: propTyp
   
 
   return (
-    <section className="posts">
+    <section className="builds">
       {
         builds.map((build) => {
           return (
