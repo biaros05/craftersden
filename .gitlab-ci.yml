@@ -80,29 +80,6 @@ test:
 # https://learn.microsoft.com/en-us/cli/azure/authenticate-azure-cli
 # https://learn.microsoft.com/en-us/cli/azure/create-an-azure-service-principal-azure-cli
 
-build-app-archive:
-  stage: release
-  rules:
-    - if: $CI_COMMIT_TAG
-  variables:
-    #name the zip file that is created
-    RELEASE_FILE: release-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA.zip
-  dependencies:
-    - build-frontend
-  before_script:
-    #assure there are no dev dependencies in server
-    - cd server && npm ci --cache .npm --omit=dev && rm -rf .npm && cd ..
-  script:
-    # zip (not tar) the required app files
-    - apt-get update
-    - apt-get install zip
-    - zip -r $RELEASE_FILE client/dist server ./package.json
-  artifacts:
-    expire_in: 1 days
-    when: on_success
-    paths:
-      - $RELEASE_FILE
-
 build-image:
   stage: build
   image: docker:28.0.0
@@ -112,6 +89,8 @@ build-image:
   # dind starts the docker daemon so we can use docker commands
   services:
     - docker:28.0.0-dind
+  dependencies:
+    - build-frontend
   variables:
     IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
   before_script: []
@@ -145,8 +124,10 @@ config-dev:
     - "az webapp config appsettings set --resource-group $RESOURCE_GROUP_NAME --name $APP_NAME-dev --settings SECRET=$SECRET"
 
 deploy-dev:
-  stage: build
+  stage: deploy
   image: docker:28.0.0
+  dependencies:
+    - build-image
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
     - if: $CI_COMMIT_TAG
@@ -187,8 +168,10 @@ config-prod:
     - "az webapp config appsettings set --resource-group $RESOURCE_GROUP_NAME --name $APP_NAME --settings SECRET=$SECRET"
 
 deploy-prod:
-  stage: build
+  stage: deploy
   image: docker:28.0.0
+  dependencies:
+    - build-image
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
       when: never
