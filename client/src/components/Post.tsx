@@ -149,7 +149,6 @@ export default function Post(
       </Carousel>
       <section className="post-information">
         <div className="post-actions">
-          <p>{saves}</p>
           <ActionIcon
             className="icons"
             color="rgba(74, 173, 24, 1)"
@@ -161,12 +160,12 @@ export default function Post(
           >
             {
               isSaved ?
-                <IconBookmarkFilled style={{ width: '70%', height: '70%' }} stroke={1.5} />
-                :
-                <IconBookmark style={{ width: '70%', height: '70%' }} stroke={1.5} />
+              <IconBookmarkFilled style={{ width: '70%', height: '70%' }} stroke={1.5} />
+              :
+              <IconBookmark style={{ width: '70%', height: '70%' }} stroke={1.5} />
             }
+            <p>{saves}</p>
           </ActionIcon>
-          <p>{likes}</p>
           <ActionIcon
             className="icons"
             color="rgba(74, 173, 24, 1)"
@@ -175,7 +174,8 @@ export default function Post(
             onClick={() => {
               toggleLike();
             }}
-          >
+            >
+            <p>{likes}</p>
             {
               isLiked ?
                 <IconHeartFilled />
