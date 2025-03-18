@@ -99,9 +99,9 @@ postRouter.post('/publish', isAuthenticated, upload.fields([
 publishBuild,
 );
 
-postRouter.post('/likePost', isAuthenticated, toggleLikeBuild);
+postRouter.post('/toggle-like', isAuthenticated, toggleLikeBuild);
 
-postRouter.post('/savePost', isAuthenticated, toggleSaveBuild);
+postRouter.post('/toggle-save', isAuthenticated, toggleSaveBuild);
 
 postRouter.get('/', getPublishedBuilds);
 

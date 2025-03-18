@@ -55,7 +55,7 @@ export default function Post(
           body: JSON.stringify(data)
         };
         console.log(requestOptions);
-        const response = await fetch('/api/post/likePost', requestOptions);
+        const response = await fetch('/api/post/toggle-like', requestOptions);
         const json = await response.json();
 
         if(!response.ok){
@@ -89,7 +89,7 @@ export default function Post(
       };
 
       console.log(requestOptions);
-      const response = await fetch('/api/post/savePost', requestOptions);
+      const response = await fetch('/api/post/toggle-save', requestOptions);
       const json = await response.json();
       
       if(!response.ok){

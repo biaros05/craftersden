@@ -268,7 +268,7 @@ async function updatePostPicture(req, res, next) {
 
 async function toggleLikeBuild(req, res, next){
   try{
-    const user = User.findOne({_id: req.body.id});
+    const user = await User.findOne({_id: req.body.id});
 
     if(!user){
       const error = new Error('User does not exist in database.');
@@ -276,7 +276,7 @@ async function toggleLikeBuild(req, res, next){
       next(err);
     }
 
-    const post = Post.findOne({_id: req.body.buildId});
+    const post = await Post.findOne({_id: req.body.buildId});
 
     if(!post){
       const error = new Error('Post does not exist in the database');
