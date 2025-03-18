@@ -9,6 +9,7 @@ import { useBuildUpdate } from "../hooks/BuildContext";
 import useNavigate from "./Navigation/useNavigate";
 import { useState } from "react";
 import { errorMessage } from "../utils/notification_utils";
+import { Text } from '@mantine/core';
 
 type Post = {
   _id: string,
@@ -118,7 +119,7 @@ export default function ProfileBuilds({ email } : propTypes
         </Tabs.Panel>
 
         <Tabs.Panel value="saves">
-          {savedPosts.map((build, i) => {
+          {savedPosts.length !== 0 ? (savedPosts.map((build, i) => {
             return (
               <Post
                 key={`saved-${i}`}
@@ -131,7 +132,26 @@ export default function ProfileBuilds({ email } : propTypes
                 viewPostOnClick={() => handlePostClick(build)}
               />
             )
-          })}
+          }) 
+        ) : (
+          <div style={{ 
+            display: "flex", 
+            justifyContent: "center", 
+            alignItems: "center", 
+            height: "100%", 
+            minHeight: "300px", 
+            textAlign: "center" 
+          }}>
+            <Text 
+              size="xl"
+              fw={900}
+              variant="gradient"
+              gradient={{ from: 'green', to: 'lime', deg: 90 }}
+            >
+              You have not saved any builds. Discover ideas in the forum!
+            </Text>
+          </div>
+        )}
         </Tabs.Panel>
       </Tabs>
     </section>
