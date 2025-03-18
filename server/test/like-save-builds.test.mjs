@@ -8,9 +8,9 @@ import mongoose from 'mongoose';
 import { OAuthService } from '../utils/auth.mjs';
 
 
-let findOneAndUpdateStubLikes;
-let findUserStubLikes;
-let findBuildsStubLikes;
+let findOneAndUpdateStub;
+let findUserStub;
+let findBuildsStub;
 let OAuthClientCreateClientStub;
 let OAuthClientStub;
 let cookie;
@@ -39,13 +39,17 @@ const testPostNotLiked= {
   'savedBy': []
 };
 
+const testPostIsSaved = {
+
+}
+
 const initialTestUser = {
   username: 'tester',
   email: 'user@test.com',
   avatar: 'testurl.com'
 };
 
-describe('Post like endpoints', () => {
+describe('POST /api/post/toggle-like', () => {
   before(() => {
     OAuthClientCreateClientStub = Sinon.stub(OAuthService.prototype, 'createClient');
     OAuthClientStub = Sinon.stub(OAuthService.prototype, 'verifyToken');
@@ -53,20 +57,20 @@ describe('Post like endpoints', () => {
   });
 
   afterEach(() => {
-    findOneAndUpdateStubLikes.restore();
-    findUserStubLikes.restore();
-    findBuildsStubLikes.restore();
+    findOneAndUpdateStub.restore();
+    findUserStub.restore();
+    findBuildsStub.restore();
   });
 
   it('should unlike a post', async () => {
-    findOneAndUpdateStubLikes = Sinon.stub(mongoose.Model, 'findOneAndUpdate');
-    findOneAndUpdateStubLikes.resolves(testPostIsLiked);
+    findOneAndUpdateStub = Sinon.stub(mongoose.Model, 'findOneAndUpdate');
+    findOneAndUpdateStub.resolves(testPostNotLiked);
 
-    findUserStubLikes = Sinon.stub(mongoose.Model, 'findOne');
-    findUserStubLikes.resolves({_id: '656a3c9d5d42a2d9b3c5e2f4'});
+    findUserStub = Sinon.stub(mongoose.Model, 'findOne');
+    findUserStub.resolves({_id: '656a3c9d5d42a2d9b3c5e2f4'});
 
-    findBuildsStubLikes = Sinon.stub(mongoose.Model, 'find');
-    findBuildsStubLikes.resolves(testPostIsLiked);
+    findBuildsStub = Sinon.stub(mongoose.Model, 'find');
+    findBuildsStub.resolves(testPostNotLiked);
 
     const loginResp = await request(app).post('/api/auth').
       send({token: 'faketoken'});
@@ -87,21 +91,22 @@ describe('Post like endpoints', () => {
 
     expect(response.status).to.equal(200);
     expect(response.body.message).to.equal('Unliked post');
-    expect(query.body.builds).to.deep.equal(testPostIsLiked);
+    expect(query.body.builds).to.deep.equal(testPostNotLiked);
     expect(query.body.message).to.equal('Builds retrieved!');
+    expect(query.body.builds.likedBy).to.deep.equal([]);
     return;
   });
 
 
   it('should like a post', async () => {
-    findOneAndUpdateStubLikes = Sinon.stub(mongoose.Model, 'findOneAndUpdate');
-    findOneAndUpdateStubLikes.resolves(testPostNotLiked);
+    findOneAndUpdateStub = Sinon.stub(mongoose.Model, 'findOneAndUpdate');
+    findOneAndUpdateStub.resolves(testPostIsLiked);
 
-    findUserStubLikes = Sinon.stub(mongoose.Model, 'findOne');
-    findUserStubLikes.resolves({_id: '656a3c9d5d42a2d9b3c5e2f4'});
+    findUserStub = Sinon.stub(mongoose.Model, 'findOne');
+    findUserStub.resolves({_id: '656a3c9d5d42a2d9b3c5e2f4'});
 
-    findBuildsStubLikes = Sinon.stub(mongoose.Model, 'find');
-    findBuildsStubLikes.resolves(testPostNotLiked);
+    findBuildsStub = Sinon.stub(mongoose.Model, 'find');
+    findBuildsStub.resolves(testPostIsLiked);
 
     const loginResp = await request(app).post('/api/auth').
       send({token: 'faketoken'});
@@ -123,15 +128,30 @@ describe('Post like endpoints', () => {
     expect(response.status).to.equal(200);
     expect(response.body.message).to.equal('Liked post');
     expect(query.body.message).to.equal('Builds retrieved!');
-    expect(query.body.builds).to.deep.equal(testPostNotLiked);
+    expect(query.body.builds).to.deep.equal(testPostIsLiked);
+    expect(query.body.builds.likedBy).to.deep.equal(["656a3c9d5d42a2d9b3c5e2f4"]);
     return;
   })
 
     after(() => {
-      findOneAndUpdateStubLikes.restore();
-      findUserStubLikes.restore();
-      findBuildsStubLikes.restore();
+      findOneAndUpdateStub.restore();
+      findUserStub.restore();
+      findBuildsStub.restore();
       OAuthClientCreateClientStub.restore();
       OAuthClientStub.restore();
     })
+});
+
+describe('POST /api/post/toggle-save', () => {
+  before(() => {
+    OAuthClientCreateClientStub = Sinon.stub(OAuthService.prototype, 'createClient');
+    OAuthClientStub = Sinon.stub(OAuthService.prototype, 'verifyToken');
+    OAuthClientStub.resolves(initialTestUser);
+  });
+
+  afterEach(() => {
+    findOneAndUpdateStub.restore();
+    findUserStub.restore();
+    findBuildsStub.restore();
+  })
 })
