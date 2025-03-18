@@ -42,6 +42,9 @@ export default function Post(
   useEffect(() => {
     const controller = new AbortController();
 
+    /**
+     * Retrieves the likesk and saves of the post and sets them.
+     */
     async function getLikesSaves(){
       const response = await fetch(`/api/post/${buildId}/likes-saves`, { method: 'GET' });
       const json = await response.json();
