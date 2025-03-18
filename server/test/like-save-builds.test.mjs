@@ -27,7 +27,7 @@ const testPostIsLiked = {
   'savedBy': []
 };
 
-const testPostNotLiked= {
+const testPostNotLiked = {
   '_id': '1111',
   'description': 'This is my first build on den!',
   'user': '656a3c9d5d42a2d9b3c5e2f4',
@@ -40,8 +40,17 @@ const testPostNotLiked= {
 };
 
 const testPostIsSaved = {
-
+  '_id': '1111',
+  'description': 'This is my first build on den!',
+  'user': '656a3c9d5d42a2d9b3c5e2f4',
+  'buildJSON' : [{}],
+  'isPublished': false,
+  'thumbnails': [],
+  'progressPicture': 'myPictureUrl',
+  'likedBy': ['656a3c9d5d42a2d9b3c5e2f4'],
+  'savedBy': ['656a3c9d5d42a2d9b3c5e2f4']
 }
+
 
 const initialTestUser = {
   username: 'tester',
@@ -153,5 +162,86 @@ describe('POST /api/post/toggle-save', () => {
     findOneAndUpdateStub.restore();
     findUserStub.restore();
     findBuildsStub.restore();
-  })
-})
+  });
+
+  it('should unsave a post', async () => {
+    findOneAndUpdateStub = Sinon.stub(mongoose.Model, 'findOneAndUpdate');
+    findOneAndUpdateStub.resolves(testPostIsLiked);
+
+    findUserStub = Sinon.stub(mongoose.Model, 'findOne');
+    findUserStub.resolves({_id: '656a3c9d5d42a2d9b3c5e2f4'});
+
+    findBuildsStub = Sinon.stub(mongoose.Model, 'find');
+    findBuildsStub.resolves(testPostIsLiked);
+
+    const loginResp = await request(app).post('/api/auth').
+      send({token: 'faketoken'});
+    cookie = loginResp.headers['set-cookie'][0].split(';')[0];
+
+    const response = await request(app).
+    post('/api/post/toggle-save').
+    send({
+      id: '656a3c9d5d42a2d9b3c5e2f4',
+      buildId: '1111',
+      isSaved: false
+    }).
+    set('Cookie', cookie);
+
+    const query = await request(app).
+      get('/api/user/user@test.com/builds').
+      set('Cookie', cookie);
+
+    expect(response.status).to.equal(200);
+    expect(response.body.message).to.equal('Unsaved successfully!');
+    expect(query.body.message).to.equal('Builds retrieved!');
+    expect(query.body.builds).to.deep.equal(testPostIsLiked);
+    expect(query.body.builds.savedBy).to.deep.equal([]);
+    return;
+  });
+
+
+  it('should save a post', async () => {
+    findOneAndUpdateStub = Sinon.stub(mongoose.Model, 'findOneAndUpdate');
+    findOneAndUpdateStub.resolves(testPostIsSaved);
+
+    findUserStub = Sinon.stub(mongoose.Model, 'findOne');
+    findUserStub.resolves({_id: '656a3c9d5d42a2d9b3c5e2f4'});
+
+    findBuildsStub = Sinon.stub(mongoose.Model, 'find');
+    findBuildsStub.resolves(testPostIsSaved);
+
+    const loginResp = await request(app).post('/api/auth').
+      send({token: 'faketoken'});
+    cookie = loginResp.headers['set-cookie'][0].split(';')[0];
+
+    const response = await request(app).
+      post('/api/post/toggle-save').
+      send({
+        id: '656a3c9d5d42a2d9b3c5e2f4',
+        buildId: '1111',
+        isSaved: true
+      }).
+      set('Cookie', cookie);
+
+    const query = await request(app).
+      get('/api/user/user@test.com/builds').
+      set('Cookie', cookie);
+
+      
+    expect(response.status).to.equal(200);
+    expect(response.body.message).to.equal('Saved successfully!');
+    expect(query.body.message).to.equal('Builds retrieved!');
+    expect(query.body.builds).to.deep.equal(testPostIsSaved);
+    expect(query.body.builds.savedBy).to.deep.equal(['656a3c9d5d42a2d9b3c5e2f4']);
+    return;
+  });
+
+  after(() => {
+    findOneAndUpdateStub.restore();
+    findUserStub.restore();
+    findBuildsStub.restore();
+    OAuthClientCreateClientStub.restore();
+    OAuthClientStub.restore();
+  });
+
+});
