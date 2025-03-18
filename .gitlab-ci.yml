@@ -8,6 +8,7 @@ image: node:20.18-bullseye
 stages:
   - lint
   - build
+  - build-img
   - test
   - release
   - deploy
@@ -81,7 +82,7 @@ test:
 # https://learn.microsoft.com/en-us/cli/azure/create-an-azure-service-principal-azure-cli
 
 build-image:
-  stage: build
+  stage: build-img
   image: docker:28.0.0
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
