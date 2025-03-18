@@ -28,4 +28,6 @@ COPY --from=build-client /app/client/dist /app/client/dist
 
 EXPOSE 3000
 
+ENV NODE_ENV="production"
+
 ENTRYPOINT ["node", "bin/www"]

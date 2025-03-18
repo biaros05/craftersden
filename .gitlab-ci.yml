@@ -112,12 +112,14 @@ build-image:
   services:
     - docker:28.0.0-dind
   variables:
-    IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+    IMAGE_TAG: dev-deployment
+    DOCKER_TAG: craftersden.azurecr.io/webapp/${IMAGE_TAG}
   before_script: []
   script:
-    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+    - echo $ACR_PASSWD | docker login -u $ACR_USER --password-stdin $ACR_SERVER
     - docker build -t ${IMAGE_TAG} . --build-arg artifact=true
-    - docker push ${IMAGE_TAG}
+    - docker tag ${IMAGE_TAG} ${DOCKER_TAG}
+    - docker push ${DOCKER_TAG}
 
 deploy:
   stage: deploy
