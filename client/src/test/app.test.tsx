@@ -9,7 +9,7 @@ import { handlers } from './test-utils/mocks/handlers.ts';
 import { render } from './test-utils/render';
 import Header from '../components/Header.tsx';
 
-const serverWhileLoggedIn = setupServer(...handlers);
+const server = setupServer(...handlers);
 
 const loggedInUser = {
   id: '1',
@@ -21,13 +21,13 @@ const loggedInUser = {
 
 describe ('App navigation logged in', () => {
 
-  beforeAll(() => serverWhileLoggedIn.listen());
+  beforeAll(() => server.listen());
   
   afterEach(() => {
-    serverWhileLoggedIn.resetHandlers();
+    server.resetHandlers();
   })
   
-  afterAll(() => serverWhileLoggedIn.close());
+  afterAll(() => server.close());
 
   it('starts at Welcome page', async () => {
     const {router} = render(<App />, { useRouter: true });
@@ -175,4 +175,77 @@ describe ('App navigation logged in', () => {
 
     expect(router?.state.location.pathname).toBe('/');
   });
+});
+
+describe ('App navigation logged out', () => {
+  
+  beforeAll(() => server.listen());
+  
+  afterEach(() => {
+    server.resetHandlers();
+  })
+  
+  afterAll(() => server.close());
+
+  it('navigate to profile from header does not work', async ()=> {
+    const user = userEvent.setup();
+    const {router} = render(<App />, { 
+      useRouter: true,
+    });
+
+
+    await user.click(screen.getByRole('link', { name: /profile/i }))
+
+    const errorAlert = screen.getByRole('alert');
+
+    expect(errorAlert).toBeInTheDocument();
+    expect(errorAlert).toHaveTextContent(/please log in to access this page!/i);
+    expect(router?.state.location.pathname).toBe('/');
+  });
+
+  it('navigate to den from header works', async ()=> {
+    const user = userEvent.setup();
+    const {router} = render(<App />, { 
+      useRouter: true,
+    });
+
+
+    await user.click(screen.getByRole('link', { name: /den/i }))
+
+    expect(router?.state.location.pathname).toBe('/den');
+  });
+
+  it('navigate to profile from den header does not work', async ()=> {
+    const user = userEvent.setup();
+    const {router} = render(<App />, { 
+      useRouter: true,
+      initialRoute: '/den'
+    });
+
+    await user.click(screen.getByRole('link', { name: /profile/i }))
+
+    const errorAlert = screen.getByRole('alert');
+
+    expect(errorAlert).toBeInTheDocument();
+    expect(errorAlert).toHaveTextContent(/please log in to access this page!/i);
+    expect(router?.state.location.pathname).toBe('/');
+  });
+
+  it('navigate to forum from den header does not work', async ()=> {
+    const user = userEvent.setup();
+    const {router} = render(<App />, { 
+      useRouter: true,
+      initialRoute: '/den'
+    });
+
+
+    await user.click(screen.getByRole('link', { name: /forum/i }))
+
+    const errorAlert = screen.getByRole('alert');
+
+    expect(errorAlert).toBeInTheDocument();
+    expect(errorAlert).toHaveTextContent(/please log in to access this page!/i);
+    expect(router?.state.location.pathname).toBe('/');
+  });
+
 });
