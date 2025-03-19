@@ -1,18 +1,23 @@
-import { describe, it, expect, afterEach, afterAll, beforeAll, vi, beforeEach } from 'vitest'
+import { describe, it, expect, afterEach, afterAll, beforeAll} from 'vitest'
 import '@testing-library/jest-dom';
-import { http, HttpResponse } from 'msw';
 import  { setupServer } from 'msw/node';
-import {renderWithoutWrapper, screen, userEvent, renderHook, act } from './test-utils';
+import {screen, userEvent} from './test-utils';
 import React from 'react';
 
 import App from '../App.tsx';
+import { handlers } from './test-utils/mocks/handlers.ts';
+import { render } from './test-utils/render';
 
-const serverWhileLoggedIn = setupServer(
-  http.get('/api/query', () => {
-      return HttpResponse.json({user: '1'});
-    }
-  )
-)
+const serverWhileLoggedIn = setupServer(...handlers);
+
+const loggedInUser = {
+  id: '1',
+  username: 'test',
+  email: 'test@test.com',
+  avatar: 'test',
+  loading: false,
+}
+
 describe ('App navigation logged in', () => {
 
   beforeAll(() => serverWhileLoggedIn.listen());
@@ -23,11 +28,23 @@ describe ('App navigation logged in', () => {
   
   afterAll(() => serverWhileLoggedIn.close());
 
-  it ('starts at Welcome page', async () => {
-    renderWithoutWrapper(<App />);
+  it('starts at Welcome page', async () => {
+    const {router} = render(<App />, { useRouter: true });
 
-    const location = screen.getByTestId('location-display');
-    expect(location).toHaveTextContent('/');
-  })
+    expect(router?.state.location.pathname).toBe('/');
+  });
+
+  it('navigate to profile page while logged in', async () => {
+    const user = userEvent.setup();
+    const {router} = render(<App />, { 
+      useRouter: true,
+      authValue: loggedInUser
+    });
+
+
+    await user.click(screen.getByRole('link', { name: /profile/i }))
+
+    expect(router?.state.location.pathname).toBe('/profile');
+  });
 
 })
