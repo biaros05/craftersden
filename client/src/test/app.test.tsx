@@ -87,9 +87,9 @@ describe ('App navigation logged in', () => {
     const header = screen.getByRole('banner');
     const headerWithin = within(header);
     
-    await user.click(headerWithin.getByRole('link', { name: /forum/i }));
+    await user.click(headerWithin.getByRole('link', { name: /den/i }));
 
     expect(router?.state.location.pathname).toBe('/den');
   });
 
-})
+});
