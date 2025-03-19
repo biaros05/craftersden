@@ -92,4 +92,87 @@ describe ('App navigation logged in', () => {
     expect(router?.state.location.pathname).toBe('/den');
   });
 
+  it('navigate to profile from footer', async () => {
+    const user = userEvent.setup();
+    const {router} = render(<App/>, {
+      useRouter: true,
+      authValue: loggedInUser
+    });
+    const footer = screen.getByRole('contentinfo');
+    const footerWithin = within(footer);
+
+    await user.click(footerWithin.getByRole('link', { name : /profile/i}));
+
+    expect(router?.state.location.pathname).toBe('/profile');
+  });
+
+  it('navigate to welcome from footer', async () => {
+    const user = userEvent.setup();
+    const {router} = render(<App/>, {
+      useRouter: true,
+      authValue: loggedInUser
+    });
+    const footer = screen.getByRole('contentinfo');
+    const footerWithin = within(footer);
+
+    await user.click(footerWithin.getByRole('link', { name : /welcome/i}));
+
+    expect(router?.state.location.pathname).toBe('/');
+  });
+
+  it('navigate to den from footer', async () => {
+    const user = userEvent.setup();
+    const {router} = render(<App/>, {
+      useRouter: true,
+      authValue: loggedInUser
+    });
+    const footer = screen.getByRole('contentinfo');
+    const footerWithin = within(footer);
+
+    await user.click(footerWithin.getByRole('link', { name : /den/i}));
+
+    expect(router?.state.location.pathname).toBe('/den');
+  });
+
+  it('navigate to forum from footer', async () => {
+    const user = userEvent.setup();
+    const {router} = render(<App/>, {
+      useRouter: true,
+      authValue: loggedInUser
+    });
+    const footer = screen.getByRole('contentinfo');
+    const footerWithin = within(footer);
+
+    await user.click(footerWithin.getByRole('link', { name : /forum/i}));
+
+    expect(router?.state.location.pathname).toBe('/forum');
+  });
+
+  it('navigate to login from footer does not work while logged in', async () => {
+    const user = userEvent.setup();
+    const {router} = render(<App/>, {
+      useRouter: true,
+      authValue: loggedInUser
+    });
+    const footer = screen.getByRole('contentinfo');
+    const footerWithin = within(footer);
+
+    await user.click(footerWithin.getByRole('link', { name : /login/i}));
+
+    expect(router?.state.location.pathname).toBe('/');
+  });
+
+  it('navigate to logout from footer does not work while logged in', async () => {
+    const user = userEvent.setup();
+    const {router} = render(<App/>, {
+      useRouter: true,
+      authValue: loggedInUser
+    });
+    const footer = screen.getByRole('contentinfo');
+    const footerWithin = within(footer);
+
+    await user.click(footerWithin.getByRole('link', { name : /logout/i}));
+
+    expect(router?.state.location.pathname).toBe('/');
+  });
 });
