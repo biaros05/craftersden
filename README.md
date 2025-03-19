@@ -246,4 +246,4 @@ npm run test
 
 ## Monitoring
 
-After exploring 3 monitoring services we came to the conclusion that (betteruptime)[https://betterstack.com/uptime] would meet our needs the best. The other services either had a very limited free tier or a less than desirable UI. Better uptime offered a clean UI although its monitoring functionality is very simple. Our healthcheck route is at (/api/health)[https://crafters-den-c7evgadfeufzfabs.canadacentral-01.azurewebsites.net/api/health]
+After exploring 3 monitoring services we came to the conclusion that [betteruptime](https://betterstack.com/uptime) would meet our needs the best. The other services either had a very limited free tier or a less than desirable UI. Better uptime offered a clean UI although its monitoring functionality is very simple. Our healthcheck route is at [/api/health](https://crafters-den-c7evgadfeufzfabs.canadacentral-01.azurewebsites.net/api/health)
