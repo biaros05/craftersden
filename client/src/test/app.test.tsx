@@ -248,4 +248,64 @@ describe ('App navigation logged out', () => {
     expect(router?.state.location.pathname).toBe('/');
   });
 
+  it('navigate to forum from footer does not work', async () => {
+    const user = userEvent.setup();
+    const {router} = render(<App/>, {
+      useRouter: true,
+    });
+    const footer = screen.getByRole('contentinfo');
+    const footerWithin = within(footer);
+
+    await user.click(footerWithin.getByRole('link', { name : /forum/i}));
+
+    const errorAlert = screen.getByRole('alert');
+
+    expect(errorAlert).toBeInTheDocument();
+    expect(errorAlert).toHaveTextContent(/please log in to access this page!/i);
+    expect(router?.state.location.pathname).toBe('/');
+  });
+
+  it('navigate to profile from footer does not work', async () => {
+    const user = userEvent.setup();
+    const {router} = render(<App/>, {
+      useRouter: true,
+    });
+    const footer = screen.getByRole('contentinfo');
+    const footerWithin = within(footer);
+
+    await user.click(footerWithin.getByRole('link', { name : /profile/i}));
+    
+    const errorAlert = screen.getByRole('alert');
+
+    expect(errorAlert).toBeInTheDocument();
+    expect(errorAlert).toHaveTextContent(/please log in to access this page!/i);
+    expect(router?.state.location.pathname).toBe('/');
+  });
+
+  it('navigate to den from footer works', async () => {
+    const user = userEvent.setup();
+    const {router} = render(<App/>, {
+      useRouter: true,
+    });
+    const footer = screen.getByRole('contentinfo');
+    const footerWithin = within(footer);
+
+    await user.click(footerWithin.getByRole('link', { name : /den/i}));
+    
+    expect(router?.state.location.pathname).toBe('/den');
+  });
+
+
+  it('navigate to den from footer works', async () => {
+    const user = userEvent.setup();
+    const {router} = render(<App/>, {
+      useRouter: true,
+    });
+    const footer = screen.getByRole('contentinfo');
+    const footerWithin = within(footer);
+
+    await user.click(footerWithin.getByRole('link', { name : /login/i}));
+    
+    expect(router?.state.location.pathname).toBe('/login');
+  });
 });
