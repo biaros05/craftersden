@@ -1,9 +1,8 @@
-import { describe, it, expect, afterEach, afterAll, beforeAll, vi } from 'vitest'
+import { describe, it, expect, afterEach, afterAll, beforeAll } from 'vitest'
 import '@testing-library/jest-dom';
 import { http, HttpResponse } from 'msw';
 import  { setupServer } from 'msw/node';
-import { render, screen, userEvent, renderHook, act } from './test-utils';
-import { useAuth } from '../hooks/useAuth';
+import { render, screen} from './test-utils';
 
 import Welcome from "../components/Welcome";
 import React from 'react';
@@ -24,7 +23,6 @@ const loggedInUser = {
 }
 
   // If you want to see the DOM structure
-  //screen.debug();
 describe('Welcome', () => {
 
   beforeAll(() => server.listen());
@@ -49,7 +47,7 @@ describe('Welcome', () => {
 
   it('displays sign out when logged in', async () => {
 
-    render(<Welcome />, loggedInUser);
+    render(<Welcome />, { authValue: loggedInUser });
 
     const signOutButton = screen.getByRole('button', { name: /sign out/i });
     expect(signOutButton).toBeInTheDocument();
@@ -63,11 +61,11 @@ describe('Welcome', () => {
     expect(image).toBeInTheDocument();
   })
 
-  it('displays welcome message', () => {
+  it('displays welcome message', async () => {
     render(<Welcome/>)
 
-    const welcome = screen.getByRole('heading', {level: 1});
-    const subwelcome = screen.getByRole('heading', {level: 2});
+    const welcome = await screen.findByRole('heading', {level: 1});
+    const subwelcome = await screen.findByRole('heading', {level: 2});
 
     expect(welcome).toBeInTheDocument();
     expect(subwelcome).toBeInTheDocument();

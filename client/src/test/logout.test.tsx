@@ -1,9 +1,6 @@
-import { describe, it, expect, afterEach, afterAll, beforeAll, vi } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import '@testing-library/jest-dom';
-import { http, HttpResponse } from 'msw';
-import  { setupServer } from 'msw/node';
-import { render, screen, userEvent, renderHook, act } from './test-utils';
-import { useAuth } from '../hooks/useAuth';
+import { render } from './test-utils';
 
 import Logout from '../components/Logout';
 import React from 'react';
@@ -15,7 +12,7 @@ describe('Logout', () => {
     const mockLogout = vi.fn();
 
     //override logout of AuthProvider
-    render(<Logout />, {logout: mockLogout});
+    render(<Logout />, { authValue: {logout: mockLogout}});
 
     expect(mockLogout).toHaveBeenCalled();
   })
