@@ -1,5 +1,4 @@
 import React from 'react';
-import {Button} from '@mantine/core';
 import '../../styles/ButtonPanel.css';
 import useNavigate from '../Navigation/useNavigate.tsx';
 import {buildLoginNotification, buildCopyNotification} from '../Notifications/buildNotifications'

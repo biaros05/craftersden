@@ -1,5 +1,5 @@
 import React from 'react';
-import { SimpleGrid, Loader, Notification } from '@mantine/core';
+import { SimpleGrid, Notification } from '@mantine/core';
 import { IconX } from '@tabler/icons-react';
 import BlockImage from './BlockImage';
 import useSWR from 'swr';

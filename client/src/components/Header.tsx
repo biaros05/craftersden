@@ -1,5 +1,5 @@
 import React from "react";
-import { Avatar, Button } from "@mantine/core";
+import { Avatar } from "@mantine/core";
 import { useLocation } from "react-router-dom";
 import Link from './Navigation/Link';
 import { useAuth } from "../hooks/useAuth";
