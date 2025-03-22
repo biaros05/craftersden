@@ -1,10 +1,10 @@
 import React from 'react';
-import {Button} from '@mantine/core';
 import '../../styles/ButtonPanel.css';
 import useNavigate from '../Navigation/useNavigate.tsx';
 import {buildLoginNotification, buildCopyNotification} from '../Notifications/buildNotifications'
 import {jsonifyBlocks} from '../../utils/building_plane_utils.ts';
 import { BlockType } from '../../utils/building_plane_utils.ts';
+import MinecraftButton from '../Custom/MinecraftButton.tsx';
 
 type ButtonPanelProps = { 
   setIsViewMode: (arg0: boolean) => void,
@@ -32,9 +32,7 @@ function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode, isUserLoggedI
   const navigate = useNavigate();
   return (
     <section className="button-panel">
-      <Button 
-        variant="outline" 
-        color="green" radius="md" 
+      <MinecraftButton 
         className="save-button"
         onClick={() => {
           if (!isUserLoggedIn) {
@@ -50,15 +48,13 @@ function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode, isUserLoggedI
         }}
       >
         Save
-      </Button>
-      <Button 
+      </MinecraftButton>
+      <MinecraftButton 
         onClick={() => setIsViewMode(!isViewMode)}
-        variant="outline" 
-        color="green" radius="md" 
         className="save-button"
       >
         Toggle Mode
-      </Button>
+      </MinecraftButton>
     </section>
   );
 }

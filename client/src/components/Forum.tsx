@@ -6,6 +6,9 @@ import { useBuildUpdate } from '../hooks/BuildContext.tsx';
 import { TextInput } from '@mantine/core';
 import { IconSearch } from '@tabler/icons-react';
 import { useState } from 'react';
+import CreeperLoad from './Loader/CreeperLoad.tsx';
+import ZombieChaseLoad from './Loader/ZombieChaseLoad.tsx';
+import { useWindowSize } from "@uidotdev/usehooks";
 import { useAuth } from '../hooks/useAuth.tsx';
 
 
@@ -38,6 +41,8 @@ export default function Forum(): React.ReactNode {
     navigate('/den');
   }
 
+  const {width} = useWindowSize();
+
   const [publishedBuilds, setPublishedBuilds] = useState<Post[]>([]);
 
   
@@ -68,9 +73,9 @@ export default function Forum(): React.ReactNode {
         leftSection={<IconSearch size={18} />}
         w={200}
       />
+      {publishedBuilds.length !== 0 && (
       <div className="posts">
-        {publishedBuilds.length !== 0 ? (
-          publishedBuilds.map((build, i) => {
+          {publishedBuilds.map((build, i) => {
             return (
               <Post
                 key={`publishing-${i}`}
@@ -84,11 +89,17 @@ export default function Forum(): React.ReactNode {
               />
             );
           })
-        ) : (
-          <p>Fetching builds...</p>
-        )
         }
-      </div>
+        </div>
+      )}
+      {
+        publishedBuilds.length === 0 && width! < 400 &&
+        <CreeperLoad/>
+      }
+      {
+        publishedBuilds.length === 0 && width! > 400 &&
+        <ZombieChaseLoad/>
+      }
     </section>
   );
 }
