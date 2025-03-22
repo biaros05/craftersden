@@ -5,6 +5,8 @@ import Link from './Navigation/Link';
 import { useAuth } from "../hooks/useAuth";
 import '../styles/header.css';
 import { useBuildUpdate } from "../hooks/BuildContext";
+import ZombieChaseLoad from "./Loader/ZombieChaseLoad";
+import MinecraftButton from "./Custom/MinecraftButton";
 
 /**
  * Header component that allows users to visit
@@ -20,7 +22,7 @@ export default function Header() {
     const { setBuild } = useBuildUpdate();
 
     if (loading) {
-        return <h2>Loading...</h2>;
+        return <ZombieChaseLoad/>;
     }
 
     const handleDenClick = () => {
@@ -40,9 +42,9 @@ export default function Header() {
             to={!isDen ? `/den` : `/forum`}
             state={{canGoBack: true}}
             onClick={handleDenClick}>
-            <Button variant="filled">
+            <MinecraftButton>
                 {!isDen ? `Den` : `Forum`}
-            </Button>
+            </MinecraftButton>
         </Link>
     </header>
 }

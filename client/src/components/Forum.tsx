@@ -7,6 +7,7 @@ import { TextInput } from '@mantine/core';
 import { IconSearch } from '@tabler/icons-react';
 import { errorMessage } from '../utils/notification_utils';
 import { useState } from 'react';
+import CreeperLoad from './Loader/CreeperLoad.tsx';
 import ZombieChaseLoad from './Loader/ZombieChaseLoad.tsx';
 
 type Post = {
