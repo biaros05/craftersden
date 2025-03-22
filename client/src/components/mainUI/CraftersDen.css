@@ -37,3 +37,11 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+
+@media (max-width: 600px) {
+  h1 {
+    font-size: x-large;
+    text-align: center;
+  }
+}

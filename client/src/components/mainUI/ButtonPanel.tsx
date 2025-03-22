@@ -38,7 +38,6 @@ function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode, isUserLoggedI
         onClick={() => {
           if (!isUserLoggedIn) {
             const serializedBlocks = jsonifyBlocks(blocks);
-            console.log(serializedBlocks);
             localStorage.setItem("build", JSON.stringify({"blocks": serializedBlocks}));
             buildLoginNotification(() => navigate('/login'));
           } else if (!isBuildOwner) {

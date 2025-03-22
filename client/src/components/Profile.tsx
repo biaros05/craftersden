@@ -1,12 +1,10 @@
-import React, { FormEvent, FormEventHandler, useState, useEffect } from 'react';
+import React, { FormEvent, FormEventHandler } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { ActionIcon, Button, Modal } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconEdit } from '@tabler/icons-react';
 import '../styles/profile.css';
 import ProfileBuilds from './ProfileBuilds.tsx';
-import { useBuild } from '../hooks/BuildContext.tsx';
-import { useLocation } from 'react-router-dom';
 
 
 /**
@@ -19,25 +17,6 @@ export default function Profile(): React.ReactNode {
   // const location = useLocation(); 
   const {username, email, avatar} = useAuth() ?? {};
   const [opened, {open, close}] = useDisclosure(false);
-
-  const location = useLocation(); // Detects route changes
-  const build = useBuild();
-
-  const [userBuilds, setUserBuilds] = useState<Build[]>([]);
-
-  useEffect(() => {
-    /**
-     * Fetches all builds for a user and updates
-     * builds state
-     */
-    async function getBuilds() {
-      const response = await fetch(`/api/user/${email}/builds`);
-      const json = await response.json();
-      setUserBuilds([...json.builds]);
-    }
-
-    getBuilds();
-  }, [email, build, location.pathname]);
 
 
   const onSubmitHandler: FormEventHandler = async (event: FormEvent) => {
@@ -82,6 +61,6 @@ export default function Profile(): React.ReactNode {
         </ActionIcon>
       </div>
     </section>
-    <ProfileBuilds userBuilds={userBuilds} setUserBuilds={setUserBuilds} email={email}/>
+    <ProfileBuilds email={email}/>
   </div>;
 }

@@ -4,14 +4,21 @@ header#site-header {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    align-items: center;
 }
 
 header > h2 > a {
     color: black;
+    font-size: xx-large;
 }
 
-h2 {
-    font-size: 2em;
+header > h2 {
     text-align: center;
 }
 
+@media (max-width: 600px) {
+
+    header > h2 > a {
+        font-size: x-large;
+    }
+}
