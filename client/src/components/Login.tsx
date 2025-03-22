@@ -4,7 +4,7 @@ import { useAuth } from '../hooks/useAuth';
 import React from 'react';
 import '../styles/login.css';
 import {successMessage, errorMessage as errorPopup} from '../utils/notification_utils';
-
+import CreeperLoad from './Loader/CreeperLoad';
 
 /**
  * @returns {React.ReactNode} - Login component
@@ -20,7 +20,7 @@ export default function Login(): React.ReactNode  {
   };
 
   if (loading || login === undefined) {
-    return <h2>Loading...</h2>;
+    return <CreeperLoad/>;
   }
 
   return (
