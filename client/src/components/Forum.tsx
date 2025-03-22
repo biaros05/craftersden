@@ -9,6 +9,7 @@ import { errorMessage } from '../utils/notification_utils';
 import { useState } from 'react';
 import CreeperLoad from './Loader/CreeperLoad.tsx';
 import ZombieChaseLoad from './Loader/ZombieChaseLoad.tsx';
+import { useWindowSize } from "@uidotdev/usehooks";
 
 type Post = {
   progressPicture: string,
@@ -33,6 +34,8 @@ export default function Forum(): React.ReactNode {
     setBuild(build)
     navigate('/den');
   }
+
+  const {width} = useWindowSize();
 
   const [publishedBuilds, setPublishedBuilds] = useState<Post[]>([]);
   useEffect(() => {
@@ -67,7 +70,7 @@ export default function Forum(): React.ReactNode {
         leftSection={<IconSearch size={18} />}
         w={200}
       />
-      {publishedBuilds.length !== 0 ? (
+      {publishedBuilds.length !== 0 && (
       <div className="posts">
           {publishedBuilds.map((build, i) => {
             return (
@@ -84,9 +87,15 @@ export default function Forum(): React.ReactNode {
           })
         }
         </div>
-      ) : (
-        <ZombieChaseLoad/>
       )}
+      {
+        publishedBuilds.length === 0 && width! < 400 &&
+        <CreeperLoad/>
+      }
+      {
+        publishedBuilds.length === 0 && width! > 400 &&
+        <ZombieChaseLoad/>
+      }
     </section>
   );
 }
