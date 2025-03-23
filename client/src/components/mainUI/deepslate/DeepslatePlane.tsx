@@ -7,11 +7,26 @@ import { mat4, ReadonlyVec3, vec3 } from 'gl-matrix';
 import InteractiveCanvas from './InteractiveCanvas';
 import InteractiveStructureRenderer from './InteractiveStructureRenderer';
 import CloneableStructure from './CloneableStructure';
+import '../../../styles/DeepslatePlane.css';
+import BlockStatePanel from './BlockStatePanel';
 
 export interface PlaneBlock extends Mesh {
 	name: string;
 	position: [number, number, number];
 }
+
+const baseStructure = new CloneableStructure([20, 20, 20]);
+for (let x = 0; x < 20; x++) {
+    for (let z = 0; z < 20; z++) {
+        baseStructure.addBlock([x, 0, z], 'minecraft:grass_block', {snowy: 'false'});
+    }
+}
+
+const selectedBlock = {
+	namespace: 'minecraft',
+	name: 'acacia_fence',
+}
+
 
 /**
  * 
@@ -34,13 +49,14 @@ export default function DeepslatePlane({canvas, structure, setStructure, blocks,
 	const [resources, setResources] = useState<Resources>();
 	const [interactiveCanvas, setInteractiveCanvas] = useState<InteractiveCanvas>();
 	const [, setStructureRenderer] = useState<InteractiveStructureRenderer>();
+	const [blockstate, setBlockstate] = useState<{[key: string]: string} | undefined>();
 
 	// Setup placeholder structure on first load. Load the saved structure here or in the useState(HERE)
 	useEffect(() => {
 		// Strict mode is making the add fire multiple times per click
 		fetchResources(setResources);
 		setBlocks(structureBlockToPlaneBlock(structure.getBlocks()));
-	}, [])
+	}, []);
 
 	// Initializes structure renderer and Interactive canvas
 	useEffect(() => {
@@ -64,6 +80,26 @@ export default function DeepslatePlane({canvas, structure, setStructure, blocks,
 			setInteractiveCanvas(new InteractiveCanvas(canvas.current!, onRender, [size[0] / 2, size[1] / 2, size[2] / 2]));
         }
 	}, [resources]);
+
+	// Update Interactive canvas and Structure renderer
+	useEffect(() => {
+		const structureGl = canvas?.current?.getContext('webgl');
+		if (structureGl && resources) {
+			const newRenderer = new InteractiveStructureRenderer(structureGl, structure, resources);
+			setStructureRenderer(newRenderer);
+
+			// function that renders the structure
+			const onRender = (view: mat4) => {
+				newRenderer.drawStructure(view);
+				newRenderer.drawGrid(view);
+				setViewMatrix(view);
+				setProjectionMatrix(newRenderer.getPerspectiveMatrix());
+				setCameraPosition(getCameraPosition(view));
+			}
+			
+			setInteractiveCanvas(interactiveCanvas!.cloneAndDelete(onRender));
+		}
+	}, [structure]);
 
 	/**
 	 * Cast a ray to mouse position on canvas and return point and normal.
@@ -118,7 +154,7 @@ export default function DeepslatePlane({canvas, structure, setStructure, blocks,
 				const newBlockPosVec = vec3.add(vec3.create(), point, normal);
 				const newBlockPos: [number, number, number] = [newBlockPosVec[0], newBlockPosVec[1], newBlockPosVec[2]];
 				if (!structure.getBlock(newBlockPos) && structure.isInside(point)) {
-					structure.addBlock(newBlockPos, 'minecraft:stone')
+					structure.addBlock(newBlockPos, `${selectedBlock.namespace}:${selectedBlock.name}`, {...blockstate})
 					const newStructure = structure.clone()
 					setStructure(newStructure);
 					setBlocks([...blocks, ...structureBlockToPlaneBlock([newStructure.getBlock(newBlockPos)!])])
@@ -189,7 +225,10 @@ export default function DeepslatePlane({canvas, structure, setStructure, blocks,
 		}
 	}
 
-	return <canvas ref={canvas} width={800} height={800} onMouseDown={handleClick} onContextMenu={(e) => e.preventDefault()}></canvas>
+	return <div className='plane-container'>
+		<canvas ref={canvas} width={800} height={800} onMouseDown={handleClick} onContextMenu={(e) => e.preventDefault()}></canvas>
+		<BlockStatePanel blockName={selectedBlock.name} blockNamespace={selectedBlock.namespace} currentState={blockstate} resources={resources} setBlockstate={setBlockstate} />
+	</div>
 }
 
 /**
