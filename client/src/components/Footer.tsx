@@ -6,7 +6,8 @@ import '../styles/footer.css'
  * @returns {React.ReactNode} - Footer component
  */
 export default function Footer(): React.ReactNode {
-    return <footer className="site-footer">
+    return <footer className="footer-container">
+        <section className="site-footer">
         <ul className="footer-links">
             <h3>Site</h3>
             <li><Link to='/' state={{canGoBack: true}}>Welcome</Link></li>
@@ -19,10 +20,6 @@ export default function Footer(): React.ReactNode {
             <li><Link to='/login' state={{canGoBack: true}}>Login</Link></li>
             <li><Link to='/logout' state={{canGoBack: true}}>Logout</Link></li>
         </ul>
-        <ul className="footer-copyright">
-            <h3>Copyright</h3>
-            <li>&copy; 2025</li>
-        </ul>
         <ul>
             <h3>Developers</h3>
             <li>Amy Nguyen</li>
@@ -30,5 +27,9 @@ export default function Footer(): React.ReactNode {
             <li>Bianca Rossetti</li>
             <li>Marin Melentii</li>
         </ul>
+        </section>
+        <aside className="footer-copyright">
+            <p>Copyright &copy; 2025</p>
+        </aside>
     </footer>;
 }

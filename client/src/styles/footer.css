@@ -4,10 +4,38 @@
 
     display: flex;
     justify-content: space-evenly;
-
-    background-color: lightgrey;
 }
 
 .site-footer li {
     list-style: none;
+}
+
+.footer-container {
+    padding: 10px 0;
+    background-color: lightgrey;
+}
+
+@media (max-width: 600px) {
+    .site-footer {
+        padding: 1em;
+        padding-left: 2em;
+        width: 100%;
+    
+        display: flex;
+        gap: 10px 0;
+        flex-direction: column;
+        justify-content: space-evenly;
+    
+        background-color: lightgrey;
+    }
+
+    .site-footer li {
+        font-size: small;
+    }
+}
+
+.footer-copyright {
+    text-align: center;
+    font-weight: bold;
+    font-size: small;
 }

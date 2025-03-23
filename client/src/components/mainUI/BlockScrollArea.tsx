@@ -38,9 +38,9 @@ export default function BlockScrollArea({ style = {}}): React.ReactNode {
       {pageIndex < pageCount &&
         <div style={{ display: 'none' }}><BlockPage index={ pageIndex + 1 }/></div> }
       {pageCount && <Pagination total={pageCount} value={pageIndex} onChange={handlePageChange} withPages={true}/>}
-      <ScrollArea h={"30vw"} type="always" scrollbarSize={12} style={{ padding: '1em'}} viewportRef={scrollViewport}>
+      <ScrollArea.Autosize mah={300} maw={400} mx="auto" type="always" scrollbarSize={12} style={{ padding: '1em'}} viewportRef={scrollViewport}>
         <BlockPage index={pageIndex}/>
-      </ScrollArea>
+      </ScrollArea.Autosize>
     </section>
   );
 }

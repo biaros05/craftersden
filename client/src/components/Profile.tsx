@@ -47,10 +47,11 @@ export default function Profile(): React.ReactNode {
     </Modal>
 
     <section className="user-info">
-      <div className="big-profile-image-wrapper">
+      {/* <div className="big-profile-image-wrapper">
         <img src={avatar} alt="profile picture" className="big-profile-image" />
-      </div>
+      </div> */}
       <div className="name-area">
+      <img src={avatar} alt="profile picture" className="big-profile-image" />
         <div>
           <h2>{username}</h2>
           <p>{email}</p>

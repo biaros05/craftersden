@@ -2,6 +2,7 @@ import React from "react";
 import { Tabs } from "@mantine/core";
 import Builds from "./Builds";
 import { useEffect } from "react";
+import '../styles/ProfileBuilds.css';
 import Post from "./Post";
 import { useAuth } from "../hooks/useAuth";
 import { useState } from "react";

@@ -3,7 +3,7 @@ import {errorMessage} from '../utils/notification_utils';
 import { useAuth } from "./../hooks/useAuth";
 import useGoBack from './Navigation/useGoBack';
 import {useLocation} from 'react-router-dom';
-
+import CreeperLoad from './Loader/CreeperLoad';
 /**
  * Checks if a user is logged in or not and if they should be. If they
  * aren't the user is redirected to the given route.
@@ -30,7 +30,7 @@ export default function ProtectedRoute({ authed, children }:
   });
 
   if (loading) {
-    return <h2>Loading...</h2>;
+    return <CreeperLoad/>;
   }
 
 
