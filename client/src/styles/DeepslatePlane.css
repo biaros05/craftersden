@@ -1,0 +1,13 @@
+.plane-container {
+    position: relative;
+}
+
+.blockstate-panel {
+    position: absolute;
+    right: 10px;
+    top: 50px;
+    z-index: 1;
+    width: 150px;
+    height: 150px;
+    background-color: rgba(71, 71, 71, 0.3);
+}
