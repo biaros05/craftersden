@@ -44,6 +44,12 @@
 - **Axel Brochu:** Implemented fixing and breaking block into deep slate, looked into how to change state of their blocks.
 - **Marin Melentii:** Worked on saving other people's build and editing it, setting up the front-end tests.
 
+## March 24 2025 
+- **Amy Nguyen:** Worked on implement save and like, now I am working on the forum search and the adding tags to posts for forum filtering.
+- **Bianca Rossetti:** Finished polishing UI, will add "loading" text to loading thing. Finished seeding script for deepslate database. Not sure about the bounding box for certain specific blocks like fences. Going to start saving build to databas (deepslate). Has a toJson thing that might be useful. 
+- **Axel Brochu:** Did the dev deployment, changed the dev deployment to be the containerized one, no longer POC url. Also set up monitoring service. Tried to work with changing states of blocks. Works, but not user friendly. Will work on making more user friendly and work on fixing memory.
+- **Marin Melentii:** Worked on front-end unit tests. Having weird issues with ceratin tests.
+
 ### Template 
 - **Amy Nguyen:** 
 - **Bianca Rossetti:** 
