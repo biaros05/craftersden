@@ -17,7 +17,7 @@ export default class CloneableStructure extends Structure {
     public removeBlockAndClone(pos: BlockPos) {
         const blocks = this.getPlacedBlocks().filter(b => !BlockPos.equals(b.pos, pos));
 
-        return new CloneableStructure(this.getSize(), this.getPalette(), blocks)
+        return new CloneableStructure(this.getSize(), this.getPalette(), blocks);
     }
 
     public addBlock(pos: BlockPos, name: Identifier | string, properties?: { [key: string]: string; }, nbt?: NbtCompound): this {
