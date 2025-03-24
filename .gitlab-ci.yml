@@ -8,6 +8,7 @@ image: node:20.18-bullseye
 stages:
   - lint
   - build
+  - build-img
   - test
   - release
   - deploy
@@ -80,39 +81,77 @@ test:
 # https://learn.microsoft.com/en-us/cli/azure/authenticate-azure-cli
 # https://learn.microsoft.com/en-us/cli/azure/create-an-azure-service-principal-azure-cli
 
-build-app-archive:
-  stage: release
+build-image:
+  stage: build-img
+  image: docker:28.0.0
   rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
     - if: $CI_COMMIT_TAG
-  variables:
-    #name the zip file that is created
-    RELEASE_FILE: release-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA.zip
+  # dind starts the docker daemon so we can use docker commands
+  services:
+    - docker:28.0.0-dind
   dependencies:
     - build-frontend
-  before_script:
-    #assure there are no dev dependencies in server
-    - cd server && npm ci --cache .npm --omit=dev && rm -rf .npm && cd ..
+  variables:
+    IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+  before_script: []
   script:
-    # zip (not tar) the required app files
-    - apt-get update
-    - apt-get install zip
-    - zip -r $RELEASE_FILE client/dist server ./package.json
-  artifacts:
-    expire_in: 1 days
-    when: on_success
-    paths:
-      - $RELEASE_FILE
+    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+    - docker build -t ${IMAGE_TAG} . --build-arg artifact=true
+    - docker push ${IMAGE_TAG}
 
-deploy:
+config-dev:
   stage: deploy
   image:  mcr.microsoft.com/azure-cli
   rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
     - if: $CI_COMMIT_TAG
+      when: never
   variables:
     #the zip file that was created
     RELEASE_FILE: release-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA.zip
+  before_script:
+    - "az login --allow-no-subscriptions --service-principal -u $AZ_SP_ID -p $AZ_SP_SECRET --tenant $AZ_TENANT"
+  script:
+    #set env variables on Azure
+    - "az webapp config appsettings set --resource-group $RESOURCE_GROUP_NAME --name $APP_NAME-dev --settings ATLAS_URI=$ATLAS_URI"
+    - "az webapp config appsettings set --resource-group $RESOURCE_GROUP_NAME --name $APP_NAME-dev --settings AZURE_SAS=$AZURE_SAS"
+    - "az webapp config appsettings set --resource-group $RESOURCE_GROUP_NAME --name $APP_NAME-dev --settings AZURE_BLOB_CONTAINER=$AZURE_BLOB_CONTAINER"
+    - "az webapp config appsettings set --resource-group $RESOURCE_GROUP_NAME --name $APP_NAME-dev --settings AZURE_STORAGE_ACCOUNT=$AZURE_STORAGE_ACCOUNT"
+    - "az webapp config appsettings set --resource-group $RESOURCE_GROUP_NAME --name $APP_NAME-dev --settings GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID"
+    - "az webapp config appsettings set --resource-group $RESOURCE_GROUP_NAME --name $APP_NAME-dev --settings GOOGLE_CLIENT_SECRET=$GOOGLE_CLIENT_SECRET"
+    - "az webapp config appsettings set --resource-group $RESOURCE_GROUP_NAME --name $APP_NAME-dev --settings SECRET=$SECRET"
+
+deploy-dev:
+  stage: deploy
+  image: docker:28.0.0
   dependencies:
-    - build-app-archive
+    - build-image
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_COMMIT_TAG
+      when: never
+  # dind starts the docker daemon so we can use docker commands
+  services:
+    - docker:28.0.0-dind
+  variables:
+    IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+    DOCKER_TAG: craftersden.azurecr.io/webapp/dev-deployment
+  before_script: []
+  script:
+    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+    - docker pull ${IMAGE_TAG}
+    - echo $ACR_PASSWD | docker login -u $ACR_USER --password-stdin $ACR_SERVER
+    - docker tag ${IMAGE_TAG} ${DOCKER_TAG}
+    - docker push ${DOCKER_TAG}
+
+config-prod:
+  stage: deploy
+  image:  mcr.microsoft.com/azure-cli
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      when: never
+    - if: $CI_COMMIT_TAG
   before_script:
     - "az login --allow-no-subscriptions --service-principal -u $AZ_SP_ID -p $AZ_SP_SECRET --tenant $AZ_TENANT"
   script:
@@ -124,6 +163,26 @@ deploy:
     - "az webapp config appsettings set --resource-group $RESOURCE_GROUP_NAME --name $APP_NAME --settings GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID"
     - "az webapp config appsettings set --resource-group $RESOURCE_GROUP_NAME --name $APP_NAME --settings GOOGLE_CLIENT_SECRET=$GOOGLE_CLIENT_SECRET"
     - "az webapp config appsettings set --resource-group $RESOURCE_GROUP_NAME --name $APP_NAME --settings SECRET=$SECRET"
-    # add any additional env variables that are in your .env file as CI variables and here
-    #finally upload the zip file
-    - "az webapp deploy --type zip --resource-group $RESOURCE_GROUP_NAME --name $APP_NAME --src-path $RELEASE_FILE"
+
+deploy-prod:
+  stage: deploy
+  image: docker:28.0.0
+  dependencies:
+    - build-image
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      when: never
+    - if: $CI_COMMIT_TAG
+  # dind starts the docker daemon so we can use docker commands
+  services:
+    - docker:28.0.0-dind
+  variables:
+    IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+    DOCKER_TAG: craftersden.azurecr.io/webapp/prod-deployment
+  before_script: []
+  script:
+    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+    - docker pull ${IMAGE_TAG}
+    - echo $ACR_PASSWD | docker login -u $ACR_USER --password-stdin $ACR_SERVER
+    - docker tag ${IMAGE_TAG} ${DOCKER_TAG}
+    - docker push ${DOCKER_TAG}

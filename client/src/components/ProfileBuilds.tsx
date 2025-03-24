@@ -2,15 +2,44 @@ import React from "react";
 import { Tabs } from "@mantine/core";
 import Builds from "./Builds";
 import { useEffect } from "react";
-import { FunctionExpression } from "mongoose";
+import '../styles/ProfileBuilds.css';
+import Post from "./Post";
+import { useAuth } from "../hooks/useAuth";
+import { useState } from "react";
+import { Text } from '@mantine/core';
+import '../styles/builds.css';
+import SavedPosts from "./SavedPosts";
+
+type Post = {
+  _id: string,
+  user: string,
+  progressPicture: string,
+  username: string,  
+  description: string,
+  buildJSON: object,
+  isPublished: boolean,
+  thumnails: [],
+  likedBy: (string | undefined)[];
+  savedBy: (string | undefined)[]
+}
+
+type propTypes = {
+  email: string, 
+};
+
+
 
 /**
  * This component represents the builds section of the profile page.
  * @param {string} email - The user email
- * @returns {Function} - Cleanup function to abort the fetch
+ * @returns {React.ReactNode} - The section containing the tabs for builds created/saved, and posts from forum saved.
  */
-export default function ProfileBuilds({ userBuilds, setUserBuilds, email } : {email: string, userBuilds: [], setUserBuilds: FunctionExpression}
+export default function ProfileBuilds({ email } : propTypes
 ) {
+  const { id } = useAuth() ?? {};
+  const [savedPosts, setSavedPosts] = useState<Post[]>([]);
+  const [userBuilds, setUserBuilds] = useState<Post[]>([]);
+
 
   useEffect(() => {
     const controller = new AbortController();
@@ -24,7 +53,16 @@ export default function ProfileBuilds({ userBuilds, setUserBuilds, email } : {em
       setUserBuilds([...json.builds]);
     }
 
+    
+  const getSavedPosts = async () => {
+      const response = await fetch(`/api/user/${email}/saved-posts`);
+      const json = await response.json();
+
+      setSavedPosts([...json.savedBuilds]);
+  }
+
     getBuilds();
+    getSavedPosts();
 
     return () => {
       controller.abort();
@@ -47,7 +85,7 @@ export default function ProfileBuilds({ userBuilds, setUserBuilds, email } : {em
 
   return(
     <section className="profile-builds">
-      <Tabs defaultValue="builds" >
+      <Tabs defaultValue="builds">
         <Tabs.List>
           <Tabs.Tab value="builds">
             <h2>Builds</h2>
@@ -58,11 +96,55 @@ export default function ProfileBuilds({ userBuilds, setUserBuilds, email } : {em
         </Tabs.List>
 
         <Tabs.Panel value="builds">
-          <Builds builds={userBuilds} setBuilds={setUserBuilds} updateBuildStatus={updateBuildStatus} />
+          {userBuilds.length !== 0 ? (
+            <Builds builds={userBuilds} setBuilds={setUserBuilds} updateBuildStatus={updateBuildStatus} />
+          ):
+          (
+            <div style={{ 
+              display: "flex", 
+              justifyContent: "center", 
+              alignItems: "center", 
+              height: "100%", 
+              minHeight: "300px", 
+              textAlign: "center" 
+            }}>
+              <Text 
+                size="xl"
+                fw={900}
+                variant="gradient"
+                gradient={{ from: 'green', to: 'lime', deg: 90 }}
+              >
+                You have no creations saved. Navigate to the den to start!
+              </Text>
+            </div>
+          )
+        }
+          
         </Tabs.Panel>
 
         <Tabs.Panel value="saves">
-          Saves go here
+          {savedPosts.length !== 0 ? (
+            <SavedPosts savedPosts={savedPosts} id={id}/>
+          )          
+           : (
+          <div style={{ 
+            display: "flex", 
+            justifyContent: "center", 
+            alignItems: "center", 
+            height: "100%", 
+            minHeight: "300px", 
+            textAlign: "center" 
+          }}>
+            <Text 
+              size="xl"
+              fw={900}
+              variant="gradient"
+              gradient={{ from: 'green', to: 'lime', deg: 90 }}
+            >
+              You have not saved any builds. Discover ideas in the forum!
+            </Text>
+          </div>
+        )}
         </Tabs.Panel>
       </Tabs>
     </section>

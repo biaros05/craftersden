@@ -1,4 +1,4 @@
-.posts {
+.builds {
   height: 100%;
   width: 100%;
   display: grid;
@@ -15,7 +15,14 @@
   justify-items: center;
   padding: 10px;
   border: 2px solid rgb(199, 197, 197);
-  border-radius: 10px;
+  border-radius: 5px;
 }
 
+#saved-posts{
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 30px 20px;
+  justify-items: center;
+  padding: 10px;
+}
 

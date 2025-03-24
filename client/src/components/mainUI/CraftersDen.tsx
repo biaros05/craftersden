@@ -12,7 +12,7 @@ import { useBuild, useBuildUpdate } from '../../hooks/BuildContext';
 import { successMessage, errorMessage } from '../../utils/notification_utils';
 import { BlockType, SerializedBlockType, StatusError } from '../../utils/building_plane_utils';
 import { CurrentBlockContext } from '../../context/currentBlockContext';
-
+import { isMobile } from 'react-device-detect';
 import {jsonifyBlocks} from '../../utils/building_plane_utils.ts';
 
 /**
@@ -35,7 +35,6 @@ export function serializeBlocks(blocks: BlockType[]): Uint8Array<ArrayBufferLike
 function deserializeBlocks(blocks: SerializedBlockType[]): BlockType[] {
   const textureLoader = new THREE.TextureLoader();
   const geoLoader = new THREE.BufferGeometryLoader();
-  console.log('blocks in deserializeBlocks', blocks);
   return blocks.map(block => {
     const newBlock: BlockType = {
       id: block.id,
@@ -135,6 +134,14 @@ export default function CraftersDen(): React.ReactNode {
     } catch (e) {
       errorMessage(e.message);
     }
+  }
+
+  if (isMobile) {
+    return (
+      <div id="main-ui">
+        <h1>You must be on a computer to use the den.</h1>
+      </div>
+    )
   }
 
   return (

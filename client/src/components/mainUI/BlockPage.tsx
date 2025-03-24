@@ -1,10 +1,10 @@
 import React from 'react';
-import { SimpleGrid, Loader, Notification } from '@mantine/core';
+import { SimpleGrid, Notification } from '@mantine/core';
 import { IconX } from '@tabler/icons-react';
 import BlockImage from './BlockImage';
 import useSWR from 'swr';
 import { BlockType } from '../../../../server/models/BlockType';
-
+import CreeperLoad from '../Loader/CreeperLoad';
 const errorIcon = <IconX size="md" />;
 
 /**
@@ -19,7 +19,7 @@ export default function BlockPage({ index }: { index: number; }): React.ReactNod
 
   const { data, error, isLoading } = useSWR(`/api/blocks?page=${index}`, fetcher);
 
-  if (isLoading) return <Loader/>;
+  if (isLoading) return <CreeperLoad/>;
 
   if (error) {
     console.error(error);
