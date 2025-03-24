@@ -17,21 +17,16 @@ export interface PlaneBlock extends Mesh {
 
 const baseStructure = new CloneableStructure([20, 20, 20]);
 for (let x = 0; x < 20; x++) {
-    for (let z = 0; z < 20; z++) {
-        baseStructure.addBlock([x, 0, z], 'minecraft:grass_block', {snowy: 'false'});
-    }
+  for (let z = 0; z < 20; z++) {
+    baseStructure.addBlock([x, 0, z], 'minecraft:grass_block', {snowy: 'false'});
+  }
 }
 
 const selectedBlock = {
-	namespace: 'minecraft',
-	name: 'acacia_fence',
-}
+  namespace: 'minecraft',
+  name: 'acacia_fence',
+};
 
-
-/**
- * 
- * @returns {React.ReactNode} Plane using deepslate
- */
 /**
  * @param {object} props -
  * @param {HTMLCanvasElement} props.canvas - canvas of the plane 
@@ -51,12 +46,12 @@ export default function DeepslatePlane({canvas, structure, setStructure, blocks,
 	const [, setStructureRenderer] = useState<InteractiveStructureRenderer>();
 	const [blockstate, setBlockstate] = useState<{[key: string]: string} | undefined>();
 
-	// Setup placeholder structure on first load. Load the saved structure here or in the useState(HERE)
-	useEffect(() => {
-		// Strict mode is making the add fire multiple times per click
-		fetchResources(setResources);
-		setBlocks(structureBlockToPlaneBlock(structure.getBlocks()));
-	}, []);
+  // Setup intial structure on first load. Load the saved structure here or in the useState(HERE)
+  useEffect(() => {
+    // Strict mode is making the add fire multiple times per click
+    fetchResources(setResources);
+    setBlocks(structureBlockToPlaneBlock(structure.getBlocks()));
+  }, []);
 
 	// Initializes structure renderer and Interactive canvas
 	useEffect(() => {
@@ -76,71 +71,72 @@ export default function DeepslatePlane({canvas, structure, setStructure, blocks,
 				setCameraPosition(getCameraPosition(view));
 			}
 
-			const size = structure.getSize()
-			setInteractiveCanvas(new InteractiveCanvas(canvas.current!, onRender, [size[0] / 2, size[1] / 2, size[2] / 2]));
+      const size = structure.getSize();
+      setInteractiveCanvas(new InteractiveCanvas(canvas.current!, onRender, [size[0] / 2, size[1] / 2, size[2] / 2]));
+    }
+  }, [resources]);
+
+  // Update Interactive canvas and Structure renderer
+  useEffect(() => {
+    const structureGl = canvas?.current?.getContext('webgl');
+    if (structureGl && resources && structure) {
+      const newRenderer = new InteractiveStructureRenderer(structureGl, structure, resources);
+      setStructureRenderer(newRenderer);
+      setProjectionMatrix(newRenderer.getPerspectiveMatrix());
+
+      // function that renders the structure
+      const onRender = (view: mat4) => {
+        newRenderer.drawStructure(view);
+        newRenderer.drawGrid(view);
+        setViewMatrix(view);
+        setCameraPosition(getCameraPosition(view));
+      };
+
+      setInteractiveCanvas(interactiveCanvas => {
+        interactiveCanvas?.dispose();
+        return interactiveCanvas?.clone(canvas.current!, onRender);
+      });
+    }
+  }, [resources, structure]);
+
+  /**
+   * Cast a ray to mouse position on canvas and return point and normal.
+   * @param {React.MouseEvent<HTMLCanvasElement>} e - Mouse event object
+   * @param {mat4} viewMatrix - View matrix used by the camera
+   * @param {mat4} projectionMatrix - Projection matrix used by the renderer
+   * @param {vec3} camPos - Camera position
+   * @param {boolean} correct - whether to get the clicked block's position
+   * @returns {{point: vec3, normal: vec3} | null} intersect information
+   */
+  function rayCast(e: React.MouseEvent<HTMLCanvasElement>, viewMatrix: mat4, projectionMatrix: mat4, camPos: vec3, correct: boolean = true): {point: [number, number, number], normal: ReadonlyVec3} | null {
+    const canvasRect = canvas.current!.getBoundingClientRect();
+    const mousePos = [e.clientX - canvasRect.left, e.clientY - canvasRect.top];
+
+    const ray = screenToWorldRay(mousePos[0], mousePos[1], viewMatrix, projectionMatrix, {width: 800, height: 800}, camPos);
+    const intersect = checkBlocksForIntersect(blocks, ray.direction, ray.origin);
+
+    if (intersect) {
+      const point = computePoint(intersect.distance, ray.origin, ray.direction).map(p => Math.floor(p));
+      const normal = computeTriangleNormal(...intersect.triangle);
+
+      // Correct point using normal vector of triangle.
+      if (correct) {
+        if (normal[0] === 1) {
+          point[0] -= 1;
+        } else if (normal[1] === 1) {
+          point[1] -= 1;
+        } else if (normal[2] === 1) {
+          point[2] -= 1;
         }
-	}, [resources]);
+      }
 
-	// Update Interactive canvas and Structure renderer
-	useEffect(() => {
-		const structureGl = canvas?.current?.getContext('webgl');
-		if (structureGl && resources) {
-			const newRenderer = new InteractiveStructureRenderer(structureGl, structure, resources);
-			setStructureRenderer(newRenderer);
-
-			// function that renders the structure
-			const onRender = (view: mat4) => {
-				newRenderer.drawStructure(view);
-				newRenderer.drawGrid(view);
-				setViewMatrix(view);
-				setProjectionMatrix(newRenderer.getPerspectiveMatrix());
-				setCameraPosition(getCameraPosition(view));
-			}
-			
-			setInteractiveCanvas(interactiveCanvas!.cloneAndDelete(onRender));
-		}
-	}, [structure]);
-
-	/**
-	 * Cast a ray to mouse position on canvas and return point and normal.
-	 * @param {React.MouseEvent<HTMLCanvasElement>} e - Mouse event object
-	 * @param {mat4} viewMatrix - View matrix used by the camera
-	 * @param {mat4} projectionMatrix - Projection matrix used by the renderer
-	 * @param {vec3} camPos - Camera position
-	 * @param {boolean} correct - whether to get the clicked block's position
-	 * @returns {{point: vec3, normal: vec3} | null} intersect information
-	 */
-	function rayCast(e: React.MouseEvent<HTMLCanvasElement>, viewMatrix: mat4, projectionMatrix: mat4, camPos: vec3, correct: boolean = true): {point: [number, number, number], normal: ReadonlyVec3} | null {
-		const canvasRect = canvas.current!.getBoundingClientRect();
-		const mousePos = [e.clientX - canvasRect.left, e.clientY - canvasRect.top];
-
-		const ray = screenToWorldRay(mousePos[0], mousePos[1], viewMatrix, projectionMatrix, {width: 800, height: 800}, camPos);
-		const intersect = checkBlocksForIntersect(blocks, ray.direction, ray.origin);
-
-		if (intersect) {
-			const point = computePoint(intersect.distance, ray.origin, ray.direction).map(p => Math.floor(p));
-			const normal = computeTriangleNormal(...intersect.triangle);
-
-			// Correct point using normal vector of triangle.
-			if (correct) {
-				if (normal[0] === 1) {
-					point[0] -= 1;
-				}
-				else if (normal[1] === 1) {
-					point[1] -= 1;
-				}
-				else if (normal[2] === 1) {
-					point[2] -= 1;
-				}
-			}
-
-			return {
-				point: point as [number, number, number],
-				normal: normal
-			}
-		}
-		return null;
-	}
+      return {
+        point: point as [number, number, number],
+        normal: normal
+      };
+    }
+    return null;
+  }
 
 	/**
 	 * Places a block at click coordinates
