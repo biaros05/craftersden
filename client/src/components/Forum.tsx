@@ -69,7 +69,7 @@ export default function Forum(): React.ReactNode {
   return (
     <section className="forum-page">
       <TextInput
-        placeholder="Search"
+        placeholder="Username or description"
         leftSection={<IconSearch size={18} />}
         w={200}
       />
