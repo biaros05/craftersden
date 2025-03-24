@@ -17,9 +17,7 @@ interface PlaneBlock extends Mesh {
 /**
  * @returns {React.ReactNode} Plane using deepslate
  */
-export default function DeepslatePlane(): React.ReactNode {
-	const canvas = useRef<HTMLCanvasElement>(null);
-	const [structure, setStructure] = useState<CloneableStructure>(JSON_PLANE);
+export default function DeepslatePlane({canvas, structure, setStructure}): React.ReactNode {
 	const [blocks, setBlocks] = useState<PlaneBlock[]>([]);
 	const [projectionMatrix, setProjectionMatrix] = useState<mat4>();
 	const [viewMatrix, setViewMatrix] = useState<mat4>();
