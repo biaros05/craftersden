@@ -45,11 +45,11 @@ describe('Welcome', () => {
 
   });
 
-  it('displays sign out when logged in', async () => {
+  it('displays log out when logged in', async () => {
 
     render(<Welcome />, { authValue: loggedInUser });
 
-    const signOutButton = screen.getByRole('button', { name: /sign out/i });
+    const signOutButton = screen.getByRole('button', { name: /logout/i });
     expect(signOutButton).toBeInTheDocument();
   });
 
