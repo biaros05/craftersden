@@ -34,3 +34,18 @@ class ResizeObserver {
 }
 
 window.ResizeObserver = ResizeObserver;
+
+class IntersectionObserver {
+  root: Element | null = null;
+  rootMargin: string = '';
+  thresholds: ReadonlyArray<number> = [];
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+  takeRecords() {
+    return [];
+  }
+};
+
+
+window.IntersectionObserver = IntersectionObserver;
