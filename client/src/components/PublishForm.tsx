@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
-import { Modal, Button, TextInput, Select  } from '@mantine/core';
+import { Modal, Button, TextInput, Select, Badge, Paper, Box } from '@mantine/core';
 import { successMessage, errorMessage, } from '../utils/notification_utils';
+import '../styles/Post.css'
 
 type propTypes = {
   opened: boolean,
@@ -57,12 +58,13 @@ export default function PublishForm({ opened, close, buildId, updateBuildStatus 
           backgroundOpacity: 0.22,
           blur: 3,
         }} centered>
-        <form
+        <form className='publish-form'
           onSubmit={(e) => {
             e.preventDefault(); 
             publishPost(buildId);
             close();
           }}
+          style={{display: 'flex', flexDirection: 'column'}}
         >
           <TextInput
             label="Description:"
@@ -73,6 +75,14 @@ export default function PublishForm({ opened, close, buildId, updateBuildStatus 
             }}
             maxLength={50}
           />
+          <Box>
+            <Select>
+
+            </Select>
+            <Paper>
+              <Badge>hi</Badge>
+            </Paper>
+          </Box>
           <Button
             type="submit" 
             variant="filled"

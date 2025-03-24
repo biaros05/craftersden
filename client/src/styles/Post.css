@@ -18,3 +18,8 @@
 .post:hover{
   border: 3px #75bd82 solid;;
 }
+
+.publish-form{
+  display: flex;
+  flex-direction: column;
+}
