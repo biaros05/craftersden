@@ -24,4 +24,37 @@ export const handlers = [
       }
     )
   }),
+  http.get('/api/post', () => {
+    return HttpResponse.json({
+      message: 'Published builds fetched!',
+      builds: [
+        {
+          username: 'test',
+          buildJSON: {}
+        }
+      ]
+    })
+  }),
+  http.get('/api/user/:email/saved-posts', () => {
+    return HttpResponse.json(
+      {
+        message: 'Saved posts retrieved successfully',
+        savedBuilds: [
+          {
+            username: 'test',
+            buildJSON: {}
+          }
+        ]
+      }
+    )
+  }),
+  http.get('/api/post/:buildId/likes-saves', () => {
+    return HttpResponse.json(
+      {
+        message: 'Likes and saves retrieved successfully',
+        likedBy: [],
+        savedBy: []
+      }
+    )
+  }),
 ];
