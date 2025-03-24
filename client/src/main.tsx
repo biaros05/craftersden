@@ -94,7 +94,7 @@ export const theme = createTheme({
 
 createRoot(document.getElementById('root')!).
   render(
-    <StrictMode>
+    // <StrictMode>
       <AuthProvider >
       <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
         <MantineProvider theme={theme}>
@@ -106,5 +106,5 @@ createRoot(document.getElementById('root')!).
         </MantineProvider>
       </GoogleOAuthProvider>
       </AuthProvider>
-    </StrictMode>
+    // {/* </StrictMode> */}
   );

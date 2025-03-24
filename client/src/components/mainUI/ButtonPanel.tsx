@@ -6,15 +6,15 @@ import { toast } from 'react-toastify';
 import CustomNotification from './CustomNotification.tsx'
 import { Slide } from 'react-toastify';
 import {jsonifyBlocks} from '../../utils/building_plane_utils.ts';
-import { BlockType } from '../../utils/building_plane_utils.ts';
+import CloneableStructure from './deepslate/CloneableStructure.ts';
 
 type ButtonPanelProps = { 
   setIsViewMode: (arg0: boolean) => void,
-  canvas: React.RefObject<null>,
+  canvas: React.RefObject<HTMLCanvasElement | null>,
   savePost: (arg0: string) => void,
   isViewMode: boolean,
   email: string,
-  blocks: BlockType[]
+  structure: CloneableStructure
 }
 
 /**
@@ -25,10 +25,10 @@ type ButtonPanelProps = {
  * @param {Function} props.savePost thumbnail url
  * @param {boolean} props.isViewMode isViewMode state.
  * @param {string} props.email email of current user.
- * @param {[]} props.blocks build blocks.
+ * @param {CloneableStructure} props.structure build blocks.
  * @returns {React.ReactNode} Button panel section with buttons
  */
-function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode, email, blocks}: ButtonPanelProps): React.ReactNode {
+function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode, email, structure}: ButtonPanelProps): React.ReactNode {
   const navigate = useNavigate();
 
   return (
@@ -39,9 +39,9 @@ function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode, email, blocks
         className="save-button"
         onClick={() => {
           if (!email) {
-            const serializedBlocks = jsonifyBlocks(blocks);
+            const serializedBlocks = structure.toJson();
             console.log(serializedBlocks);
-            localStorage.setItem("build", JSON.stringify({"blocks": serializedBlocks}));
+            localStorage.setItem("build", JSON.stringify({"structure": serializedBlocks}));
 
             toast.info(CustomNotification, {
               data: {

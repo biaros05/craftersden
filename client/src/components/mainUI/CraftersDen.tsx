@@ -11,6 +11,8 @@ import { useBuild, useBuildUpdate } from '../../hooks/BuildContext';
 import { successMessage, errorMessage } from '../../utils/notification_utils';
 import { BlockType, SerializedBlockType, StatusError } from '../../utils/building_plane_utils';
 import { CurrentBlockContext } from '../../context/currentBlockContext';
+import CloneableStructure from './deepslate/CloneableStructure';
+import { JSON_PLANE } from './deepslate/PlanePresets';
 
 import {jsonifyBlocks} from '../../utils/building_plane_utils.ts';
 import DeepslatePlane from './deepslate/DeepslatePlane.tsx';
@@ -19,11 +21,11 @@ import DeepslatePlane from './deepslate/DeepslatePlane.tsx';
  * Takes an array of objects and takes care of serializing their THREE objects
  * into JSON, which is readable and storable by the database. It converts this new array
  * to a buffer to be sent through the fetch request.
- * @param {BlockType[]} blocks - array of blocks with THREE objects.
- * @returns {SerializedBlockType[]} - a buffer containing the newly serialized blocks. 
+ * @param {CloneableStructure} structure - array of blocks with THREE objects.
+ * @returns {Uint8Array<ArrayBufferLike>} - a buffer containing the newly serialized blocks. 
  */
-export function serializeBlocks(blocks: BlockType[]): Uint8Array<ArrayBufferLike> {
-  return encode(jsonifyBlocks(blocks));
+export function serializeBlocks(structure: CloneableStructure): Uint8Array<ArrayBufferLike> {
+  return encode(structure.toJson());
 }
 
 /**
@@ -57,27 +59,30 @@ function deserializeBlocks(blocks: SerializedBlockType[]): BlockType[] {
  * @returns {React.ReactNode} - A div element with the id 'main-ui' to render the den.
  */
 export default function CraftersDen(): React.ReactNode {
-  const canvas = useRef(null);
+  // const canvas = useRef(null);
+  const canvas = useRef<HTMLCanvasElement>(null);
+  const [structure, setStructure] = useState<CloneableStructure>(JSON_PLANE);
   const {email} = useAuth() ?? {};
   const [isViewMode, setIsViewMode] = useState(false);
-  const [blocks, setBlocks] = useState<BlockType[]>([]);
+  // const [blocks, setBlocks] = useState<BlockType[]>([]);
   const [currentBlock, setCurrentBlock] = useState(null);
 
   const build = useBuild();
   const { setBuild } = useBuildUpdate();
 
   useEffect(() => {
+    // localStorage.clear();
     const serializedBlocks = JSON.parse(localStorage.getItem("build") ?? "{}");
-
-    if (Object.keys(serializedBlocks).length && Object.keys(serializedBlocks.blocks).length) {
-      setBlocks(deserializeBlocks(serializedBlocks.blocks))
+    if ( serializedBlocks.structure !== "{}" && serializedBlocks.structure) {
+      console.log("WHY AM I HERE")
+      setStructure(CloneableStructure.fromJson(serializedBlocks.structure));
       localStorage.clear();
     }
     else if (build.build !== undefined && build.build !== null) {
-      setBlocks(deserializeBlocks(build.build.buildJSON));
+      setStructure(CloneableStructure.fromJson(build.build.buildJSON));
     }
     else{
-      setBlocks(deserializeBlocks([]));
+      setStructure(structure);
     }
   }, []);
 
@@ -103,7 +108,8 @@ export default function CraftersDen(): React.ReactNode {
    */
   async function savePost(progressPicture: string) {
     // fetch dataURL to get the blob
-    const arrayBufferBlocks = serializeBlocks(blocks);
+    console.log(structure.toJson());
+    const arrayBufferBlocks = serializeBlocks(structure);
     const serializedBlocks = new Blob([arrayBufferBlocks], { type: 'application/octet-stream' });
     try {
       const base64Data = progressPicture.split(',')[1];
@@ -127,6 +133,7 @@ export default function CraftersDen(): React.ReactNode {
         throw err;
       }
 
+      console.log(build);
       setBuild({...{'_id': json.id}, ...build.build})
       successMessage(json.message);
     } catch (e) {
@@ -146,13 +153,13 @@ export default function CraftersDen(): React.ReactNode {
             setIsViewMode={setIsViewMode}
             style={{width: "75%"}}
             /> */}
-            <DeepslatePlane />
+            <DeepslatePlane canvas={canvas} structure={structure} setStructure={setStructure} />
           {!isViewMode && <BlockSelection />}
         </section>
         <ButtonPanel 
-        blocks={blocks}
+        canvas={canvas}
+        structure={structure}
         setIsViewMode={setIsViewMode} 
-        canvas={canvas} 
         savePost={savePost} 
         isViewMode={isViewMode}
         email={email}/>
