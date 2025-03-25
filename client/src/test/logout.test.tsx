@@ -16,8 +16,4 @@ describe('Logout', () => {
 
     expect(mockLogout).toHaveBeenCalled();
   })
-  
-  it ('clears the build', async ()=> {
-    
-  });
 });
