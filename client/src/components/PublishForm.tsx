@@ -19,7 +19,7 @@ type propTypes = {
  */
 export default function PublishForm({ opened, close, buildId, updateBuildStatus } :  propTypes) {
   const [description, setDescription] = useState('');
-  const [tags, setTags] = useState<string | string[]>([]);
+  const [tags, setTags] = useState<string[]>([]);
   /**
    *
    * @param {string} buildId - The build id to be published.
@@ -32,6 +32,8 @@ export default function PublishForm({ opened, close, buildId, updateBuildStatus 
       if (description !== '') {
         data.append('description', description);
       }
+
+      data.append('tags', JSON.stringify(tags)); 
 
       const requestOptions = {
         method: 'POST',
@@ -88,7 +90,7 @@ export default function PublishForm({ opened, close, buildId, updateBuildStatus 
             ]}
           /> */}
           <MultiSelect
-            onChange={setTags}
+            onChange={(value) => setTags(value)}
             checkIconPosition="right"
             label='Build Tags'
             placeholder='Search Tags..'

@@ -119,11 +119,13 @@ async function publishBuild(req, res, next) {
       updateData.description = req.body.description;
     }
 
+    const tags = JSON.parse(req.body.tags || []);
+    updateData.tags = tags;
+
     const publishedBuild = await Post.findOneAndUpdate(
       { _id: req.body.buildId },
       updateData,
-      { returnDocument: 'after' },
-      { tags: req.body.tags}
+      { returnDocument: 'after' }
     );
 
     if (!publishedBuild) {
