@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
-import { Modal, Button, TextInput, MultiSelect } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
+import { Modal, TextInput, MultiSelect } from '@mantine/core';
 import { successMessage, errorMessage, } from '../utils/notification_utils';
 import '../styles/Post.css'
 import MinecraftButton from './Custom/MinecraftButton';
