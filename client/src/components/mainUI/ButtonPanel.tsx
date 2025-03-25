@@ -5,8 +5,6 @@ import '../../styles/ButtonPanel.css';
 import { toast } from 'react-toastify';
 import CustomNotification from './CustomNotification.tsx'
 import { Slide } from 'react-toastify';
-import {jsonifyBlocks} from '../../utils/building_plane_utils.ts';
-import { BlockType } from '../../utils/building_plane_utils.ts';
 
 type ButtonPanelProps = { 
   setIsViewMode: (arg0: boolean) => void,
@@ -14,7 +12,7 @@ type ButtonPanelProps = {
   savePost: (arg0: string) => void,
   isViewMode: boolean,
   email: string,
-  blocks: BlockType[]
+  blocks: []
 }
 
 /**

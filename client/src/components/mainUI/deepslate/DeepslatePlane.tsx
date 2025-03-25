@@ -1,3 +1,4 @@
+/* eslint-disable jsdoc/no-undefined-types */
  
 import React, { useEffect, useRef, useState } from 'react';
 import fetchResources from './ResourcesFetcher';
@@ -33,82 +34,63 @@ const selectedBlock = {
  */
 export default function DeepslatePlane(): React.ReactNode {
   const canvas = useRef<HTMLCanvasElement>(null);
-  const [structure, setStructure] = useState<CloneableStructure>(baseStructure);
-  const [blocks, setBlocks] = useState<PlaneBlock[]>([]);
-  const [projectionMatrix, setProjectionMatrix] = useState<mat4>();
-  const [viewMatrix, setViewMatrix] = useState<mat4>();
-  const [cameraPosition, setCameraPosition] = useState<vec3>();
+  const structure = useRef<CloneableStructure>(baseStructure);
+  const blocks = useRef<PlaneBlock[]>(structureBlockToPlaneBlock(structure.current.getBlocks()));
+  const projectionMatrix = useRef<mat4>(null);
+  const viewMatrix = useRef<mat4>(null);
+  const cameraPosition = useRef<vec3>(null);
+  const interactiveCanvas = useRef<InteractiveCanvas>(null);
+  const structureRenderer = useRef<InteractiveStructureRenderer>(null);
+  const blockstate = useRef<{[key: string]: string} | undefined>({});
   const [resources, setResources] = useState<Resources>();
-  const [, setInteractiveCanvas] = useState<InteractiveCanvas>();
-  const [, setStructureRenderer] = useState<InteractiveStructureRenderer>();
-  const [blockstate, setBlockstate] = useState<{[key: string]: string} | undefined>();
 
-  // Setup intial structure on first load. Load the saved structure here or in the useState(HERE)
   useEffect(() => {
-    // Strict mode is making the add fire multiple times per click
     fetchResources(setResources);
-    setBlocks(structureBlockToPlaneBlock(structure.getBlocks()));
   }, []);
+
+  function getOnRender(newRenderer: InteractiveStructureRenderer) {
+    // function that renders the structure
+    const onRender = (view: mat4) => {
+      newRenderer.drawStructure(view);
+      newRenderer.drawGrid(view);
+      viewMatrix.current = view;
+      cameraPosition.current = getCameraPosition(view);
+    };
+    return onRender
+  }
 
   // Initializes structure renderer and Interactive canvas
   useEffect(() => {
     const structureGl = canvas?.current?.getContext('webgl');
     if (structureGl && resources) {
-      const newRenderer = new InteractiveStructureRenderer(structureGl, structure, resources);
-      setStructureRenderer(newRenderer);
-      setProjectionMatrix(newRenderer.getPerspectiveMatrix());
+      const newRenderer = new InteractiveStructureRenderer(structureGl, structure.current, resources);
+      structureRenderer.current = newRenderer;
+      projectionMatrix.current = newRenderer.getPerspectiveMatrix();
 
-      // function that renders the structure
-      const onRender = (view: mat4) => {
-        newRenderer.drawStructure(view);
-        newRenderer.drawGrid(view);
-        setViewMatrix(view);
-        setCameraPosition(getCameraPosition(view));
-      };
+      const size = structure.current.getSize();
+      const intCanvas = new InteractiveCanvas(canvas.current!, getOnRender(newRenderer), [size[0] / 2, size[1] / 2, size[2] / 2]);
+      intCanvas.subscribe();
+      interactiveCanvas.current = intCanvas;
 
-      const size = structure.getSize();
-      setInteractiveCanvas(new InteractiveCanvas(canvas.current!, onRender, [size[0] / 2, size[1] / 2, size[2] / 2]));
+      return intCanvas?.cleanup;
     }
   }, [resources]);
-
-  // Update Interactive canvas and Structure renderer
-  useEffect(() => {
-    const structureGl = canvas?.current?.getContext('webgl');
-    if (structureGl && resources && structure) {
-      const newRenderer = new InteractiveStructureRenderer(structureGl, structure, resources);
-      setStructureRenderer(newRenderer);
-      setProjectionMatrix(newRenderer.getPerspectiveMatrix());
-
-      // function that renders the structure
-      const onRender = (view: mat4) => {
-        newRenderer.drawStructure(view);
-        newRenderer.drawGrid(view);
-        setViewMatrix(view);
-        setCameraPosition(getCameraPosition(view));
-      };
-
-      setInteractiveCanvas(interactiveCanvas => {
-        interactiveCanvas?.dispose();
-        return interactiveCanvas?.clone(canvas.current!, onRender);
-      });
-    }
-  }, [resources, structure]);
 
   /**
    * Cast a ray to mouse position on canvas and return point and normal.
    * @param {React.MouseEvent<HTMLCanvasElement>} e - Mouse event object
-   * @param {mat4} viewMatrix - View matrix used by the camera
-   * @param {mat4} projectionMatrix - Projection matrix used by the renderer
+   * @param {mat4} viewMat - View matrix used by the camera
+   * @param {mat4} projectionMat - Projection matrix used by the renderer
    * @param {vec3} camPos - Camera position
    * @param {boolean} correct - whether to get the clicked block's position
    * @returns {{point: vec3, normal: vec3} | null} intersect information
    */
-  function rayCast(e: React.MouseEvent<HTMLCanvasElement>, viewMatrix: mat4, projectionMatrix: mat4, camPos: vec3, correct: boolean = true): {point: [number, number, number], normal: ReadonlyVec3} | null {
+  function rayCast(e: React.MouseEvent<HTMLCanvasElement>, viewMat: mat4, projectionMat: mat4, camPos: vec3, correct: boolean = true): {point: [number, number, number], normal: ReadonlyVec3} | null {
     const canvasRect = canvas.current!.getBoundingClientRect();
     const mousePos = [e.clientX - canvasRect.left, e.clientY - canvasRect.top];
 
-    const ray = screenToWorldRay(mousePos[0], mousePos[1], viewMatrix, projectionMatrix, {width: 800, height: 800}, camPos);
-    const intersect = checkBlocksForIntersect(blocks, ray.direction, ray.origin);
+    const ray = screenToWorldRay(mousePos[0], mousePos[1], viewMat, projectionMat, {width: 800, height: 800}, camPos);
+    const intersect = checkBlocksForIntersect(blocks.current, ray.direction, ray.origin);
 
     if (intersect) {
       const point = computePoint(intersect.distance, ray.origin, ray.direction).map(p => Math.floor(p));
@@ -138,19 +120,20 @@ export default function DeepslatePlane(): React.ReactNode {
    * @param {React.MouseEvent<HTMLCanvasElement>} e - Mouse event object
    */
   function placeBlock(e: React.MouseEvent<HTMLCanvasElement>) {
-    if (viewMatrix && projectionMatrix && cameraPosition) {
-      const {point, normal} = rayCast(e, viewMatrix, projectionMatrix, cameraPosition) ?? {};
+    if (viewMatrix.current && projectionMatrix.current && cameraPosition.current) {
+      const {point, normal} = rayCast(e, viewMatrix.current, projectionMatrix.current, cameraPosition.current) ?? {};
       if (point && normal) {
         console.log(point, normal)
         // Point is coordinates of the the block that was clicked on
         const newBlockPosVec = vec3.add(vec3.create(), point, normal);
         const newBlockPos: [number, number, number] = [newBlockPosVec[0], newBlockPosVec[1], newBlockPosVec[2]];
-        if (!structure.getBlock(newBlockPos) && structure.isInside(point)) {
-          const newStructure = structure.clone();
-          newStructure.addBlock(newBlockPos, `${selectedBlock.namespace}:${selectedBlock.name}`, {...blockstate});
+        if (!structure.current.getBlock(newBlockPos) && structure.current.isInside(point)) {
+          structure.current.addBlock(newBlockPos, `${selectedBlock.namespace}:${selectedBlock.name}`, {...blockstate.current});
+          blocks.current.push(...structureBlockToPlaneBlock([structure.current.getBlock(newBlockPos)!]));
 
-          setStructure(newStructure);
-          setBlocks([...blocks, ...structureBlockToPlaneBlock([newStructure.getBlock(newBlockPos)!])]);
+          structureRenderer.current!.setStructure(structure.current);
+          interactiveCanvas.current?.setOnRender(getOnRender(structureRenderer.current!))
+          interactiveCanvas.current!.redraw();
         }
       }
     } else {
@@ -163,12 +146,16 @@ export default function DeepslatePlane(): React.ReactNode {
    * @param {React.MouseEvent<HTMLCanvasElement>} e - Mouse event object
    */
   function destroyBlock(e: React.MouseEvent<HTMLCanvasElement>) {
-    if (viewMatrix && projectionMatrix && cameraPosition) {
-      const {point, normal} = rayCast(e, viewMatrix, projectionMatrix, cameraPosition) ?? {};
+    if (viewMatrix.current && projectionMatrix.current && cameraPosition.current) {
+      const {point, normal} = rayCast(e, viewMatrix.current, projectionMatrix.current, cameraPosition.current) ?? {};
 
       if (point && normal) {
-        setStructure(structure.removeBlockAndClone(point));
-        setBlocks([...blocks.filter(b => !BlockPos.equals(b.position, point))]);
+        structure.current = structure.current.removeBlockAndClone(point);
+        blocks.current = blocks.current.filter(b => !BlockPos.equals(b.position, point));
+
+        structureRenderer.current!.setStructure(structure.current);
+        interactiveCanvas.current!.setOnRender(getOnRender(structureRenderer.current!));
+        interactiveCanvas.current?.redraw();
       }
     } else {
       console.log('Canvas is loading');
@@ -190,7 +177,7 @@ export default function DeepslatePlane(): React.ReactNode {
 
   return <div className="plane-container">
     <canvas ref={canvas} width={800} height={800} onMouseDown={handleClick} onContextMenu={(e) => e.preventDefault()}></canvas>
-    <BlockStatePanel blockName={selectedBlock.name} blockNamespace={selectedBlock.namespace} currentState={blockstate} resources={resources} setBlockstate={setBlockstate} />
+    <BlockStatePanel blockName={selectedBlock.name} blockNamespace={selectedBlock.namespace} currentState={blockstate} resources={resources} />
   </div>;
 }
 
