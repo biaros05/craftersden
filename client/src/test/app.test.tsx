@@ -7,7 +7,6 @@ import React from 'react';
 import App from '../App.tsx';
 import { handlers } from './test-utils/mocks/handlers.ts';
 import { render } from './test-utils/render';
-import Header from '../components/Header.tsx';
 
 const server = setupServer(...handlers);
 

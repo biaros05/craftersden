@@ -1,18 +1,13 @@
 import { describe, it, expect, afterEach, afterAll, beforeAll } from 'vitest'
 import '@testing-library/jest-dom';
-import { http, HttpResponse } from 'msw';
 import  { setupServer } from 'msw/node';
+import { handlers } from './test-utils/mocks/handlers.ts';
 import { render, screen} from './test-utils';
 
 import Welcome from "../components/Welcome";
 import React from 'react';
 
-const server = setupServer(
-  http.get('/api/query', () => {
-      return HttpResponse.json({user: '1'});
-    }
-  )
-)
+const server = setupServer(...handlers);
 
 const loggedInUser = {
   id: '1',
