@@ -57,4 +57,18 @@ export const handlers = [
       }
     )
   }),
+  http.post('/api/post/toggle-like', () => {
+    return HttpResponse.json(
+      {
+        message: 'Post liked successfully'
+      }
+    );
+  }),
+  http.post('/api/post/toggle-save', () => {
+    return HttpResponse.json(
+      {
+        message: 'Post saved successfully'
+      }
+    );
+  }),
 ];
