@@ -1,6 +1,5 @@
 import { createRoot } from 'react-dom/client';
 import './index.css';
-import { StrictMode } from 'react';
 import {
   createBrowserRouter,
   RouterProvider,
@@ -94,17 +93,15 @@ export const theme = createTheme({
 
 createRoot(document.getElementById('root')!).
   render(
-    // <StrictMode>
-      <AuthProvider >
-      <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-        <MantineProvider theme={theme}>
-          <AuthProvider >
-            <BuildProvider>
-              <RouterProvider router={router} />
-            </BuildProvider>
-          </AuthProvider>
-        </MantineProvider>
-      </GoogleOAuthProvider>
-      </AuthProvider>
-    // {/* </StrictMode> */}
+    <AuthProvider >
+    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+      <MantineProvider theme={theme}>
+        <AuthProvider >
+          <BuildProvider>
+            <RouterProvider router={router} />
+          </BuildProvider>
+        </AuthProvider>
+      </MantineProvider>
+    </GoogleOAuthProvider>
+    </AuthProvider>
   );
