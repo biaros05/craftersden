@@ -1,5 +1,5 @@
 /* eslint-disable jsdoc/no-undefined-types */
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import fetchResources from './ResourcesFetcher';
 import { Mesh, getCameraPosition, checkBlocksForIntersect, computePoint, computeTriangleNormal, computeTrianglesOfCube, screenToWorldRay } from './RaycastUtils';
 import { BlockPos, PlacedBlock, Resources } from 'deepslate';
@@ -7,7 +7,7 @@ import { mat4, ReadonlyVec3, vec3 } from 'gl-matrix';
 import InteractiveCanvas from './InteractiveCanvas';
 import InteractiveStructureRenderer from './InteractiveStructureRenderer';
 import CloneableStructure from './CloneableStructure';
-import { JSON_PLANE } from './PlanePresets';
+// import { JSON_PLANE } from './PlanePresets';
 
 interface PlaneBlock extends Mesh {
 	name: string;
@@ -17,8 +17,8 @@ interface PlaneBlock extends Mesh {
 /**
  * @returns {React.ReactNode} Plane using deepslate
  */
-export default function DeepslatePlane({canvas, structure, setStructure}): React.ReactNode {
-	const [blocks, setBlocks] = useState<PlaneBlock[]>([]);
+export default function DeepslatePlane({canvas, structure, setStructure, blocks, setBlocks}): React.ReactNode {
+	// const [blocks, setBlocks] = useState<PlaneBlock[]>([]);
 	const [projectionMatrix, setProjectionMatrix] = useState<mat4>();
 	const [viewMatrix, setViewMatrix] = useState<mat4>();
 	const [cameraPosition, setCameraPosition] = useState<vec3>();
@@ -185,7 +185,7 @@ export default function DeepslatePlane({canvas, structure, setStructure}): React
  * @param {PlacedBlock[]} sBlocks structure blocks
  * @returns {PlaneBlock[]} plane blocks with vertices
  */
-function structureBlockToPlaneBlock(sBlocks: PlacedBlock[]): PlaneBlock[] {
+export function structureBlockToPlaneBlock(sBlocks: PlacedBlock[]): PlaneBlock[] {
 	return sBlocks.map(b => {
 		return {
 			name: b.state.getName().toString(),

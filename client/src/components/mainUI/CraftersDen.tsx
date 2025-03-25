@@ -14,8 +14,8 @@ import { CurrentBlockContext } from '../../context/currentBlockContext';
 import { isMobile } from 'react-device-detect';
 import CloneableStructure from './deepslate/CloneableStructure';
 import { JSON_PLANE } from './deepslate/PlanePresets';
+import {structureBlockToPlaneBlock, PlaneBlock} from './deepslate/DeepslatePlane.tsx';
 
-import {jsonifyBlocks} from '../../utils/building_plane_utils.ts';
 import DeepslatePlane from './deepslate/DeepslatePlane.tsx';
 
 /**
@@ -64,8 +64,9 @@ export default function CraftersDen(): React.ReactNode {
   const {id, email} = useAuth() ?? {};
   const [isViewMode, setIsViewMode] = useState(true);
   const [currentBlock, setCurrentBlock] = useState(null);
-  // useBuild returns an object that contains build
-  const build = useBuild()?.build;
+  const [blocks, setBlocks] = useState<PlaneBlock[]>([]);
+
+  const build = useBuild();
   const { setBuild } = useBuildUpdate();
   const [isBuildOwner,] = useState<boolean>(build?.user === id || build === null);
 
@@ -79,16 +80,22 @@ export default function CraftersDen(): React.ReactNode {
 
   useEffect(() => {
     const serializedBlocks = JSON.parse(localStorage.getItem("build") ?? "{}");
+    
     if ( serializedBlocks.structure !== "{}" && serializedBlocks.structure) {
-      console.log("WHY AM I HERE")
-      setStructure(CloneableStructure.fromJson(serializedBlocks.structure));
+      const newStructure = CloneableStructure.fromJson(JSON.parse(serializedBlocks.structure));
+      setStructure(newStructure);
+      setBlocks(structureBlockToPlaneBlock(newStructure.getBlocks()));
       localStorage.clear();
     }
     else if (build.build !== undefined && build.build !== null) {
-      setStructure(CloneableStructure.fromJson(build.build.buildJSON));
+      const newStructure = CloneableStructure.fromJson(build.build.buildJSON);
+      setStructure(newStructure);
+      setBlocks(structureBlockToPlaneBlock(newStructure.getBlocks()));
+
     }
     else{
       setStructure(structure);
+      setBlocks(structureBlockToPlaneBlock(structure.getBlocks()));
     }
   }, []);
 
@@ -152,7 +159,21 @@ export default function CraftersDen(): React.ReactNode {
     <CurrentBlockContext.Provider value={{currentBlock, storeBlock}}>
       <div id="main-ui">
         <section className="build-tools">
-          <DeepslatePlane canvas={canvas} structure={structure} setStructure={setStructure} />
+          {/* <BuildPlane 
+            canvasRef={canvas} 
+            blocks={blocks} 
+            setBlocks={setBlocks} 
+            isViewMode={isViewMode} 
+            setIsViewMode={setIsViewMode}
+            style={{width: "75%"}}
+            /> */}
+            <DeepslatePlane 
+            canvas={canvas} 
+            structure={structure} 
+            setStructure={setStructure} 
+            setBlocks={setBlocks}
+            blocks={blocks}
+            />
           {!isViewMode && <BlockSelection />}
         </section>
         <ButtonPanel 

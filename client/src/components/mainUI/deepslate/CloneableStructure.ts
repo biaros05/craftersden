@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { BlockPos, BlockState, Identifier, NbtCompound, Structure } from "deepslate";
-
+import { BlockPos, StoredStructure, BlockState, Identifier, NbtCompound, Structure } from "deepslate";
 export default class CloneableStructure extends Structure {
 
     protected getPalette(): BlockState[] {
@@ -29,18 +28,17 @@ export default class CloneableStructure extends Structure {
     }
 
     public toJson() {
-        return JSON.stringify({
+        return {
             size: this.getSize(),
             palette: this.getPalette(),
             placedBlocks: this.getPlacedBlocks(),
-        });
+        };
     }
 
-    public static fromJson(json: string) {
-        const obj = JSON.parse(json);
-        console.log("PALETTE", obj.palette);
-        obj.palette = obj.palette.map(b => new BlockState(`${b.name.namespace}:${b.name.path}`, b.properties));
+    public static fromJson(json: object) {
+        console.log("PALETTE", json.palette);
+        const palette = json.palette.map(b => new BlockState(`${b.name.namespace}:${b.name.path}`, b.properties)) as any;
 
-        return new CloneableStructure(obj.size, obj.palette, obj.placedBlocks);
+        return new CloneableStructure(json.size, palette, json.placedBlocks);
     }
 }
