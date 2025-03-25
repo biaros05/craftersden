@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
-import { Modal, Button, TextInput } from '@mantine/core';
+import { Modal, TextInput, MultiSelect } from '@mantine/core';
 import { successMessage, errorMessage, } from '../utils/notification_utils';
+import '../styles/Post.css'
+import MinecraftButton from './Custom/MinecraftButton';
 
 type propTypes = {
   opened: boolean,
@@ -16,6 +18,7 @@ type propTypes = {
  */
 export default function PublishForm({ opened, close, buildId, updateBuildStatus } :  propTypes) {
   const [description, setDescription] = useState('');
+  const [tags, setTags] = useState<string[]>([]);
   /**
    *
    * @param {string} buildId - The build id to be published.
@@ -28,6 +31,8 @@ export default function PublishForm({ opened, close, buildId, updateBuildStatus 
       if (description !== '') {
         data.append('description', description);
       }
+
+      data.append('tags', JSON.stringify(tags)); 
 
       const requestOptions = {
         method: 'POST',
@@ -57,12 +62,13 @@ export default function PublishForm({ opened, close, buildId, updateBuildStatus 
           backgroundOpacity: 0.22,
           blur: 3,
         }} centered>
-        <form
+        <form className='publish-form'
           onSubmit={(e) => {
             e.preventDefault(); 
             publishPost(buildId);
             close();
           }}
+          style={{display: 'flex', flexDirection: 'column'}}
         >
           <TextInput
             label="Description:"
@@ -73,12 +79,42 @@ export default function PublishForm({ opened, close, buildId, updateBuildStatus 
             }}
             maxLength={50}
           />
-          <Button
+{/* 
+          <Select
+            placeholder="Search Tags.."
+            data={[
+              { group: 'General', items: ['Survival Base', 'Creative Base', 'Hardcore'] },
+              { group: 'Structure', items: ['Hut', 'House', 'Mansion', 'Farm', 'Village', 'Barn'] },
+              { group: 'Themes', items: ['Medieval', 'Cottage', 'Fantasy', 'Minimalistic', 'Modern', 'Rustic'] }
+            ]}
+          /> */}
+          <MultiSelect
+            onChange={(value) => setTags(value)}
+            checkIconPosition="right"
+            label='Build Tags'
+            placeholder='Search Tags..'
+            data={[
+              { group: 'General', items: ['Survival Base', 'Creative Base', 'Hardcore'] },
+              { group: 'Structure', items: ['Hut', 'House', 'Mansion', 'Farm', 'Village', 'Barn'] },
+              { group: 'Themes', items: ['Medieval', 'Cottage', 'Fantasy', 'Minimalistic', 'Modern', 'Rustic'] }
+            ]}
+            searchable
+            maxValues={5}
+            clearable
+            styles={{
+              pill: {
+                backgroundColor: '#4CAF50', 
+                color: 'white', 
+                fontWeight: 'bold',
+              },
+            }}
+          />
+          <MinecraftButton
             type="submit" 
             variant="filled"
           >
             Submit
-          </Button>
+          </MinecraftButton>
         </form>
       </Modal>
     </>

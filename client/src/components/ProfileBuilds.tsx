@@ -21,6 +21,7 @@ type Post = {
   thumnails: [],
   likedBy: (string | undefined)[];
   savedBy: (string | undefined)[]
+  tags: []
 }
 
 type propTypes = {

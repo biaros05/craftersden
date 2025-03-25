@@ -20,7 +20,8 @@ const PostSchema = new Schema({
   thumnails: [],
   progressPicture: String,
   likedBy: [{ type: Schema.Types.ObjectId, ref:'User'}],
-  savedBy: [{ type: Schema.Types.ObjectId, ref: 'User'}]
+  savedBy: [{ type: Schema.Types.ObjectId, ref: 'User'}],
+  tags: []
 });
 
 

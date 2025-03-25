@@ -14,6 +14,7 @@ type Post = {
   thumnails: [],
   likedBy: (string | undefined)[];
   savedBy: (string | undefined)[];
+  tags: []
 };
 
 /**
@@ -43,6 +44,7 @@ export default function SavedPosts({ savedPosts, id }: { savedPosts: Post[], id:
             liked={build.likedBy.includes(id)}
             saved={build.savedBy.includes(id)}
             viewPostOnClick={() => handlePostClick(build)}
+            tags={build.tags}
           />
         ))
       ) : (

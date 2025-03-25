@@ -7,10 +7,10 @@ import styles from './button.module.css';
  * @param {JSON} children - Component's children
  * @returns {React.ReactNode} - custom button component
  */
-export default function MinecraftButton({children, className = '', 
+export default function MinecraftButton({children, className = '', type, variant,
   /* eslint-disable @typescript-eslint/no-unused-vars */
   onClick = (e) => {}}): React.ReactNode { 
   return (
-    <UnstyledButton onClick={(e) => onClick(e)} className={`${styles.button} ${className}`} unstyled>{...children}</UnstyledButton>
+    <UnstyledButton variant={variant} type={type} onClick={(e) => onClick(e)} className={`${styles.button} ${className}`} unstyled>{...children}</UnstyledButton>
   );
 }
