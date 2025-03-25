@@ -15,6 +15,7 @@ import React from 'react';
 import { theme } from './theme';
 import { routesConfig } from './routesconfig.tsx';
 
+
 const router = createBrowserRouter(routesConfig);
 
 /**
