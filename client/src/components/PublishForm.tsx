@@ -1,7 +1,9 @@
 import React, { useState } from 'react'
-import { Modal, Button, TextInput, Select, Badge, Paper, Box } from '@mantine/core';
+import { Modal, Button, TextInput, MultiSelect } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
 import { successMessage, errorMessage, } from '../utils/notification_utils';
 import '../styles/Post.css'
+import MinecraftButton from './Custom/MinecraftButton';
 
 type propTypes = {
   opened: boolean,
@@ -75,20 +77,41 @@ export default function PublishForm({ opened, close, buildId, updateBuildStatus 
             }}
             maxLength={50}
           />
-          <Box>
-            <Select>
-
-            </Select>
-            <Paper>
-              <Badge>hi</Badge>
-            </Paper>
-          </Box>
-          <Button
+{/* 
+          <Select
+            placeholder="Search Tags.."
+            data={[
+              { group: 'General', items: ['Survival Base', 'Creative Base', 'Hardcore'] },
+              { group: 'Structure', items: ['Hut', 'House', 'Mansion', 'Farm', 'Village', 'Barn'] },
+              { group: 'Themes', items: ['Medieval', 'Cottage', 'Fantasy', 'Minimalistic', 'Modern', 'Rustic'] }
+            ]}
+          /> */}
+          <MultiSelect
+            checkIconPosition="right"
+            label='Build Tags'
+            placeholder='Search Tags..'
+            data={[
+              { group: 'General', items: ['Survival Base', 'Creative Base', 'Hardcore'] },
+              { group: 'Structure', items: ['Hut', 'House', 'Mansion', 'Farm', 'Village', 'Barn'] },
+              { group: 'Themes', items: ['Medieval', 'Cottage', 'Fantasy', 'Minimalistic', 'Modern', 'Rustic'] }
+            ]}
+            searchable
+            maxValues={5}
+            clearable
+            styles={{
+              pill: {
+                backgroundColor: '#4CAF50', 
+                color: 'white', 
+                fontWeight: 'bold',
+              },
+            }}
+          />
+          <MinecraftButton
             type="submit" 
             variant="filled"
           >
             Submit
-          </Button>
+          </MinecraftButton>
         </form>
       </Modal>
     </>
