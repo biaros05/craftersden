@@ -16,64 +16,44 @@ const MCMETA = 'https://raw.githubusercontent.com/misode/mcmeta/refs/heads/summa
  * @returns {React.ReactNode} block state panel
  */
 export default function BlockStatePanel(
-  {blockName, blockNamespace, setBlockstate, resources, currentState}:
-  {blockName: string, blockNamespace: string, setBlockstate: React.Dispatch<React.SetStateAction<{ [key: string]: string} | undefined>>, resources?: Resources | undefined, currentState?: { [key: string]: string } | undefined}
+  {blockName, blockNamespace, resources, currentState}:
+  {blockName: string, blockNamespace: string, currentState: React.RefObject<{ [key: string]: string }>, resources?: Resources | undefined}
 ): React.ReactNode {
   const {data: allBlockstates} = useSWR(MCMETA, fetcher, {suspense: true});
   const blockStatePreview = useRef<HTMLCanvasElement>(null);
-  const [previewStructure, setPreviewStructure] = useState<Structure>(new Structure([1, 1, 1]));
-  const [, setPreviewRenderer] = useState<StructureRenderer>();
-  const [, setPreviewCanvas] = useState<InteractiveCanvas>();
+  const previewStructure = useRef<Structure>(new Structure([1, 1, 1]));
+  const previewRenderer = useRef<StructureRenderer>(null);
+  const previewInteractiveCanvas = useRef<InteractiveCanvas>(null);
 
   const possibleBlockstates = allBlockstates[blockName][0];
 
-  // If currentState is undefined use default and update buildPlane
-  const state = currentState ?? allBlockstates[blockName][1];
-  useEffect(() => {
-    if (!currentState) {
-      setBlockstate(state);
-    }
-  }, [currentState, setBlockstate, state]);
+  // If currentState is empty use default and update buildPlane
+  if (Object.keys(currentState.current).length === 0) {
+    currentState.current = allBlockstates[blockName][1];
+  }
+  const state = currentState.current;
 
   // Initialize
   useEffect(() => {
     const gl = blockStatePreview?.current?.getContext('webgl');
     if (gl && resources) {
-      const newStructure = new Structure([1, 1, 1]);
-      newStructure.addBlock([0, 0, 0], `${blockNamespace}:${blockName}`, state);
-      setPreviewStructure(newStructure);
-            
-      const newRenderer = new StructureRenderer(gl, newStructure, resources);
-      setPreviewRenderer(newRenderer);
+      previewStructure.current.addBlock([0, 0, 0], `${blockNamespace}:${blockName}`, state);
+      
+      previewRenderer.current = new StructureRenderer(gl, previewStructure.current, resources);
 
       // function that renders the structure
       const onRender = (view) => {
-        newRenderer.drawStructure(view);
+        previewRenderer.current!.drawStructure(view);
       };
 
-      const size = newStructure.getSize();
-      setPreviewCanvas(new InteractiveCanvas(blockStatePreview.current!, onRender, [size[0] / 2, size[1] / 2, size[2] / 2], 2));
-    }
-  }, [blockName, blockNamespace, resources, state]);
+      const size = previewStructure.current.getSize();
+      const canvas = new InteractiveCanvas(blockStatePreview.current!, onRender, [size[0] / 2, size[1] / 2, size[2] / 2], 2);
+      canvas.subscribe();
+      previewInteractiveCanvas.current = canvas;
 
-  // Update
-  useEffect(() => {
-    const structureGl = blockStatePreview?.current?.getContext('webgl');
-    if (structureGl && resources && previewStructure) {
-      const newRenderer = new StructureRenderer(structureGl, previewStructure, resources);
-      setPreviewRenderer(newRenderer);
-
-      // function that renders the structure
-      const onRender = (view) => {
-        newRenderer.drawStructure(view);
-      };
-            
-      setPreviewCanvas(i => {
-        i?.dispose();
-        return i?.clone(blockStatePreview.current!, onRender);
-      });
+      return canvas?.cleanup;
     }
-  }, [previewStructure, resources]);
+  }, [blockName, blockNamespace, resources]);
 
   const stateInputs = Object.keys(possibleBlockstates).map((k) => {
 
@@ -83,8 +63,10 @@ export default function BlockStatePanel(
         state[k] = e.target.value;
         const structure = new Structure([1, 1, 1]);
         structure.addBlock([0, 0, 0], `${blockNamespace}:${blockName}`, state);
-        setPreviewStructure(structure);
-        setBlockstate({...state});
+        previewStructure.current = structure;
+        previewRenderer.current?.setStructure(structure);
+        currentState.current = state;
+        previewInteractiveCanvas.current?.redraw();
       }}>
         {possibleBlockstates[k].map(s => <option key={`option-${k}-${s}`} value={s}>{s}</option>)}
       </select>
