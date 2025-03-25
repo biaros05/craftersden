@@ -42,6 +42,24 @@ export default function DeepslatePlane({canvas, structure, blocks}): React.React
   const structureRenderer = useRef<InteractiveStructureRenderer>(null);
   const blockstate = useRef<{[key: string]: string}>({});
   const [resources, setResources] = useState<Resources>();
+  const canvasRect = useRef<DOMRect>(null);
+
+  useEffect(() => {
+    /**
+     * Updates canvas rect when the window is resized
+     */
+    function resize() {
+      if (canvas.current) {
+        canvasRect.current = canvas.current.getBoundingClientRect();
+      }
+    }
+
+    resize();
+
+    window.addEventListener('resize', resize);
+
+    return () => window.removeEventListener('resize', resize);
+  }, [])
 
   useEffect(() => {
     fetchResources(setResources);
@@ -93,10 +111,11 @@ export default function DeepslatePlane({canvas, structure, blocks}): React.React
    * @returns {{point: vec3, normal: vec3} | null} intersect information
    */
   function rayCast(e: React.MouseEvent<HTMLCanvasElement>, viewMat: mat4, projectionMat: mat4, camPos: vec3, correct: boolean = true): {point: [number, number, number], normal: ReadonlyVec3} | null {
-    const canvasRect = canvas.current!.getBoundingClientRect();
-    const mousePos = [e.clientX - canvasRect.left, e.clientY - canvasRect.top];
+    const mousePos = [e.clientX - canvasRect.current!.left, e.clientY - canvasRect.current!.top];
+    const {width, height} = canvasRect.current!;
+    const canvasSize = {width: width, height: height};
 
-    const ray = screenToWorldRay(mousePos[0], mousePos[1], viewMat, projectionMat, {width: 800, height: 800}, camPos);
+    const ray = screenToWorldRay(mousePos[0], mousePos[1], viewMat, projectionMat, canvasSize, camPos);
     const intersect = checkBlocksForIntersect(blocks.current, ray.direction, ray.origin);
 
     if (intersect) {
@@ -181,8 +200,8 @@ export default function DeepslatePlane({canvas, structure, blocks}): React.React
 		}
 	}
 
-	return <div className="plane-container">
-    <canvas ref={canvas} width={800} height={800} onMouseDown={handleClick} onContextMenu={(e) => e.preventDefault()}></canvas>
+  return <div className="plane-container">
+    <canvas id='deepslate-plane' width={800} height={800} ref={canvas} onMouseDown={handleClick} onContextMenu={(e) => e.preventDefault()}></canvas>
     <BlockStatePanel blockName={selectedBlock.name} blockNamespace={selectedBlock.namespace} currentState={blockstate} resources={resources} />
   </div>;
 }
