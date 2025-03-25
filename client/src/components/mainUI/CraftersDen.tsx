@@ -34,52 +34,53 @@ export function serializeBlocks(structure: CloneableStructure): Uint8Array<Array
 export default function CraftersDen(): React.ReactNode {
   // const canvas = useRef(null);
   const canvas = useRef<HTMLCanvasElement>(null);
-  const [structure, setStructure] = useState<CloneableStructure>(JSON_PLANE);
+  const structure = useRef<CloneableStructure>(JSON_PLANE);
+  const blocks = useRef<PlaneBlock[]>(structureBlockToPlaneBlock(structure.current.getBlocks()));
+
   const {email} = useAuth() ?? {};
   const [isViewMode, setIsViewMode] = useState(false);
   // const [blocks, setBlocks] = useState<BlockType[]>([]);
   const [currentBlock, setCurrentBlock] = useState(null);
-  const [blocks, setBlocks] = useState<PlaneBlock[]>([]);
 
   const build = useBuild();
   const { setBuild } = useBuildUpdate();
 
+  // ?-? Could we put this in useRef default
   useEffect(() => {
     const serializedBlocks = JSON.parse(localStorage.getItem("build") ?? "{}");
     
     if ( serializedBlocks.structure !== "{}" && serializedBlocks.structure) {
       const newStructure = CloneableStructure.fromJson(serializedBlocks.structure);
-      setStructure(newStructure);
-      setBlocks(structureBlockToPlaneBlock(newStructure.getBlocks()));
+      structure.current = newStructure;
+      // ?-? Could move blocks down into plane and update them on initial load.
+      blocks.current = structureBlockToPlaneBlock(newStructure.getBlocks());
       localStorage.clear();
-    }
-    else if (build.build !== undefined && build.build !== null) {
+    } else if (build.build !== undefined && build.build !== null) {
       const newStructure = CloneableStructure.fromJson(build.build.buildJSON);
-      setStructure(newStructure);
-      setBlocks(structureBlockToPlaneBlock(newStructure.getBlocks()));
+      structure.current = newStructure;
+      blocks.current = structureBlockToPlaneBlock(newStructure.getBlocks());
 
     }
-    else{
-      setStructure(structure);
-      setBlocks(structureBlockToPlaneBlock(structure.getBlocks()));
+    else {
+      // Use default
     }
   }, []);
 
   let curBuildId = null;
 
-  if(build.build !== undefined && build.build !== null){
+  if(build?.build){
     curBuildId = build.build._id;
   }
 
-    /**
-     * Fetches the complete block data from the api, and stores it in CurrentBlockContext.
-     * @param {object} block - block object to fetch from the api
-     */
-    async function storeBlock(block) {
-      const response = await fetch(`/api/block/${block._id}`);
-      const completeBlockData = await response.json();
-      setCurrentBlock(completeBlockData);
-    }
+  /**
+   * Fetches the complete block data from the api, and stores it in CurrentBlockContext.
+   * @param {object} block - block object to fetch from the api
+   */
+  async function storeBlock(block: object) {
+    const response = await fetch(`/api/block/${block._id}`);
+    const completeBlockData = await response.json();
+    setCurrentBlock(completeBlockData);
+  }
 
   /**
    * Saves the current build in the db
@@ -87,8 +88,8 @@ export default function CraftersDen(): React.ReactNode {
    */
   async function savePost(progressPicture: string) {
     // fetch dataURL to get the blob
-    console.log(JSON.stringify(structure.toJson()));
-    const arrayBufferBlocks = serializeBlocks(structure);
+    console.log(JSON.stringify(structure.current.toJson()));
+    const arrayBufferBlocks = serializeBlocks(structure.current);
     const serializedBlocks = new Blob([arrayBufferBlocks], { type: 'application/octet-stream' });
     try {
       const base64Data = progressPicture.split(',')[1];
@@ -127,15 +128,13 @@ export default function CraftersDen(): React.ReactNode {
             <DeepslatePlane 
             canvas={canvas} 
             structure={structure} 
-            setStructure={setStructure} 
-            setBlocks={setBlocks}
             blocks={blocks}
             />
           {!isViewMode && <BlockSelection />}
         </section>
         <ButtonPanel 
         canvas={canvas}
-        structure={structure}
+        structure={structure.current}
         setIsViewMode={setIsViewMode} 
         savePost={savePost} 
         isViewMode={isViewMode}

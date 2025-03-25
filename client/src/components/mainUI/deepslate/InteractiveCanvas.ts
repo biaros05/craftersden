@@ -1,3 +1,4 @@
+/* eslint-disable jsdoc/no-undefined-types */
 import { mat4 } from "gl-matrix"
 
 export default class InteractiveCanvas {
@@ -8,6 +9,7 @@ export default class InteractiveCanvas {
     private mousemoveHandlerBind: (arg0: MouseEvent) => void;
     private mouseupHandlerBind: () => void;
     private wheelHandlerBind: (arg0: WheelEvent) => void;
+    private subscribed = false;
 
     constructor(
         private canvas: HTMLCanvasElement,
@@ -19,6 +21,7 @@ export default class InteractiveCanvas {
         xPos = 0,
         yPos = 0,
     ) {
+        console.log('CONSTRUCTING')
         this.xPosition = xPos;
         this.yPosition = yPos;
 
@@ -27,12 +30,31 @@ export default class InteractiveCanvas {
         this.mouseupHandlerBind = this.mouseupHandler.bind(this);
         this.wheelHandlerBind = this.wheelHandler.bind(this);
         
-        this.canvas.addEventListener('mousedown', this.mousedownHandlerBind);
-        this.canvas.addEventListener('mousemove', this.mousemoveHandlerBind);
-        this.canvas.addEventListener('mouseup', this.mouseupHandlerBind);
-        this.canvas.addEventListener('wheel', this.wheelHandlerBind);
-
         this.redraw();
+    }
+
+    public setOnRender(newOnRender: (view: mat4) => void) {
+        this.onRender = newOnRender;
+    }
+
+    public subscribe() {
+        console.log("Subscribing from", this.canvas);
+        this.canvas.addEventListener('mousedown', this.mousedownHandlerBind)
+        this.canvas.addEventListener('mousemove', this.mousemoveHandlerBind)
+        this.canvas.addEventListener('mouseup', this.mouseupHandlerBind)
+        this.canvas.addEventListener('wheel', this.wheelHandlerBind)
+        this.subscribed = true;
+        this.animate();
+    }
+
+    public unsubscribe() {
+        console.log("Unsubscribing from", this.canvas);
+        this.canvas.removeEventListener('mousedown', this.mousedownHandlerBind);
+        this.canvas.removeEventListener('mousemove', this.mousemoveHandlerBind);
+        this.canvas.removeEventListener('mouseup', this.mouseupHandlerBind);
+        this.canvas.removeEventListener('wheel', this.wheelHandlerBind);
+        // this.abortController.abort();
+        this.subscribed = false;
     }
 
     private mousedownHandler(evt) {
@@ -66,7 +88,16 @@ export default class InteractiveCanvas {
     }
 
     public redraw() {
-        requestAnimationFrame(() => this.renderImmediately())
+        console.log('redrawing')
+        requestAnimationFrame(() => this.renderImmediately());
+    }
+
+    private animate() {
+        // console.log('animating', this.subscribed);
+        // if (this.subscribed) {
+        //     this.renderImmediately();
+        //     requestAnimationFrame(() => {this.animate()});
+        // }
     }
 
     private renderImmediately() {
@@ -96,7 +127,7 @@ export default class InteractiveCanvas {
      * @returns {InteractiveCanvas} new InteractiveCanvas
      */
     public clone(newCanvas?: HTMLCanvasElement, onRender?: (arg0: mat4) => void): InteractiveCanvas {
-        console.log('CLONING')
+        // console.log('CLONING')
         const render = onRender ?? this.onRender;
         const canvas = newCanvas ?? this.canvas;
         const newInteractiveCanvas = new InteractiveCanvas(
@@ -113,23 +144,23 @@ export default class InteractiveCanvas {
         return newInteractiveCanvas;
     }
 
-    public dispose() {
-        console.log('DISPOSING')
-        if (this.canvas) {
-            this.canvas.removeEventListener('mousedown', this.mousedownHandlerBind);
-            this.canvas.removeEventListener('mousemove', this.mousemoveHandlerBind);
-            this.canvas.removeEventListener('mouseup', this.mouseupHandlerBind);
-            this.canvas.removeEventListener('wheel', this.wheelHandlerBind);
-
-            this.canvas = null as any;
-        }
-
-        this.mousedownHandlerBind = null as any;
-        this.mousemoveHandlerBind = null as any;
-        this.mouseupHandlerBind = null as any;
-        this.wheelHandlerBind = null as any;
+    public cleanup() {
+        console.log('DISPOSING', this)
+        if (this) {
+            if (this.canvas) {
+                if (this.subscribed) {
+                    this.unsubscribe();
+                }
+                this.canvas = null as never;
+            }
     
-        this.renderImmediately = () => {};
-        this.redraw = () => {};
+            this.mousedownHandlerBind = null as never;
+            this.mousemoveHandlerBind = null as never;
+            this.mouseupHandlerBind = null as never;
+            this.wheelHandlerBind = null as never;
+        
+            this.renderImmediately = () => {};
+            this.redraw = () => {};
+        }
     }
 }
