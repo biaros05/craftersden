@@ -17,7 +17,7 @@ export default function CraftersDen(): React.ReactNode {
   const [isViewMode, setIsViewMode] = useState(false);
   const canvas = useRef(null);
   const {email} = useAuth() ?? {};
-  const [blocks, setBlocks] = useState([]);
+  const [blocks,] = useState([]);
   const [currentBlock, setCurrentBlock] = useState(null);
 
   const build = useBuild();
@@ -31,6 +31,7 @@ export default function CraftersDen(): React.ReactNode {
 
   if(build?.build){
     curBuildId = build.build._id;
+    console.log(curBuildId)
   }
 
   /**
@@ -49,6 +50,7 @@ export default function CraftersDen(): React.ReactNode {
    */
   async function savePost(progressPicture: string) {
     // Save post was here
+    console.log(progressPicture)
   }
 
   return (

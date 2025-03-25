@@ -1,5 +1,5 @@
 import { Resources, Structure, StructureRenderer } from 'deepslate';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import useSWR from 'swr';
 import InteractiveCanvas from './InteractiveCanvas';
 
@@ -10,9 +10,8 @@ const MCMETA = 'https://raw.githubusercontent.com/misode/mcmeta/refs/heads/summa
  * Renders a panel that lets users control the state of their blocks
  * @param {object} props - React props
  * @param {string} props.blockName Name of block selected
- * @param {React.Dispatch<React.SetStateAction<{[key: string]: string}>>} props.setBlockstate Set state callback update current state
  * @param {Resources} props.resources resource object
- * @param {{[key: string]: string}} props.currentState State of the block
+ * @param {React.RefObject<{[key: string]: string}>} props.currentState State of the block
  * @returns {React.ReactNode} block state panel
  */
 export default function BlockStatePanel(
