@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Carousel } from '@mantine/carousel';
 import { IconBookmark, IconBookmarkFilled, IconHeart, IconHeartFilled } from '@tabler/icons-react';
-import { Image, Text, Box, ActionIcon } from '@mantine/core';
+import { Image, Text, Box, ActionIcon, Pill, ScrollArea } from '@mantine/core';
 import '../styles/Post.css';
 import { errorMessage, successMessage } from '../utils/notification_utils';
 import { useAuth } from '../hooks/useAuth';
@@ -14,6 +14,7 @@ type propTypes = {
   username: string
   buildId: string,
   viewPostOnClick?: () => void
+  tags: []
 }
 
 /**
@@ -28,10 +29,11 @@ type propTypes = {
  * @param {string} props.username Username of the creator
  * @param {Function} props.viewPostOnClick - Function to call when the post is clicked
  * @param {string} props.buildId the id of the build
+ * @param {Array} props.tags tags of the build post
  * @returns {React.ReactNode} The Post
  */
 export default function Post(
-  { description, liked, saved, imageURL, username, viewPostOnClick, buildId}: propTypes): React.ReactNode {
+  { description, liked, saved, imageURL, username, viewPostOnClick, buildId, tags}: propTypes): React.ReactNode {
 
   const [isLiked, setIsLiked] = useState(liked);
   const [isSaved, setIsSaved] = useState(saved);
@@ -188,10 +190,42 @@ export default function Post(
           </ActionIcon>
         </div>
         <Box>
-          <Text size={'xs'} component="p" lineClamp={3} inline={false}>
+          <Text size={'xs'} 
+          component="p" 
+          lineClamp={3} 
+          inline={false}
+          style={{
+            overflow: 'hidden', 
+            textOverflow: 'ellipsis',
+            whiteSpace: 'normal', 
+            wordBreak: 'break-word', 
+            padding: '15px'
+          }}
+          >
             {description}
           </Text>
         </Box>
+        {tags.length !== 0 && (
+          <ScrollArea className="tags-area" h={80}>
+            {tags.map((tag, i) => {
+              return(
+                <Pill 
+                style={{
+                  backgroundColor: '#4CAF50',
+                  color: 'white', 
+                  fontWeight: 'bold',
+                  margin: '2px'
+                }}
+                size="sm"
+                className="tag"
+                key={`tag-${i}`}
+                >
+                  {tag}
+                </Pill>
+              )
+            })}
+          </ScrollArea>
+        )}
       </section>
     </div>
   );

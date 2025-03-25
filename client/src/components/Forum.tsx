@@ -23,6 +23,7 @@ type Post = {
   thumnails: [],
   likedBy: (string | undefined)[];
   savedBy: (string | undefined)[]
+  tags: []
 }
 
 /**
@@ -86,6 +87,7 @@ export default function Forum(): React.ReactNode {
                 liked={build.likedBy.includes(id)}
                 saved={build.savedBy.includes(id)}
                 viewPostOnClick={() => handlePostClick(build)}
+                tags={build.tags}
               />
             );
           })
