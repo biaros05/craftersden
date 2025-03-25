@@ -7,15 +7,24 @@ import { mat4, ReadonlyVec3, vec3 } from 'gl-matrix';
 import InteractiveCanvas from './InteractiveCanvas';
 import InteractiveStructureRenderer from './InteractiveStructureRenderer';
 import CloneableStructure from './CloneableStructure';
-// import { JSON_PLANE } from './PlanePresets';
 
-interface PlaneBlock extends Mesh {
+export interface PlaneBlock extends Mesh {
 	name: string;
 	position: [number, number, number];
 }
 
 /**
+ * 
  * @returns {React.ReactNode} Plane using deepslate
+ */
+/**
+ * @param {object} props -
+ * @param {HTMLCanvasElement} props.canvas - canvas of the plane 
+ * @param {CloneableStructure} props.structure - current structure
+ * @param {Function} props.setStructure - function to set the state of the current structure
+ * @param {Function} props.setBlocks - function to set the current blocks
+ * @param {PlaneBlock} props.blocks - current blocks within the structure
+ * @returns {React.ReactNode} -
  */
 export default function DeepslatePlane({canvas, structure, setStructure, blocks, setBlocks}): React.ReactNode {
 	// const [blocks, setBlocks] = useState<PlaneBlock[]>([]);

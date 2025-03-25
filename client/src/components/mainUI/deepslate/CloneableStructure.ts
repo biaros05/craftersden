@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { BlockPos, StoredStructure, BlockState, Identifier, NbtCompound, Structure } from "deepslate";
+import { BlockPos, BlockState, Identifier, NbtCompound, Structure } from "deepslate";
 export default class CloneableStructure extends Structure {
 
     protected getPalette(): BlockState[] {
