@@ -116,6 +116,7 @@ export default function BlockStatePanel(
   </div>;
 }
 
+/*--- Algorithm proposed and implemented by AI ---*/
 /**
  * Generate all possible blockstate combinations given 
  * an object holding keys and an array of possible values

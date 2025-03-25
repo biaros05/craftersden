@@ -10,6 +10,7 @@ export type Triangle = [Vertex, Vertex, Vertex];
 
 export type Vertex = [number, number, number];
 
+/*--- Algorithm proposed and implemented by AI, Verified using https://antongerdelan.net/opengl/raycasting.html and https://www.youtube.com/watch?v=ebzlMOw79Yw ---*/
 /**
  * Gets the world ray (origin, direction) from the mouse position on the canvas.
  * The direction is a unit vector.
