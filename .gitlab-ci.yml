@@ -59,6 +59,7 @@ build-frontend:
     - export VITE_GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID
     - npm install @rollup/rollup-linux-x64-gnu
     - cd client && npm run build
+    - ls
   artifacts:
     expire_in: 1 days
     when: on_success
