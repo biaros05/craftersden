@@ -1,3 +1,4 @@
+/* eslint-disable jsdoc/no-undefined-types */
 import { Resources, Structure, StructureRenderer } from 'deepslate';
 import React, { useEffect, useRef, useState } from 'react';
 import useSWR from 'swr';
@@ -24,8 +25,7 @@ export default function BlockStatePanel(
   const previewRenderer = useRef<StructureRenderer>(null);
   const previewInteractiveCanvas = useRef<InteractiveCanvas>(null);
   const keyIndex = useRef(0);
-  // const valueIndex = useRef(1);
-  const stateMappings = useRef([]);
+  const stateMappings = useRef<{[key:string]: string}[]>([]);
   const [advancedMode, setAdvancedMode] = useState(false);
 
   const possibleBlockstates = allBlockstates[blockName][0];
@@ -35,7 +35,6 @@ export default function BlockStatePanel(
     currentState.current = allBlockstates[blockName][1];
   }
   const state = currentState.current;
-  const stateKeys = Object.keys(state);
 
   useEffect(() => {
     stateMappings.current = generateStates(possibleBlockstates);
@@ -76,6 +75,10 @@ export default function BlockStatePanel(
     </fieldset>;
   });
 
+  /**
+   * Updates blockstate and redraws canvas
+   * @param {{[key: string]: string}} blockstate new blockstate to apply
+   */
   function updateBlockstate(blockstate: {[key: string]: string}) {
     const structure = new Structure([1, 1, 1]);
     structure.addBlock([0, 0, 0], `${blockNamespace}:${blockName}`, blockstate);
@@ -85,37 +88,23 @@ export default function BlockStatePanel(
     previewInteractiveCanvas.current?.redraw();
   }
 
+  /**
+   * Event handler to cycle through different states
+   * @param {React.KeyboardEvent<HTMLDivElement>} e - Event object 
+   */
   function keyboardControls(e: React.KeyboardEvent<HTMLDivElement>): void {
     const keyPressed = e.key.toLocaleLowerCase();
-    // const currKey = stateKeys[keyIndex.current];
-    let validKey = false;
     
     if (keyPressed === 'arrowright' || keyPressed === 'd') {
       e.preventDefault();
       keyIndex.current = (keyIndex.current + 1) % stateMappings.current.length;
-      // valueIndex.current = (valueIndex.current + 1) % possibleBlockstates[currKey].length;
-      validKey = true;
+      updateBlockstate(stateMappings.current[keyIndex.current]);
     } else if (keyPressed === 'arrowleft' || keyPressed === 'a') {
       e.preventDefault();
       keyIndex.current = (keyIndex.current - 1 + stateMappings.current.length) % stateMappings.current.length;
-      // valueIndex.current = (valueIndex.current - 1 + possibleBlockstates[currKey].length) % possibleBlockstates[currKey].length;
-      validKey = true;
-    } else if (keyPressed === 'arrowup' || keyPressed === 'w') {}
-    //   e.preventDefault();
-    //   keyIndex.current = (keyIndex.current - 1 + stateKeys.length) % stateKeys.length;
-    //   validKey = true;
-    // } else if (keyPressed === 'arrowdown' || keyPressed === 's') {
-    //   e.preventDefault();
-    //   keyIndex.current = (keyIndex.current + 1) % stateKeys.length;
-    //   validKey = true;
-    // }
-
-    if (validKey) {
-      console.log(stateMappings.current[keyIndex.current], keyIndex.current, stateMappings.current)
       updateBlockstate(stateMappings.current[keyIndex.current]);
     }
   }
-  console.log(stateMappings.current);
 
   return <div className="blockstate-panel" tabIndex={0} onKeyDown={!advancedMode ? keyboardControls : undefined}>
     <canvas className="blockstate-preview" width={100} height={100} ref={blockStatePreview}></canvas>
@@ -133,7 +122,7 @@ export default function BlockStatePanel(
  * @param {{[key: string]: string[]}} possibleBlockstates - Possible states (key,values)
  * @returns {object[]} All possible blockstate combinations
  */
-function generateStates(possibleBlockstates: { [key: string]: string[] }): object[] {
+function generateStates(possibleBlockstates: { [key: string]: string[] }): {[key: string]: string}[] {
   const keys = Object.keys(possibleBlockstates);
   const values = Object.values(possibleBlockstates);
 
