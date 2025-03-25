@@ -54,7 +54,7 @@ export function render(
 
   const renderResult =  testingLibraryRender(
   <AuthContext.Provider value={defaultAuth}>
-    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+    <GoogleOAuthProvider clientId="test">
       <MantineProvider theme={theme}>
         <BuildProvider>
           {useRouter ? (

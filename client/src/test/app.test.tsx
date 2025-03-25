@@ -161,7 +161,7 @@ describe ('App navigation logged in', () => {
     expect(router?.state.location.pathname).toBe('/');
   });
 
-  it('navigate to logout from footer does not work while logged in', async () => {
+  it('navigate to logout from footer works while logged in', async () => {
     const user = userEvent.setup();
     const {router} = render(<App/>, {
       useRouter: true,
