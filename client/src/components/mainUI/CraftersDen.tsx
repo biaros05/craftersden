@@ -25,7 +25,7 @@ import DeepslatePlane from './deepslate/DeepslatePlane.tsx';
  * @returns {Uint8Array<ArrayBufferLike>} - a buffer containing the newly serialized blocks. 
  */
 export function serializeBlocks(structure: CloneableStructure): Uint8Array<ArrayBufferLike> {
-  return encode(structure.toJson());
+  return encode(JSON.stringify(structure.toJson()));
 }
 
 /**
@@ -75,7 +75,7 @@ export default function CraftersDen(): React.ReactNode {
     const serializedBlocks = JSON.parse(localStorage.getItem("build") ?? "{}");
     
     if ( serializedBlocks.structure !== "{}" && serializedBlocks.structure) {
-      const newStructure = CloneableStructure.fromJson(JSON.parse(serializedBlocks.structure));
+      const newStructure = CloneableStructure.fromJson(serializedBlocks.structure);
       setStructure(newStructure);
       setBlocks(structureBlockToPlaneBlock(newStructure.getBlocks()));
       localStorage.clear();
@@ -114,7 +114,7 @@ export default function CraftersDen(): React.ReactNode {
    */
   async function savePost(progressPicture: string) {
     // fetch dataURL to get the blob
-    console.log(structure.toJson());
+    console.log(JSON.stringify(structure.toJson()));
     const arrayBufferBlocks = serializeBlocks(structure);
     const serializedBlocks = new Blob([arrayBufferBlocks], { type: 'application/octet-stream' });
     try {
