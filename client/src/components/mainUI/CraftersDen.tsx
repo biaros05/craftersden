@@ -71,7 +71,6 @@ export default function CraftersDen(): React.ReactNode {
   const { setBuild } = useBuildUpdate();
 
   useEffect(() => {
-    // localStorage.clear();
     const serializedBlocks = JSON.parse(localStorage.getItem("build") ?? "{}");
     if ( serializedBlocks.structure !== "{}" && serializedBlocks.structure) {
       console.log("WHY AM I HERE")
