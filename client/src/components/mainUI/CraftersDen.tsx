@@ -5,11 +5,10 @@ import './CraftersDen.css';
 import { useEffect, useState, useRef } from 'react';
 import React from 'react';
 import {toByteArray} from 'base64-js';
-import * as THREE from 'three';
 import {encode} from '@msgpack/msgpack'; 
 import { useBuild, useBuildUpdate } from '../../hooks/BuildContext';
 import { successMessage, errorMessage } from '../../utils/notification_utils';
-import { BlockType, SerializedBlockType, StatusError } from '../../utils/building_plane_utils';
+import { StatusError } from '../../utils/building_plane_utils';
 import { CurrentBlockContext } from '../../context/currentBlockContext';
 import { isMobile } from 'react-device-detect';
 import CloneableStructure from './deepslate/CloneableStructure';
@@ -27,31 +26,6 @@ import DeepslatePlane from './deepslate/DeepslatePlane.tsx';
  */
 export function serializeBlocks(structure: CloneableStructure): Uint8Array<ArrayBufferLike> {
   return encode(JSON.stringify(structure.toJson()));
-}
-
-/**
- * Takes an array of blocks which has JSON objects for Geometry and Textures and converts
- * them back to proper THREE objects so they are usable by the BuildPlane
- * @param {SerializedBlockType[]} blocks - array of blocks fetched from the database
- * @returns {BlockType[]} - Array of blocks which contain THREE objects
- */
-function deserializeBlocks(blocks: SerializedBlockType[]): BlockType[] {
-  const textureLoader = new THREE.TextureLoader();
-  const geoLoader = new THREE.BufferGeometryLoader();
-  return blocks.map(block => {
-    const newBlock: BlockType = {
-      id: block.id,
-      name: block.name,
-      position: [...block.position],
-      worldPosition: block.worldPosition ? [...block.worldPosition] : undefined,
-      geometry: geoLoader.parse(block.geometry),
-      textureURLs: block.textureURLs,
-      textures: (block.textureURLs || []).map(url => textureLoader.load(url)),
-      rotation: block.rotation ? [...block.rotation] : undefined, // ERROR OCCURS
-      rotationIndex: block.rotationIndex
-    };
-    return newBlock;
-  });
 }
 
 /**
@@ -159,14 +133,6 @@ export default function CraftersDen(): React.ReactNode {
     <CurrentBlockContext.Provider value={{currentBlock, storeBlock}}>
       <div id="main-ui">
         <section className="build-tools">
-          {/* <BuildPlane 
-            canvasRef={canvas} 
-            blocks={blocks} 
-            setBlocks={setBlocks} 
-            isViewMode={isViewMode} 
-            setIsViewMode={setIsViewMode}
-            style={{width: "75%"}}
-            /> */}
             <DeepslatePlane 
             canvas={canvas} 
             structure={structure} 
