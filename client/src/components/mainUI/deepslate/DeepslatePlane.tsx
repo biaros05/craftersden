@@ -1,5 +1,5 @@
 /* eslint-disable jsdoc/no-undefined-types */
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import fetchResources from './ResourcesFetcher';
 import { Mesh, getCameraPosition, checkBlocksForIntersect, computePoint, computeTriangleNormal, computeTrianglesOfCube, screenToWorldRay } from './RaycastUtils';
 import { BlockPos, PlacedBlock, Resources } from 'deepslate';
@@ -7,20 +7,27 @@ import { mat4, ReadonlyVec3, vec3 } from 'gl-matrix';
 import InteractiveCanvas from './InteractiveCanvas';
 import InteractiveStructureRenderer from './InteractiveStructureRenderer';
 import CloneableStructure from './CloneableStructure';
-import { JSON_PLANE } from './PlanePresets';
 
-interface PlaneBlock extends Mesh {
+export interface PlaneBlock extends Mesh {
 	name: string;
 	position: [number, number, number];
 }
 
 /**
+ * 
  * @returns {React.ReactNode} Plane using deepslate
  */
-export default function DeepslatePlane(): React.ReactNode {
-	const canvas = useRef<HTMLCanvasElement>(null);
-	const [structure, setStructure] = useState<CloneableStructure>(JSON_PLANE);
-	const [blocks, setBlocks] = useState<PlaneBlock[]>([]);
+/**
+ * @param {object} props -
+ * @param {HTMLCanvasElement} props.canvas - canvas of the plane 
+ * @param {CloneableStructure} props.structure - current structure
+ * @param {Function} props.setStructure - function to set the state of the current structure
+ * @param {Function} props.setBlocks - function to set the current blocks
+ * @param {PlaneBlock} props.blocks - current blocks within the structure
+ * @returns {React.ReactNode} -
+ */
+export default function DeepslatePlane({canvas, structure, setStructure, blocks, setBlocks}): React.ReactNode {
+	// const [blocks, setBlocks] = useState<PlaneBlock[]>([]);
 	const [projectionMatrix, setProjectionMatrix] = useState<mat4>();
 	const [viewMatrix, setViewMatrix] = useState<mat4>();
 	const [cameraPosition, setCameraPosition] = useState<vec3>();
@@ -37,13 +44,15 @@ export default function DeepslatePlane(): React.ReactNode {
 
 	// Initializes structure renderer and Interactive canvas
 	useEffect(() => {
-		const structureGl = canvas?.current?.getContext('webgl');
+		const structureGl = canvas?.current?.getContext('webgl', {preserveDrawingBuffer: true});
         if (structureGl && resources) {
 			const newRenderer = new InteractiveStructureRenderer(structureGl, structure, resources);
 			setStructureRenderer(newRenderer);
 
 			// function that renders the structure
 			const onRender = (view: mat4) => {
+				structureGl?.clearColor(0,0,0,0);
+				structureGl?.clear(structureGl.COLOR_BUFFER_BIT | structureGl.DEPTH_BUFFER_BIT);
 				newRenderer.drawStructure(view);
 				newRenderer.drawGrid(view);
 				setViewMatrix(view);
@@ -159,7 +168,7 @@ export default function DeepslatePlane(): React.ReactNode {
 	 * @param {CloneableStructure} newStructure new structure to use
 	 */
 	function updateRendererAndCanvas(newStructure: CloneableStructure) {
-		const structureGl = canvas?.current?.getContext('webgl');
+		const structureGl = canvas?.current?.getContext('webgl', {preserveDrawingBuffer: true});
 
 		if (structureGl && resources) {
 			const newRenderer = new InteractiveStructureRenderer(structureGl, newStructure, resources);
@@ -167,6 +176,8 @@ export default function DeepslatePlane(): React.ReactNode {
 
 			// function that renders the structure
 			const onRender = (view: mat4) => {
+				structureGl?.clearColor(0,0,0,0);
+				structureGl?.clear(structureGl.COLOR_BUFFER_BIT | structureGl.DEPTH_BUFFER_BIT);
 				newRenderer.drawStructure(view);
 				newRenderer.drawGrid(view);
 				setViewMatrix(view);
@@ -187,7 +198,7 @@ export default function DeepslatePlane(): React.ReactNode {
  * @param {PlacedBlock[]} sBlocks structure blocks
  * @returns {PlaneBlock[]} plane blocks with vertices
  */
-function structureBlockToPlaneBlock(sBlocks: PlacedBlock[]): PlaneBlock[] {
+export function structureBlockToPlaneBlock(sBlocks: PlacedBlock[]): PlaneBlock[] {
 	return sBlocks.map(b => {
 		return {
 			name: b.state.getName().toString(),
