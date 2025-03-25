@@ -91,7 +91,7 @@ client-test:
       coverage_report:
         coverage_format: cobertura
         path: client/coverage/clover.xml
-      junit: junit.json
+      junit: client/coverage/coverage-final.json
 
 
 
