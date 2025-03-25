@@ -1,5 +1,5 @@
 import { Resources, Structure, StructureRenderer } from 'deepslate';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import useSWR from 'swr';
 import InteractiveCanvas from './InteractiveCanvas';
 
@@ -23,6 +23,10 @@ export default function BlockStatePanel(
   const previewStructure = useRef<Structure>(new Structure([1, 1, 1]));
   const previewRenderer = useRef<StructureRenderer>(null);
   const previewInteractiveCanvas = useRef<InteractiveCanvas>(null);
+  const keyIndex = useRef(0);
+  // const valueIndex = useRef(1);
+  const stateMappings = useRef([]);
+  const [advancedMode, setAdvancedMode] = useState(false);
 
   const possibleBlockstates = allBlockstates[blockName][0];
 
@@ -31,6 +35,11 @@ export default function BlockStatePanel(
     currentState.current = allBlockstates[blockName][1];
   }
   const state = currentState.current;
+  const stateKeys = Object.keys(state);
+
+  useEffect(() => {
+    stateMappings.current = generateStates(possibleBlockstates);
+  }, [blockName])
 
   // Initialize
   useEffect(() => {
@@ -60,22 +69,88 @@ export default function BlockStatePanel(
       <label htmlFor={`blockstate-${blockName}-${k}-select`}>{k}</label>
       <select id={`blockstate-${blockName}-${k}-select`} defaultValue={state[k] ?? ''} onChange={(e) => {
         state[k] = e.target.value;
-        const structure = new Structure([1, 1, 1]);
-        structure.addBlock([0, 0, 0], `${blockNamespace}:${blockName}`, state);
-        previewStructure.current = structure;
-        previewRenderer.current?.setStructure(structure);
-        currentState.current = state;
-        previewInteractiveCanvas.current?.redraw();
+        updateBlockstate(state);
       }}>
         {possibleBlockstates[k].map(s => <option key={`option-${k}-${s}`} value={s}>{s}</option>)}
       </select>
     </fieldset>;
   });
 
-  return <div className="blockstate-panel">
+  function updateBlockstate(blockstate: {[key: string]: string}) {
+    const structure = new Structure([1, 1, 1]);
+    structure.addBlock([0, 0, 0], `${blockNamespace}:${blockName}`, blockstate);
+    previewStructure.current = structure;
+    previewRenderer.current?.setStructure(structure);
+    currentState.current = blockstate;
+    previewInteractiveCanvas.current?.redraw();
+  }
+
+  function keyboardControls(e: React.KeyboardEvent<HTMLDivElement>): void {
+    const keyPressed = e.key.toLocaleLowerCase();
+    // const currKey = stateKeys[keyIndex.current];
+    let validKey = false;
+    
+    if (keyPressed === 'arrowright' || keyPressed === 'd') {
+      e.preventDefault();
+      keyIndex.current = (keyIndex.current + 1) % stateMappings.current.length;
+      // valueIndex.current = (valueIndex.current + 1) % possibleBlockstates[currKey].length;
+      validKey = true;
+    } else if (keyPressed === 'arrowleft' || keyPressed === 'a') {
+      e.preventDefault();
+      keyIndex.current = (keyIndex.current - 1 + stateMappings.current.length) % stateMappings.current.length;
+      // valueIndex.current = (valueIndex.current - 1 + possibleBlockstates[currKey].length) % possibleBlockstates[currKey].length;
+      validKey = true;
+    } else if (keyPressed === 'arrowup' || keyPressed === 'w') {}
+    //   e.preventDefault();
+    //   keyIndex.current = (keyIndex.current - 1 + stateKeys.length) % stateKeys.length;
+    //   validKey = true;
+    // } else if (keyPressed === 'arrowdown' || keyPressed === 's') {
+    //   e.preventDefault();
+    //   keyIndex.current = (keyIndex.current + 1) % stateKeys.length;
+    //   validKey = true;
+    // }
+
+    if (validKey) {
+      console.log(stateMappings.current[keyIndex.current], keyIndex.current, stateMappings.current)
+      updateBlockstate(stateMappings.current[keyIndex.current]);
+    }
+  }
+  console.log(stateMappings.current);
+
+  return <div className="blockstate-panel" tabIndex={0} onKeyDown={!advancedMode ? keyboardControls : undefined}>
     <canvas className="blockstate-preview" width={100} height={100} ref={blockStatePreview}></canvas>
-    <form>
+    <label htmlFor="advanced">Advanced mode </label>
+    <input type="checkbox" name="advanced" id="advanced" defaultChecked={advancedMode} onChange={(e) => setAdvancedMode(Boolean(e.target.checked))} />
+    {advancedMode && <form>
       {stateInputs}
-    </form>
+    </form>}
   </div>;
+}
+
+/**
+ * Generate all possible blockstate combinations given 
+ * an object holding keys and an array of possible values
+ * @param {{[key: string]: string[]}} possibleBlockstates - Possible states (key,values)
+ * @returns {object[]} All possible blockstate combinations
+ */
+function generateStates(possibleBlockstates: { [key: string]: string[] }): object[] {
+  const keys = Object.keys(possibleBlockstates);
+  const values = Object.values(possibleBlockstates);
+
+  const combinations = cartesianProduct(values);
+
+  return combinations.map(
+    combination => Object.fromEntries(keys.map((key, i) => [key, combination[i]]))
+  );
+}
+
+/**
+ * Finds all possible combinations of a set of arrays
+ * @param {Array[]} arrays - Arrays of possible values split by keys
+ * @returns {Array[]} - Array of all possible combinations of given arrays
+ */
+function cartesianProduct(arrays: string[][]): string[][] {
+  return arrays.reduce<string[][]>((acc, curr) => {
+    return acc.flatMap(a => curr.map(b => [...a, b]));
+  }, [[]]);
 }

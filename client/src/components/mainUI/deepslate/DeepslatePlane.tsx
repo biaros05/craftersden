@@ -40,7 +40,7 @@ export default function DeepslatePlane({canvas, structure, blocks}): React.React
   const cameraPosition = useRef<vec3>(null);
   const interactiveCanvas = useRef<InteractiveCanvas>(null);
   const structureRenderer = useRef<InteractiveStructureRenderer>(null);
-  const blockstate = useRef<{[key: string]: string} | undefined>({});
+  const blockstate = useRef<{[key: string]: string}>({});
   const [resources, setResources] = useState<Resources>();
 
   useEffect(() => {
