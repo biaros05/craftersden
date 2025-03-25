@@ -1,21 +1,27 @@
 import { Schema, model } from 'mongoose';
 
 const blockBuildSchema = new Schema({
-  id: String,
-  name: String,
-  position: [Number, Number, Number],
-  worldPosition: [Number, Number, Number],
-  geometry: {},
-  textureURLs: [String],
-  rotation: [Number, Number, Number],
-  rotationIndex: Number
+  pos: [Number, Number, Number],
+  state: Number
+});
+
+const paletteSchema = new Schema({
+  properties: {},
+  name: {
+    namespace: String,
+    path: String
+  },
 });
 
 // Define a schema
 const PostSchema = new Schema({
   description: String,
   user: { type: Schema.Types.ObjectId, ref: 'User' },
-  buildJSON: [blockBuildSchema],
+  buildJSON: {
+    size: [Number, Number, Number],
+    palette: [paletteSchema],
+    placedBlocks: [blockBuildSchema]
+  },
   isPublished: Boolean,
   thumnails: [],
   progressPicture: String
