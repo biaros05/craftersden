@@ -19,7 +19,6 @@ const router = createBrowserRouter(routesConfig);
 
 /**
  * The main application component
- * 
  * @returns {React.ReactNode} The main application component with all providers.
  */
 export default function App(): React.ReactNode {

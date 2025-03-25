@@ -2,7 +2,7 @@ import { RenderResult, render as testingLibraryRender } from '@testing-library/r
 import { MantineProvider } from '@mantine/core';
 import { theme } from '../../theme';
 import React from 'react';
-import { BrowserRouter, createMemoryRouter, RouterProvider } from 'react-router-dom';
+import { BrowserRouter, createMemoryRouter, RouterProvider, Router } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { AuthContext, AuthContextType } from '../../hooks/useAuth.tsx';
 import { BuildProvider } from '../../hooks/BuildContext.tsx';
@@ -27,15 +27,16 @@ type RenderOptions = {
  * 
  * Starts the auth provider with default values of logged out user.
  * @param {React.ReactNode} ui - The React component to render.
- * @param {boolean} useRouter - Whether to use a router for rendering
- * @param {string} initialRoute - The initialRoute to use if is useRouter is true
- * @param {Partial<AuthContextType>} authValue - The value to use for the AuthContext.Provider
- * @returns {{ renderResult: RenderResult, router: any }} The result of the render and the router if `useRouter` was set to true.
+ * @param {object} RenderOptions - The options object.
+ * @param {boolean} RenderOptions.useRouter - Whether to use a router or not. Is false by default
+ * @param {string} RenderOptions.initialRoute - The initial route to use if `useRouter` is set to true. Is / by default.
+ * @param {Partial<AuthContextType>} RenderOptions.authValue - The value to use for the auth context. Has empty values for all fields by default.
+ * @returns {{renderResult: RenderResult;router: any;}} The result of the render and the router if `useRouter` was set to true.
  */
 export function render(
   ui: React.ReactNode,
   { useRouter = false, initialRoute = '/', authValue = {} }: RenderOptions = {}
-) {
+): { renderResult: RenderResult; router: typeof Router; } {
 
   const defaultAuth = {
     id: '',
