@@ -19,6 +19,7 @@ type propTypes = {
  */
 export default function PublishForm({ opened, close, buildId, updateBuildStatus } :  propTypes) {
   const [description, setDescription] = useState('');
+  const [tags, setTags] = useState<string | string[]>([]);
   /**
    *
    * @param {string} buildId - The build id to be published.
@@ -87,6 +88,7 @@ export default function PublishForm({ opened, close, buildId, updateBuildStatus 
             ]}
           /> */}
           <MultiSelect
+            onChange={setTags}
             checkIconPosition="right"
             label='Build Tags'
             placeholder='Search Tags..'

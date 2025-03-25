@@ -122,7 +122,8 @@ async function publishBuild(req, res, next) {
     const publishedBuild = await Post.findOneAndUpdate(
       { _id: req.body.buildId },
       updateData,
-      { returnDocument: 'after' }
+      { returnDocument: 'after' },
+      { tags: req.body.tags}
     );
 
     if (!publishedBuild) {
@@ -171,7 +172,8 @@ async function unpublishBuild(req, res, next) {
     const unpublishedBuild = await Post.findOneAndUpdate(
       { _id: req.body.buildId },
       { isPublished: false },
-      { returnDocument: 'after' }
+      { returnDocument: 'after' },
+      { tags: []}
     );
 
     if (!unpublishedBuild) {
@@ -401,7 +403,6 @@ async function getLikesSaves(req, res, next) {
     next(error);
   }
 };
-
 
 export {
   saveBuild,
