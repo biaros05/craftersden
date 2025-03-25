@@ -66,7 +66,7 @@ build-frontend:
     paths:
       - client/dist
 
-test:
+server-test:
   stage: test
   script:
     - cd server && npm run ci-test
@@ -76,6 +76,25 @@ test:
       junit:
         - server/junit.xml
   allow_failure: false
+
+client-test:
+  stage: test
+  script:
+    - cd client && npm run test:v8
+  coverage: '/All files[^|]*\|[^|]*\|[^|]*\|[^|]*\|\s+([\d\.]+)/'
+  artifacts:
+    when: always
+    paths:
+      - cobertura-coverage.xml
+      - junit.json
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: cobertura-coverage.xml
+      junit: junit.json
+
+
+
 
 # https://learn.microsoft.com/en-us/azure/app-service/deploy-run-package
 # https://maciejz.dev/gitlab-ci-cd-series-deploying-angular-application-to-azure-storage-static-app/
