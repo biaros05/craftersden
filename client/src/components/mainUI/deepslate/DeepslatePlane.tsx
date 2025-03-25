@@ -35,13 +35,15 @@ export default function DeepslatePlane({canvas, structure, setStructure, blocks,
 
 	// Initializes structure renderer and Interactive canvas
 	useEffect(() => {
-		const structureGl = canvas?.current?.getContext('webgl');
+		const structureGl = canvas?.current?.getContext('webgl', {preserveDrawingBuffer: true});
         if (structureGl && resources) {
 			const newRenderer = new InteractiveStructureRenderer(structureGl, structure, resources);
 			setStructureRenderer(newRenderer);
 
 			// function that renders the structure
 			const onRender = (view: mat4) => {
+				structureGl?.clearColor(0,0,0,0);
+				structureGl?.clear(structureGl.COLOR_BUFFER_BIT | structureGl.DEPTH_BUFFER_BIT);
 				newRenderer.drawStructure(view);
 				newRenderer.drawGrid(view);
 				setViewMatrix(view);
@@ -157,7 +159,7 @@ export default function DeepslatePlane({canvas, structure, setStructure, blocks,
 	 * @param {CloneableStructure} newStructure new structure to use
 	 */
 	function updateRendererAndCanvas(newStructure: CloneableStructure) {
-		const structureGl = canvas?.current?.getContext('webgl');
+		const structureGl = canvas?.current?.getContext('webgl', {preserveDrawingBuffer: true});
 
 		if (structureGl && resources) {
 			const newRenderer = new InteractiveStructureRenderer(structureGl, newStructure, resources);
@@ -165,6 +167,8 @@ export default function DeepslatePlane({canvas, structure, setStructure, blocks,
 
 			// function that renders the structure
 			const onRender = (view: mat4) => {
+				structureGl?.clearColor(0,0,0,0);
+				structureGl?.clear(structureGl.COLOR_BUFFER_BIT | structureGl.DEPTH_BUFFER_BIT);
 				newRenderer.drawStructure(view);
 				newRenderer.drawGrid(view);
 				setViewMatrix(view);
