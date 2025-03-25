@@ -5,7 +5,6 @@ import '../../styles/ButtonPanel.css';
 import { toast } from 'react-toastify';
 import CustomNotification from './CustomNotification.tsx'
 import { Slide } from 'react-toastify';
-import {jsonifyBlocks} from '../../utils/building_plane_utils.ts';
 import CloneableStructure from './deepslate/CloneableStructure.ts';
 
 type ButtonPanelProps = { 
@@ -40,7 +39,6 @@ function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode, email, struct
         onClick={() => {
           if (!email) {
             const serializedBlocks = structure.toJson();
-            console.log(serializedBlocks);
             localStorage.setItem("build", JSON.stringify({"structure": serializedBlocks}));
 
             toast.info(CustomNotification, {
