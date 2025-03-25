@@ -5,7 +5,6 @@ import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import jsdoc from 'eslint-plugin-jsdoc';
 import tseslint from 'typescript-eslint';
-import { ReactThreeFiber } from '@react-three/fiber';
 
 export default [
   ...tseslint.configs.recommended,
@@ -27,8 +26,7 @@ export default [
       react,
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
-      jsdoc,
-      ReactThreeFiber
+      jsdoc
     },
     rules: {
       ...js.configs.recommended.rules,
