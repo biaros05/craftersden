@@ -47,6 +47,12 @@ export default function DeepslatePlane({canvas, structure, blocks}): React.React
     fetchResources(setResources);
   }, []);
 
+/**
+ * Creates on render function causing the given renderer to rerender
+ * @param {InteractiveStructureRenderer} newRenderer Renderer used for the onRender
+ * @param {WebGLRenderingContext} structureGl WebGL rendering context
+ * @returns {(view: mat4) => void} onRender function to draw structure
+*/
   function getOnRender(newRenderer: InteractiveStructureRenderer, structureGl: WebGLRenderingContext) {
     // function that renders the structure
     const onRender = (view: mat4) => {

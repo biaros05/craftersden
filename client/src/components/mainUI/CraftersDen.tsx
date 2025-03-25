@@ -70,6 +70,7 @@ export default function CraftersDen(): React.ReactNode {
 
   if(build?.build){
     curBuildId = build.build._id;
+    console.log(curBuildId)
   }
 
   /**
