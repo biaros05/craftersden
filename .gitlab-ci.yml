@@ -85,8 +85,8 @@ client-test:
   artifacts:
     when: always
     paths:
-      - client/coverage/clover.xml
-      - client/coverage/coverage-final.json
+      - ./client/coverage/clover.xml
+      - ./client/coverage/coverage-final.json
     reports:
       coverage_report:
         coverage_format: cobertura
