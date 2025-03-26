@@ -8,12 +8,36 @@
     right: 10px;
     top: 50px;
     z-index: 1;
-    width: 150px;
-    height: 150px;
+    width: 200px;
+    max-width: 20%;
     background-color: rgba(71, 71, 71, 0.3);
+    padding: 1%;
 }
 
 #deepslate-plane {
     width: 100%;
     aspect-ratio: 1;
+
+    border: 2px solid green;
+}
+
+.blockstate-preview {
+    width: 100%;
+    aspect-ratio: 1;
+
+    border: 2px solid white;
+}
+
+.blockstate-panel form {
+    display: flex;
+    flex-direction: column;
+}
+
+.blockstate-panel fieldset {
+    width: 100%;
+
+    display: flex;
+    justify-content: space-between;
+
+    border: none;
 }

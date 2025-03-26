@@ -1,5 +1,5 @@
 /* eslint-disable jsdoc/no-undefined-types */
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import fetchResources from './ResourcesFetcher';
 import { Mesh, getCameraPosition, checkBlocksForIntersect, computePoint, computeTriangleNormal, computeTrianglesOfCube, screenToWorldRay } from './RaycastUtils';
 import { BlockPos, PlacedBlock, Resources } from 'deepslate';
@@ -44,7 +44,8 @@ export default function DeepslatePlane({canvas, structure, blocks}): React.React
   const [resources, setResources] = useState<Resources>();
   const canvasRect = useRef<DOMRect>(null);
 
-  useEffect(() => {
+  // Layout effect to make sure dom is ready to paint
+  useLayoutEffect(() => {
     /**
      * Updates canvas rect when the window is resized
      */
@@ -54,8 +55,8 @@ export default function DeepslatePlane({canvas, structure, blocks}): React.React
       }
     }
 
-    resize();
-
+    // raf to make sure the first paint happened to have correct size
+    requestAnimationFrame(resize);
     window.addEventListener('resize', resize);
 
     return () => window.removeEventListener('resize', resize);
@@ -111,11 +112,14 @@ export default function DeepslatePlane({canvas, structure, blocks}): React.React
    * @returns {{point: vec3, normal: vec3} | null} intersect information
    */
   function rayCast(e: React.MouseEvent<HTMLCanvasElement>, viewMat: mat4, projectionMat: mat4, camPos: vec3, correct: boolean = true): {point: [number, number, number], normal: ReadonlyVec3} | null {
-    const mousePos = [e.clientX - canvasRect.current!.left, e.clientY - canvasRect.current!.top];
-    const {width, height} = canvasRect.current!;
-    const canvasSize = {width: width, height: height};
+    canvasRect.current = canvas.current!.getBoundingClientRect();
+    const mouseX = e.clientX - canvasRect.current!.left;
+    const mouseY = e.clientY - canvasRect.current!.top;
 
-    const ray = screenToWorldRay(mousePos[0], mousePos[1], viewMat, projectionMat, canvasSize, camPos);
+    console.log(canvasRect.current, 'raycast')
+    const canvasSize = {width: canvas.current!.clientWidth, height: canvas.current!.clientHeight}
+
+    const ray = screenToWorldRay(mouseX, mouseY, viewMat, projectionMat, canvasSize, camPos);
     const intersect = checkBlocksForIntersect(blocks.current, ray.direction, ray.origin);
 
     if (intersect) {
