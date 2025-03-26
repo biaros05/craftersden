@@ -1,5 +1,6 @@
 import React from "react";
-import { Avatar } from "@mantine/core";
+import { Avatar, Popover, ScrollArea, Stack, Card, Group, Text } from "@mantine/core";
+import { IconBell } from "@tabler/icons-react";
 import { useLocation } from "react-router-dom";
 import Link from './Navigation/Link';
 import { useAuth } from "../hooks/useAuth";
@@ -38,6 +39,30 @@ export default function Header() {
                 {isDen ? `Crafter's Den` : `Crafter's Forum`}
             </Link>
         </h2>
+        <Popover width={200} position="bottom" withArrow shadow="md">
+            <Popover.Target>
+                <IconBell size={24}/>
+            </Popover.Target>
+            <Popover.Dropdown>
+                <ScrollArea>
+                    <Stack>
+                        <Card 
+                            shadow="sm" 
+                            p="sm" 
+                            withBorder 
+                            onClick={() => console.log(`Open chat with ${msg.sender}`)}
+                            style={{ cursor: "pointer" }}>
+                        <Group>
+                            <div>
+                                <Text>Testing</Text>
+                                <Text size="sm" color="dimmed" truncate>Testing 2</Text>
+                            </div>
+                        </Group>
+                        </Card>
+                    </Stack>
+                </ScrollArea>
+            </Popover.Dropdown>
+        </Popover>
         <Link 
             to={!isDen ? `/den` : `/forum`}
             state={{canGoBack: true}}
