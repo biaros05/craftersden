@@ -15,6 +15,7 @@ const postMock = {
   saved: false,
   imageURL: 'test-url',
   username: 'test-username',
+  tags: [] as [],
   viewPostOnClick: vi.fn(),
 }
 
@@ -39,6 +40,7 @@ describe('Post tests', () => {
       imageURL={postMock.imageURL}
       username={postMock.username}
       viewPostOnClick={postMock.viewPostOnClick}
+      tags={postMock.tags}
     />);
     
       const postElement = renderResult.container.getElementsByClassName('post')[0];
@@ -54,7 +56,8 @@ describe('Post tests', () => {
       imageURL={postMock.imageURL}
       username={postMock.username}
       viewPostOnClick={postMock.viewPostOnClick}
-    />);
+      tags={postMock.tags}
+      />);
     const user = userEvent.setup();
     const post = screen.getByRole('img');
 
@@ -80,7 +83,8 @@ describe('Post tests', () => {
       imageURL={postMock.imageURL}
       username={postMock.username}
       viewPostOnClick={postMock.viewPostOnClick}
-    />);
+      tags={postMock.tags}
+      />);
 
     const likes = await screen.findByText('1');
     const saves = await screen.findByText('2');
@@ -99,6 +103,7 @@ describe('Post tests', () => {
       imageURL={postMock.imageURL}
       username={postMock.username}
       viewPostOnClick={postMock.viewPostOnClick}
+      tags={postMock.tags}
       />);
     const user = userEvent.setup();
     const likeButton = screen.getByRole('button', { name: /like/i });
@@ -120,6 +125,7 @@ describe('Post tests', () => {
       imageURL={postMock.imageURL}
       username={postMock.username}
       viewPostOnClick={postMock.viewPostOnClick}
+      tags={postMock.tags}
       />);
     const user = userEvent.setup();
     const saveButton = screen.getByRole('button', { name: /save/i });
