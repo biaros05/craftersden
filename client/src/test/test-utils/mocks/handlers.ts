@@ -30,9 +30,10 @@ export const handlers = [
       builds: [
         {
           username: 'test',
-          buildJSON: {}
+          buildJSON: {},
+          tags: []
         }
-      ]
+      ],
     })
   }),
   http.get('/api/user/:email/saved-posts', () => {
