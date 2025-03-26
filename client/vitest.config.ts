@@ -10,6 +10,7 @@ export default defineConfig({
       junit: './coverage/junit-report.xml',
       json: './coverage/json-report.json',
     },
+    include: ['src/**/*.test.tsx', 'src/**/*.test.ts'],
     setupFiles: ['./vitest.setup.ts'],
     environment: 'jsdom',
     globals: true,
