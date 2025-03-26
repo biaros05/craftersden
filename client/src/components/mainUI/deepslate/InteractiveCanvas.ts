@@ -1,6 +1,8 @@
 /* eslint-disable jsdoc/no-undefined-types */
 import { mat4 } from "gl-matrix"
 
+/* --- Adapted from deepslatejs demo --- */
+
 export default class InteractiveCanvas {
     public xPosition = 0;
     public yPosition = 0;
