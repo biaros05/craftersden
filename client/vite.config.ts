@@ -20,4 +20,22 @@ export default defineConfig({
       },
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        // Split the biggest deps - https://stackoverflow.com/questions/76220621/is-it-possible-to-split-the-react-dom-package-when-using-vite
+        manualChunks(id){
+          if (id.includes('react-dom')) {
+            return 'react-dom'
+          }
+          if (id.includes('react')) {
+            return 'react';
+          }
+          if (id.includes('three')) {
+            return 'three'
+          }
+        }
+      }
+    }
+  }
 });
