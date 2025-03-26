@@ -12,3 +12,4 @@ deploy.zip
 api.key.mjs
 *.pem
 junit.xml
+coverage/
