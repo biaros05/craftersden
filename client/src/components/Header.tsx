@@ -1,5 +1,5 @@
 import React from "react";
-import { Avatar, Popover, ScrollArea, Stack, Card, Group, Text } from "@mantine/core";
+import { Avatar, Popover, ScrollArea, Stack, Card, Group, Text, ActionIcon } from "@mantine/core";
 import { IconBell } from "@tabler/icons-react";
 import { useLocation } from "react-router-dom";
 import Link from './Navigation/Link';
@@ -31,17 +31,22 @@ export default function Header() {
     }
 
     return <header id="site-header">
-        <Link to='/profile'>
-            <Avatar src={avatar} />
+    <Link to="/profile">
+        <Avatar src={avatar} />
+    </Link>
+
+    <h2>
+        <Link to={isDen ? `/den` : `/forum`} state={{ canGoBack: true }}>
+            {isDen ? `Crafter's Den` : `Crafter's Forum`}
         </Link>
-        <h2>
-            <Link to={isDen ? `/den` : `/forum`} state={{canGoBack: true}}>
-                {isDen ? `Crafter's Den` : `Crafter's Forum`}
-            </Link>
-        </h2>
+    </h2>
+
+    <div className="header-right">
         <Popover width={200} position="bottom" withArrow shadow="md">
             <Popover.Target>
-                <IconBell size={24}/>
+                <ActionIcon variant="subtle" size="lg">
+                    <IconBell size={34} />
+                </ActionIcon>
             </Popover.Target>
             <Popover.Dropdown>
                 <ScrollArea>
@@ -50,14 +55,15 @@ export default function Header() {
                             shadow="sm" 
                             p="sm" 
                             withBorder 
-                            onClick={() => console.log(`Open chat with ${msg.sender}`)}
-                            style={{ cursor: "pointer" }}>
-                        <Group>
-                            <div>
-                                <Text>Testing</Text>
-                                <Text size="sm" color="dimmed" truncate>Testing 2</Text>
-                            </div>
-                        </Group>
+                            onClick={() => console.log(`Opens chat`)}
+                            style={{ cursor: "pointer" }}
+                        >
+                            <Group>
+                                <div>
+                                    <Text>Testing</Text>
+                                    <Text size="sm" color="dimmed" truncate>Testing 2</Text>
+                                </div>
+                            </Group>
                         </Card>
                     </Stack>
                 </ScrollArea>
@@ -65,11 +71,14 @@ export default function Header() {
         </Popover>
         <Link 
             to={!isDen ? `/den` : `/forum`}
-            state={{canGoBack: true}}
-            onClick={handleDenClick}>
+            state={{ canGoBack: true }}
+            onClick={handleDenClick}
+        >
             <MinecraftButton>
                 {!isDen ? `Den` : `Forum`}
             </MinecraftButton>
         </Link>
+    </div>
     </header>
+
 }
