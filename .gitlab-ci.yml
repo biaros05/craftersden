@@ -81,7 +81,7 @@ client-test:
   stage: test
   script:
     #exclude app.test.tsx which only contains navigation tests as react router does not work on CI
-    - cd client && npm run coverage -- --coverage.exclude app.test.tsx
+    - cd client && npm run coverage -- --exclude src/test/app.test.tsx
   coverage: '/All files[^|]*\|[^|]*\|[^|]*\|[^|]*\|\s+([\d\.]+)/'
   artifacts:
     when: always
