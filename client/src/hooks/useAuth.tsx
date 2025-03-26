@@ -7,7 +7,7 @@ type ContextProviderProps = {
     children: React.ReactNode;
 };
 
-type AuthContextType = {
+export type AuthContextType = {
     id: string,
     username: string,
     email: string,
@@ -17,7 +17,7 @@ type AuthContextType = {
     logout: () => void
 };
 
-const AuthContext = createContext<null | AuthContextType>(null);
+export const AuthContext = createContext<null | AuthContextType>(null);
 
 export const AuthProvider = ({ children }: ContextProviderProps) => {
   const [id, setId] = useState('');

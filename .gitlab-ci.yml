@@ -59,13 +59,14 @@ build-frontend:
     - export VITE_GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID
     - npm install @rollup/rollup-linux-x64-gnu
     - cd client && npm run build
+    - ls
   artifacts:
     expire_in: 1 days
     when: on_success
     paths:
       - client/dist
 
-test:
+server-test:
   stage: test
   script:
     - cd server && npm run ci-test
@@ -75,6 +76,26 @@ test:
       junit:
         - server/junit.xml
   allow_failure: false
+
+client-test:
+  stage: test
+  script:
+    #exclude app.test.tsx which only contains navigation tests as react router does not work on CI
+    - cd client && npm run coverage -- --exclude src/test/app.test.tsx
+  coverage: '/All files[^|]*\|[^|]*\|[^|]*\|[^|]*\|\s+([\d\.]+)/'
+  artifacts:
+    when: always
+    paths:
+      - client/coverage/junit-report.xml
+      - client/coverage/json-report.json
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: ./client/coverage/junit-report.xml
+      junit: ./client/coverage/json-report.json
+
+
+
 
 # https://learn.microsoft.com/en-us/azure/app-service/deploy-run-package
 # https://maciejz.dev/gitlab-ci-cd-series-deploying-angular-application-to-azure-storage-static-app/

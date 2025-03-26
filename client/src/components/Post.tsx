@@ -158,7 +158,7 @@ export default function Post(
             className="icons"
             color="rgba(74, 173, 24, 1)"
             variant="subtle"
-            aria-label="Settings"
+            aria-label="save"
             onClick={() => {
               toggleSave();
             }}
@@ -175,7 +175,7 @@ export default function Post(
             className="icons"
             color="rgba(74, 173, 24, 1)"
             variant="subtle"
-            aria-label="Settings"
+            aria-label="like"
             onClick={() => {
               toggleLike();
             }}
