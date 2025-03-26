@@ -33,7 +33,7 @@ type propTypes = {
  * @returns {React.ReactNode} The Post
  */
 export default function Post(
-  { description, liked, saved, imageURL, username, viewPostOnClick, buildId, tags}: propTypes): React.ReactNode {
+  { description, liked, saved, imageURL, username, viewPostOnClick, buildId, tags = []}: propTypes): React.ReactNode {
 
   const [isLiked, setIsLiked] = useState(liked);
   const [isSaved, setIsSaved] = useState(saved);
