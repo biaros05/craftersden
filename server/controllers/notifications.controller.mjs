@@ -107,13 +107,13 @@ async function readAllNotifications(req, res, next) {
  */
 async function clearNotifications(req, res, next) {
   try {
-    const { userId } = req.body;
+    const { id } = req.body;
     
-    if (!userId) {
+    if (!id) {
       return res.status(400).json({ message: "User ID is required" });
     }
 
-    const result = await Notification.deleteMany({ user: userId });
+    const result = await Notification.deleteMany({ user: id });
 
     if (result.deletedCount === 0) {
       return res.status(404).json({ message: "No notifications found for this user" });

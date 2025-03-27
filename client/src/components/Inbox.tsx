@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { errorMessage } from "../utils/notification_utils";
-import { Popover, ScrollArea, Stack, Card, Group, Text, ActionIcon, Indicator } from "@mantine/core";
+import { Popover, ScrollArea, Stack, Card, Group, Text, ActionIcon, Indicator, Button } from "@mantine/core";
 import { IconBell } from "@tabler/icons-react";
 import { read } from "fs";
 
@@ -59,30 +59,47 @@ export default function Inbox({}){
 
     if(!response.ok){
       const json = await response.json();
-      errorMessage(json.message || "Notification system failed.");
+      errorMessage(json.message || 'Notification system failed');
       throw new Error(json.message);
     }
-  }
+  };
 
-  const unread = (notif) => !notif.viewed;
+  async function clearInbox(){
+    const data = {
+      id
+    };
+
+    const requestOptions = {
+      method: 'DELETE',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(data)
+    };
+
+    const response = await fetch('/api/notifications/clear', requestOptions);
+
+    if(!response.ok){
+      const json = await response.json();
+      errorMessage(json.message || 'Notifications system failed');
+      throw new Error(json.message);
+    }
+
+    setNotifications([]);
+  };
 
   return (
     <Popover width={200} position="bottom" withArrow shadow="md" onOpen={readAll}>
       <Popover.Target>
-        {notifications.some(unread) ? (
-          <Indicator color="red">
-            <ActionIcon variant="subtle" size="lg">
-                <IconBell size={34} />
-            </ActionIcon>
-          </Indicator>
-        ) : ( 
-          <ActionIcon variant="subtle" size="lg">
-              <IconBell size={34} />
-          </ActionIcon>
-        )}
+      <Indicator color="red" size={12} withBorder disabled={!notifications.some(n => !n.viewed)}>
+        <ActionIcon variant="subtle" size="lg">
+          <IconBell size={34} />
+        </ActionIcon>
+      </Indicator>
       </Popover.Target>
       <Popover.Dropdown style={{ width: "400px" }}>
         <ScrollArea w="100%" h={150}>
+            <Button onClick={clearInbox} style={{'margin':'10px'}} color="orange">
+              Clear Inbox
+            </Button>
             <Stack
             align="stretch"
             justify="center"
