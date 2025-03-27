@@ -1,6 +1,5 @@
 import React from "react";
-import { Avatar, Popover, ScrollArea, Stack, Card, Group, Text, ActionIcon } from "@mantine/core";
-import { IconBell } from "@tabler/icons-react";
+import { Avatar } from "@mantine/core";
 import { useLocation } from "react-router-dom";
 import Link from './Navigation/Link';
 import { useAuth } from "../hooks/useAuth";
@@ -8,6 +7,7 @@ import '../styles/header.css';
 import { useBuildUpdate } from "../hooks/BuildContext";
 import ZombieChaseLoad from "./Loader/ZombieChaseLoad";
 import MinecraftButton from "./Custom/MinecraftButton";
+import Inbox from "./Inbox";
 
 /**
  * Header component that allows users to visit
@@ -40,44 +40,17 @@ export default function Header() {
             {isDen ? `Crafter's Den` : `Crafter's Forum`}
         </Link>
     </h2>
-
     <div className="header-right">
-        <Popover width={200} position="bottom" withArrow shadow="md">
-            <Popover.Target>
-                <ActionIcon variant="subtle" size="lg">
-                    <IconBell size={34} />
-                </ActionIcon>
-            </Popover.Target>
-            <Popover.Dropdown>
-                <ScrollArea>
-                    <Stack>
-                        <Card 
-                            shadow="sm" 
-                            p="sm" 
-                            withBorder 
-                            onClick={() => console.log(`Opens chat`)}
-                            style={{ cursor: "pointer" }}
-                        >
-                            <Group>
-                                <div>
-                                    <Text>Testing</Text>
-                                    <Text size="sm" color="dimmed" truncate>Testing 2</Text>
-                                </div>
-                            </Group>
-                        </Card>
-                    </Stack>
-                </ScrollArea>
-            </Popover.Dropdown>
-        </Popover>
-        <Link 
-            to={!isDen ? `/den` : `/forum`}
-            state={{ canGoBack: true }}
-            onClick={handleDenClick}
-        >
-            <MinecraftButton>
-                {!isDen ? `Den` : `Forum`}
-            </MinecraftButton>
-        </Link>
+    {avatar && <Inbox/>}
+    <Link 
+        to={!isDen ? `/den` : `/forum`}
+        state={{ canGoBack: true }}
+        onClick={handleDenClick}
+    >
+        <MinecraftButton>
+            {!isDen ? `Den` : `Forum`}
+        </MinecraftButton>
+    </Link>
     </div>
     </header>
 

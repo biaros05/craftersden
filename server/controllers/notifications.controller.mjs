@@ -1,4 +1,4 @@
-import Notification from "../models/Notification";
+import Notification from "../models/Notification.js";
 
 /**
  * Adds a notification to user's inbox.
