@@ -47,15 +47,12 @@ async function addNotification(req, res, next) {
  * @returns - The response object
  */
 async function getUserNotifications(req, res, next){
-  try{
-
-    const { userId } = req.body;
-    
-    if (!userId) {
+  try{    
+    if (!req.params.id) {
       return res.status(400).json({ message: "User ID is required" });
     }
 
-    const notifications = await Notification.find({ user: req.body.userId });
+    const notifications = await Notification.find({ user: req.params.id });
     
     return res.status(200).json({notifications: notifications});
   } catch(err){

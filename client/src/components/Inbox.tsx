@@ -18,34 +18,31 @@ export default function Inbox({}){
   useEffect(() => {
     const controller = new AbortController();
 
-    async function fetchNotifs(){
-      const data = {
-        id
-      };
-
-      const requestOptions = {
-        method: 'GET',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(data)
-      };
-      const response = await fetch('/api/notifications/', requestOptions);
-      const json = await response.json();
-
-      if(!response.ok){
-        const err = new Error('Cannot fetch notifications');
-        errorMessage(json.message);
-        throw err;
+    async function fetchNotifs() {
+      try {
+        const response = await fetch(`/api/notifications/${id}`, {method: 'GET'});
+        const json = await response.json();
+  
+        if (!response.ok) {
+          throw new Error(json.message || 'Cannot fetch notifications');
+        }
+  
+        setNotifications(json.notifications);
+      } catch (error) {
+        errorMessage(error.message);
       }
-
-      setNotifications(json.notifications);
     }
-
-    fetchNotifs();
-
+  
+    fetchNotifs(); 
+  
+    const interval = setInterval(fetchNotifs, 5000);
+  
     return () => {
+      clearInterval(interval); 
       controller.abort();
-    }
+    };
   }, []);
+  
 
 
   return (
@@ -70,7 +67,6 @@ export default function Inbox({}){
                     p="sm" 
                     withBorder 
                     onClick={() => console.log(`Opens chat`)}
-                    style={{ cursor: "pointer" }}
                 >
                     <Group>
                         <div>
