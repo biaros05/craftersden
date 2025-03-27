@@ -44,13 +44,22 @@ export default function Inbox({}){
   }, []);
   
 
+  const unread = (notif) => !notif.viewed;
 
   return (
     <Popover width={200} position="bottom" withArrow shadow="md">
       <Popover.Target>
+        {notifications.some(unread) ? (
+          <Indicator color="red">
+            <ActionIcon variant="subtle" size="lg">
+                <IconBell size={34} />
+            </ActionIcon>
+          </Indicator>
+        ) : ( 
           <ActionIcon variant="subtle" size="lg">
               <IconBell size={34} />
           </ActionIcon>
+        )}
       </Popover.Target>
       <Popover.Dropdown style={{ width: "400px" }}>
         <ScrollArea w="100%" h={150}>
@@ -70,7 +79,7 @@ export default function Inbox({}){
                 >
                     <Group>
                         <div>
-                            <Text>{notif.message}</Text>
+                            <Text className="inbox-messages">{notif.message}</Text>
                         </div>
                     </Group>
                 </Card>
