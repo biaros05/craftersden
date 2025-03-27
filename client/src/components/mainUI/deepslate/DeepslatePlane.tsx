@@ -150,6 +150,7 @@ export default function DeepslatePlane({canvas, structure, blocks}): React.React
    * @param {React.MouseEvent<HTMLCanvasElement>} e - Mouse event object
    */
   function placeBlock(e: React.MouseEvent<HTMLCanvasElement>) {
+    console.log(viewMatrix, projectionMatrix, cameraPosition)
     if (viewMatrix.current && projectionMatrix.current && cameraPosition.current) {
       const {point, normal} = rayCast(e, viewMatrix.current, projectionMatrix.current, cameraPosition.current) ?? {};
       if (point && normal) {
@@ -205,7 +206,7 @@ export default function DeepslatePlane({canvas, structure, blocks}): React.React
 	}
 
   return <div className="plane-container">
-    <canvas id='deepslate-plane' width={800} height={800} ref={canvas} onClick={handleClick} onContextMenu={(e) => e.preventDefault()}></canvas>
+    <canvas id='deepslate-plane' width={800} height={800} ref={canvas} onMouseDown={handleClick} onContextMenu={(e) => e.preventDefault()}></canvas>
     <BlockStatePanel blockName={selectedBlock.name} blockNamespace={selectedBlock.namespace} currentState={blockstate} resources={resources} />
   </div>;
 }
