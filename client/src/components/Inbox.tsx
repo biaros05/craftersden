@@ -142,7 +142,7 @@ export default function Inbox(){
                 ))
               ) : (
                 <Card>
-                  <Text>You have no new notifications</Text>
+                  <Text className="inbox-messages">You have no new notifications</Text>
                 </Card>
               )}
             </Stack>
