@@ -63,7 +63,7 @@ export default function CraftersDen(): React.ReactNode {
       // ?-? Could move blocks down into plane and update them on initial load.
       blocks.current = structureBlockToPlaneBlock(newStructure.getBlocks());
       localStorage.clear();
-    } else if (build.build !== undefined && build.build !== null) {
+    } else if (build?.build) {
       const newStructure = CloneableStructure.fromJson(build.build.buildJSON);
       structure.current = newStructure;
       blocks.current = structureBlockToPlaneBlock(newStructure.getBlocks());
@@ -77,8 +77,9 @@ export default function CraftersDen(): React.ReactNode {
   /**
    * Fetches the complete block data from the api, and stores it in CurrentBlockContext.
    * @param {object} block - block object to fetch from the api
+   * @param {{_id: string}} block._id - Blockid of the block
    */
-  async function storeBlock(block) {
+  async function storeBlock(block: {_id: string}) {
     const response = await fetch(`/api/block/${block._id}`);
     const completeBlockData = await response.json();
     setCurrentBlock(completeBlockData);
@@ -115,7 +116,9 @@ export default function CraftersDen(): React.ReactNode {
         throw err;
       }
 
-      setBuild({...{'_id': json.id}, ...build})
+      console.log(build);
+      // ?-? Could block be undefined here? (build?.build or build!.build) 
+      setBuild({...{'_id': json.id}, ...build?.build})
       successMessage(json.message);
     } catch (e) {
       errorMessage(e.message);
