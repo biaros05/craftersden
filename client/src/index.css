@@ -10,7 +10,7 @@
   font-weight: normal;
 }
 
-h1, h2, h3, .mantine-Button-label, .mantine-UnstyledButton-root {
+h1, h2, h3, .mantine-Button-label, .mantine-UnstyledButton-root, .inbox-messages {
   font-family: "Minecraft";
 }
 
