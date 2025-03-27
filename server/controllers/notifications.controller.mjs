@@ -70,13 +70,13 @@ async function getUserNotifications(req, res, next){
 async function readAllNotifications(req, res, next) {
   try {
 
-    const { userId } = req.body;
+    const { id } = req.body;
     
-    if (!userId) {
+    if (!id) {
       return res.status(400).json({ message: "User ID is required" });
     }
 
-    const notifications = await Notification.find({ user: req.body.userId });
+    const notifications = await Notification.find({ user: req.body.id });
 
     const notificationsViewed = await Promise.all(
       notifications.map((notification) =>

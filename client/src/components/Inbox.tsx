@@ -3,6 +3,7 @@ import { useAuth } from "../hooks/useAuth";
 import { errorMessage } from "../utils/notification_utils";
 import { Popover, ScrollArea, Stack, Card, Group, Text, ActionIcon, Indicator } from "@mantine/core";
 import { IconBell } from "@tabler/icons-react";
+import { read } from "fs";
 
 type message = {
     id: string,
@@ -43,11 +44,30 @@ export default function Inbox({}){
     };
   }, []);
   
+  async function readAll(){
+    const data = {
+      id
+    }
+
+    const requestOptions = {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(data)
+    };
+
+    const response = await fetch('/api/notifications/read-all', requestOptions);
+
+    if(!response.ok){
+      const json = await response.json();
+      errorMessage(json.message || "Notification system failed.");
+      throw new Error(json.message);
+    }
+  }
 
   const unread = (notif) => !notif.viewed;
 
   return (
-    <Popover width={200} position="bottom" withArrow shadow="md">
+    <Popover width={200} position="bottom" withArrow shadow="md" onOpen={readAll}>
       <Popover.Target>
         {notifications.some(unread) ? (
           <Indicator color="red">
