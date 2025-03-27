@@ -28,13 +28,14 @@ const selectedBlock = {
 };
 
 /**
- * @param {object} props -
+ * @param {object} props - React props
  * @param {React.RefObject<HTMLCanvasElement>} props.canvas - canvas of the plane 
  * @param {React.RefObject<CloneableStructure>} props.structure - current structure
  * @param {React.RefObject<PlaneBlock[]>} props.blocks - current blocks within the structure
- * @returns {React.ReactNode} -
+ * @param {boolean} props.isViewMode - View mode state of plane
+ * @returns {React.ReactNode} - Deepslate plane
  */
-export default function DeepslatePlane({canvas, structure, blocks}): React.ReactNode {
+export default function DeepslatePlane({canvas, structure, blocks, isViewMode}: { canvas: React.RefObject<HTMLCanvasElement | null>; structure: React.RefObject<CloneableStructure>; blocks: React.RefObject<PlaneBlock[]>; isViewMode: boolean; }): React.ReactNode {
   const projectionMatrix = useRef<mat4>(null);
   const viewMatrix = useRef<mat4>(null);
   const cameraPosition = useRef<vec3>(null);
@@ -69,14 +70,14 @@ export default function DeepslatePlane({canvas, structure, blocks}): React.React
 /**
  * Creates on render function causing the given renderer to rerender
  * @param {InteractiveStructureRenderer} newRenderer Renderer used for the onRender
- * @param {WebGLRenderingContext} structureGl WebGL rendering context
  * @returns {(view: mat4) => void} onRender function to draw structure
-*/
-  function getOnRender(newRenderer: InteractiveStructureRenderer, structureGl: WebGLRenderingContext) {
+ */
+  function getOnRender(newRenderer: InteractiveStructureRenderer) {
     // function that renders the structure
     const onRender = (view: mat4) => {
-      structureGl?.clearColor(0,0,0,0);
-      structureGl?.clear(structureGl.COLOR_BUFFER_BIT | structureGl.DEPTH_BUFFER_BIT);
+      const gl = newRenderer.getGl();
+      gl.clearColor(0,0,0,0);
+      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
       newRenderer.drawStructure(view);
       newRenderer.drawGrid(view);
       viewMatrix.current = view;
@@ -94,7 +95,7 @@ export default function DeepslatePlane({canvas, structure, blocks}): React.React
       projectionMatrix.current = newRenderer.getPerspectiveMatrix();
 
       const size = structure.current.getSize();
-      const intCanvas = new InteractiveCanvas(canvas.current!, getOnRender(newRenderer, structureGl), [size[0] / 2, size[1] / 2, size[2] / 2]);
+      const intCanvas = new InteractiveCanvas(canvas.current!, getOnRender(newRenderer), [size[0] / 2, size[1] / 2, size[2] / 2]);
       intCanvas.subscribe();
       interactiveCanvas.current = intCanvas;
 
@@ -206,8 +207,8 @@ export default function DeepslatePlane({canvas, structure, blocks}): React.React
 	}
 
   return <div className="plane-container">
-    <canvas id='deepslate-plane' width={800} height={800} ref={canvas} onMouseDown={handleClick} onContextMenu={(e) => e.preventDefault()}></canvas>
-    <BlockStatePanel blockName={selectedBlock.name} blockNamespace={selectedBlock.namespace} currentState={blockstate} resources={resources} />
+    <canvas id='deepslate-plane' width={800} height={800} ref={canvas} onMouseDown={!isViewMode ? handleClick : undefined} onContextMenu={(e) => e.preventDefault()}></canvas>
+    {!isViewMode && <BlockStatePanel blockName={selectedBlock.name} blockNamespace={selectedBlock.namespace} currentState={blockstate} resources={resources} />}
   </div>;
 }
 
