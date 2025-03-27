@@ -1,15 +1,15 @@
 import './index.css';
 import { Outlet } from 'react-router-dom';
-import ErrorPage from './error-page.jsx';
+const ErrorPage = React.lazy(() => import('./error-page.jsx'));
+const Login = React.lazy(() => import('./components/Login.tsx'));
+const Logout = React.lazy(() => import('./components/Logout.tsx'));
+const ProtectedRoute = React.lazy(() => import('./components/ProtectedRoute.tsx'));
+const Profile = React.lazy(() => import('./components/Profile.tsx'));
+const Forum = React.lazy(() => import('./components/Forum.tsx'));
+const CraftersDen = React.lazy(() => import('./components/mainUI/CraftersDen.jsx'));
 import Header from './components/Header.tsx';
 import Footer from './components/Footer.tsx';
 import Welcome from './components/Welcome.tsx';
-import Login from './components/Login.tsx';
-import Logout from './components/Logout.tsx';
-import ProtectedRoute from './components/ProtectedRoute.tsx';
-import Profile from './components/Profile.tsx';
-import Forum from './components/Forum.tsx';
-import CraftersDen from './components/mainUI/CraftersDen.js';
 import { ToastContainer, Slide } from 'react-toastify';
 import React from 'react';
 

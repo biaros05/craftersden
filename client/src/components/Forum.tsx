@@ -56,7 +56,7 @@ export default function Forum(): React.ReactNode {
     async function getPublishedBuilds() {
         const response = await fetch('/api/post/', { method: 'GET' });
         const json = await response.json();
-
+        
         setPublishedBuilds([...json.builds]);
     };
 

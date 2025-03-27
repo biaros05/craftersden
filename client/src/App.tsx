@@ -1,9 +1,10 @@
-import './index.css';
+import React from 'react';
 import { StrictMode } from 'react';
 import {
   createBrowserRouter,
   RouterProvider,
 } from 'react-router-dom';
+import './index.css';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { AuthProvider } from './hooks/useAuth.tsx';
 import '@mantine/core/styles.css';
@@ -11,7 +12,6 @@ import '@mantine/carousel/styles.css';
 import { BuildProvider } from './hooks/BuildContext.tsx';
 import '@mantine/core/styles.css';
 import { MantineProvider} from '@mantine/core';
-import React from 'react';
 import { theme } from './theme';
 import { routesConfig } from './routesconfig.tsx';
 
