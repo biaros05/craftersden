@@ -41,6 +41,10 @@ export default function Post(
   const [saves, setSaves] = useState(null);
   const {id, username} = useAuth() ?? {};
 
+  /**
+   * Posts a notification to user's inbox in database with custom message.
+   * @param {string} message - The message to be assigned to notification.
+   */
   async function sendNotification(message : string){
     const data = {
       message,

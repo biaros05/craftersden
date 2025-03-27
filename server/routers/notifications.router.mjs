@@ -4,7 +4,7 @@ import {
   getUserNotifications,
   readAllNotifications,
   clearNotifications
-} from '../controllers/notifications.controller.mjs'
+} from '../controllers/notifications.controller.mjs';
 
 import { isAuthenticated } from '../utils/auth.mjs';
 

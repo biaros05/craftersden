@@ -5,7 +5,7 @@ const NotificationSchema = new Schema({
   message: String, 
   user: { type: Schema.Types.ObjectId, ref: 'User'},
   viewed: Boolean
-})
+});
 
 const Notification = model('Notification', NotificationSchema);
 

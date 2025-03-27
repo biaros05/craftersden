@@ -1,25 +1,25 @@
-import Notification from "../models/Notification.js";
-import User from "../models/User.mjs";
+import Notification from '../models/Notification.js';
+import User from '../models/User.mjs';
 
 /**
  * Adds a notification to user's inbox.
  * @param {object} req  - The request object.
  * @param {object} res - The respond object.
  * @param {*} next - Next
- * @returns - Response object with status code and message.
+ * @returns {Response}- Response object with status code and message.
  */
 async function addNotification(req, res, next) {
   try {
     const { username, message } = req.body;
 
     if (!username) {
-      return res.status(400).json({ message: "Username is required" });
+      return res.status(400).json({ message: 'Username is required' });
     }
 
-    const user = await User.findOne({ username }).select("_id");
+    const user = await User.findOne({ username }).select('_id');
 
     if (!user) {
-      return res.status(404).json({ message: `User with username "${username}" not found` });
+      return res.status(404).json({ message: `User with username '${username}' not found` });
     }
 
     const notification = new Notification({
@@ -30,9 +30,9 @@ async function addNotification(req, res, next) {
 
     await notification.save();
 
-    return res.status(200).json({ message: "Notification added" });
+    return res.status(200).json({ message: 'Notification added' });
   } catch (err) {
-    console.error("Error adding notification:", err);
+    console.error('Error adding notification:', err);
     err.status = 500;
     next(err);
   }
@@ -44,12 +44,12 @@ async function addNotification(req, res, next) {
  * @param {object} req  - The request object.
  * @param {object} res - The respond object.
  * @param {*} next - Next
- * @returns - The response object
+ * @returns {Response}- The response object
  */
 async function getUserNotifications(req, res, next){
   try{    
     if (!req.params.id) {
-      return res.status(400).json({ message: "User ID is required" });
+      return res.status(400).json({ message: 'User ID is required' });
     }
 
     const notifications = await Notification.find({ user: req.params.id });
@@ -66,6 +66,7 @@ async function getUserNotifications(req, res, next){
  * @param {object} req  - The request object.
  * @param {object} res - The respond object.
  * @param {*} next - Next
+ * @returns {Response} - response with status code, message, and notifications viewed.
  */
 async function readAllNotifications(req, res, next) {
   try {
@@ -73,7 +74,7 @@ async function readAllNotifications(req, res, next) {
     const { id } = req.body;
     
     if (!id) {
-      return res.status(400).json({ message: "User ID is required" });
+      return res.status(400).json({ message: 'User ID is required' });
     }
 
     const notifications = await Notification.find({ user: req.body.id });
@@ -89,7 +90,7 @@ async function readAllNotifications(req, res, next) {
     );
 
     res.json({ 
-      message: "Notifications updated successfully", 
+      message: 'Notifications updated successfully', 
       notifications: notificationsViewed}); 
 
   } catch (err) {
@@ -103,20 +104,20 @@ async function readAllNotifications(req, res, next) {
  * @param {object} req  - The request object.
  * @param {object} res - The respond object.
  * @param {*} next - Next
- * @returns - The response object
+ * @returns {Response}- The response object
  */
 async function clearNotifications(req, res, next) {
   try {
     const { id } = req.body;
     
     if (!id) {
-      return res.status(400).json({ message: "User ID is required" });
+      return res.status(400).json({ message: 'User ID is required' });
     }
 
     const result = await Notification.deleteMany({ user: id });
 
     if (result.deletedCount === 0) {
-      return res.status(404).json({ message: "No notifications found for this user" });
+      return res.status(404).json({ message: 'No notifications found for this user' });
     }
 
     res.json({ message: `Deleted ${result.deletedCount} notifications` });
@@ -132,5 +133,5 @@ export {
   getUserNotifications,
   readAllNotifications,
   clearNotifications
-}
+};
 

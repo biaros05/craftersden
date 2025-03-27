@@ -3,7 +3,6 @@ import { useAuth } from "../hooks/useAuth";
 import { errorMessage } from "../utils/notification_utils";
 import { Popover, ScrollArea, Stack, Card, Group, Text, ActionIcon, Indicator, Button } from "@mantine/core";
 import { IconBell } from "@tabler/icons-react";
-import { read } from "fs";
 
 type message = {
     id: string,
@@ -12,13 +11,24 @@ type message = {
     viewed: boolean
 }
 
-export default function Inbox({}){
+/**
+ * This function component represents the drop down inbox when user clicks on the bell
+ * Displays all their notifications with option to clear them.
+ * @returns {React.ReactNode} The inbox component with all the notification messages.
+ */
+export default function Inbox(){
   const [notifications, setNotifications] = useState<message[]>([]);
   const { id } = useAuth() ?? {};
 
+  /**
+   * Fetches notifications, 5 second interval fetches again.
+   */
   useEffect(() => {
     const controller = new AbortController();
 
+    /**
+     * Fetches all the user's notifications.
+     */
     async function fetchNotifs() {
       try {
         const response = await fetch(`/api/notifications/${id}`, {method: 'GET'});
@@ -37,13 +47,19 @@ export default function Inbox({}){
     fetchNotifs(); 
   
     const interval = setInterval(fetchNotifs, 5000);
-  
+    
+    /**
+     * Clean up function, clears interval on cleanup as well.
+     */
     return () => {
       clearInterval(interval); 
       controller.abort();
     };
   }, []);
   
+  /**
+   * Marks all messages opened as read.
+   */
   async function readAll(){
     const data = {
       id
@@ -64,6 +80,9 @@ export default function Inbox({}){
     }
   };
 
+  /**
+   * Clears user's notifications.
+   */
   async function clearInbox(){
     const data = {
       id
