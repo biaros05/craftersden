@@ -8,34 +8,36 @@ import User from "../models/User.mjs";
  * @param {*} next - Next
  * @returns - Response object with status code and message.
  */
-async function addNotification(req, res, next){
-  try{
+async function addNotification(req, res, next) {
+  try {
+    const { username, message } = req.body;
 
-    const { username } = req.body;
-    
     if (!username) {
-      return res.status(400).json({ message: "User ID is required" });
+      return res.status(400).json({ message: "Username is required" });
     }
 
-    const userid = User.findOne({username : username}).select({_id: 1});
-    if(!userid){
-      return res.status(404).json({message: `User with id ${userid}`});
+    const user = await User.findOne({ username }).select("_id");
+
+    if (!user) {
+      return res.status(404).json({ message: `User with username "${username}" not found` });
     }
 
     const notification = new Notification({
-      message: req.body.message,
-      user: userid,
-      viewed: false
+      message,
+      user: user._id,
+      viewed: false,
     });
 
     await notification.save();
 
-    return res.status(200).json({message: 'Notification added'});
-  } catch(err){
+    return res.status(200).json({ message: "Notification added" });
+  } catch (err) {
+    console.error("Error adding notification:", err);
     err.status = 500;
     next(err);
   }
-};
+}
+
 
 /**
  * This function retrieves all of user's notifications.

@@ -45,7 +45,9 @@ export default function Inbox({}){
     return () => {
       controller.abort();
     }
-  });
+  }, []);
+
+
   return (
     <Popover width={200} position="bottom" withArrow shadow="md">
       <Popover.Target>
@@ -87,5 +89,4 @@ export default function Inbox({}){
         </Popover.Dropdown>
     </Popover>
   )
-
 }

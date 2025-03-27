@@ -43,7 +43,8 @@ export default function Post(
 
   async function sendNotification(message : string){
     const data = {
-      message
+      message,
+      username: builderUsername
     };
 
     const requestOptions = {
@@ -55,8 +56,9 @@ export default function Post(
     const response = await fetch('/api/notifications/post', requestOptions);
 
     if(!response.ok){
-      const err = new Error('Notfication system failed.');
-      throw err;
+      const json = await response.json();
+      errorMessage(json.message || "Notification system failed.");
+      throw new Error(json.message);
     }
   }
 
