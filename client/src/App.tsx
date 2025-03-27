@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { StrictMode } from 'react';
 import {
   createBrowserRouter,
@@ -14,6 +14,7 @@ import '@mantine/core/styles.css';
 import { MantineProvider} from '@mantine/core';
 import { theme } from './theme';
 import { routesConfig } from './routesconfig.tsx';
+const AdaptiveLoad = React.lazy(() => import('./components/Loader/AdaptiveLoad.tsx'));
 
 
 const router = createBrowserRouter(routesConfig);
@@ -30,7 +31,9 @@ export default function App(): React.ReactNode {
           <MantineProvider theme={theme}>
             <AuthProvider >
               <BuildProvider>
-                <RouterProvider router={router} />
+                <Suspense fallback={<AdaptiveLoad />}>
+                  <RouterProvider router={router} />
+                </Suspense>
               </BuildProvider>
             </AuthProvider>
           </MantineProvider>
