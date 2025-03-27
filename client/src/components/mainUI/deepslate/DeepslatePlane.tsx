@@ -205,7 +205,7 @@ export default function DeepslatePlane({canvas, structure, blocks}): React.React
 	}
 
   return <div className="plane-container">
-    <canvas id='deepslate-plane' width={800} height={800} ref={canvas} onMouseDown={handleClick} onContextMenu={(e) => e.preventDefault()}></canvas>
+    <canvas id='deepslate-plane' width={800} height={800} ref={canvas} onClick={handleClick} onContextMenu={(e) => e.preventDefault()}></canvas>
     <BlockStatePanel blockName={selectedBlock.name} blockNamespace={selectedBlock.namespace} currentState={blockstate} resources={resources} />
   </div>;
 }
