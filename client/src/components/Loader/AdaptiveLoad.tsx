@@ -3,7 +3,11 @@ const CreeperLoad = React.lazy(() => import("./CreeperLoad"));
 const ZombieChaseLoad = React.lazy(() => import("./ZombieChaseLoad"));
 import { useWindowSize } from "@uidotdev/usehooks";
 
-export default function AdaptiveLoad() {
+/**
+ * A loader that adapts to screensize
+ * @returns {React.ReactNode} Loader
+ */
+export default function AdaptiveLoad(): React.ReactNode {
     const {width} = useWindowSize();
 
     return <>
