@@ -41,7 +41,7 @@ export default function Forum(): React.ReactNode {
     navigate('/den');
   }
 
-  const {data} = useSwr(`/api/post?page=${page}&limit=1`, fetcher, {suspense: true});
+  const {data} = useSwr(`/api/post?page=${page}&limit=20`, fetcher, {suspense: true});
   const publishedBuilds = data.builds;
   const scrollToTop = () => forumDiv.current!.scrollTo({ top: 0, behavior: 'smooth' });
 
