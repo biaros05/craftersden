@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { BlockPos, BlockState, Identifier, NbtCompound, Structure } from "deepslate";
+
 export default class CloneableStructure extends Structure {
 
     protected getPalette(): BlockState[] {
@@ -36,7 +37,6 @@ export default class CloneableStructure extends Structure {
     }
 
     public static fromJson(json: object) {
-        console.log("PALETTE", json.palette);
         const palette = json.palette.map(b => new BlockState(`${b.name.namespace}:${b.name.path}`, b.properties)) as any;
 
         return new CloneableStructure(json.size, palette, json.placedBlocks);

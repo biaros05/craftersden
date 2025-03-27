@@ -138,6 +138,7 @@ export default function CraftersDen(): React.ReactNode {
             canvas={canvas} 
             structure={structure} 
             blocks={blocks}
+            isViewMode={isViewMode}
             />
           {!isViewMode && <BlockSelection />}
         </section>
