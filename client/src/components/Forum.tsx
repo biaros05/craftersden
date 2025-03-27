@@ -1,16 +1,13 @@
-import React, { useEffect } from 'react';
+import React, { useRef } from 'react';
 import Post from './Post';
 import '../styles/forum.css';
 import useNavigate from "./Navigation/useNavigate.tsx"
 import { useBuildUpdate } from '../hooks/BuildContext.tsx';
-import { TextInput } from '@mantine/core';
+import { TextInput, Pagination } from '@mantine/core';
 import { IconSearch } from '@tabler/icons-react';
 import { useState } from 'react';
-import CreeperLoad from './Loader/CreeperLoad.tsx';
-import ZombieChaseLoad from './Loader/ZombieChaseLoad.tsx';
-import { useWindowSize } from "@uidotdev/usehooks";
 import { useAuth } from '../hooks/useAuth.tsx';
-
+import useSwr from 'swr';
 
 type Post = {
   _id: string,
@@ -26,13 +23,15 @@ type Post = {
   tags: []
 }
 
+const fetcher = (url) => fetch(url).then(resp => resp.json());
 /**
  * Forum page renders a Search bar and a
  * list of posts.
  * @returns {React.ReactNode} Forum page.
  */
 export default function Forum(): React.ReactNode {
-
+  const forumDiv = useRef<HTMLDivElement>(null);
+  const [page, setPage] = useState(1);
   const navigate = useNavigate();
   const { setBuild } = useBuildUpdate();
   const { id } = useAuth() ?? {};
@@ -42,30 +41,14 @@ export default function Forum(): React.ReactNode {
     navigate('/den');
   }
 
-  const {width} = useWindowSize();
+  const {data} = useSwr(`/api/post?page=${page}&limit=20`, fetcher, {suspense: true});
+  const publishedBuilds = data.builds;
+  const scrollToTop = () => forumDiv.current!.scrollTo({ top: 0, behavior: 'smooth' });
 
-  const [publishedBuilds, setPublishedBuilds] = useState<Post[]>([]);
-
-  
-  useEffect(() => {
-    const controller = new AbortController();
-
-    /**
-     * Retrieves all the builds that are published.
-     */
-    async function getPublishedBuilds() {
-        const response = await fetch('/api/post/', { method: 'GET' });
-        const json = await response.json();
-        
-        setPublishedBuilds([...json.builds]);
-    };
-
-    getPublishedBuilds();
-
-    return () => {
-      controller.abort();
-    }
-  }, [])
+  const handlePageChange = (index: number) => {
+    setPage(index);
+    scrollToTop();
+  };
 
   return (
     <section className="forum-page">
@@ -75,7 +58,7 @@ export default function Forum(): React.ReactNode {
         w={200}
       />
       {publishedBuilds.length !== 0 && (
-      <div className="posts">
+      <div className="posts" ref={forumDiv}>
           {publishedBuilds.map((build, i) => {
             return (
               <Post
@@ -94,13 +77,10 @@ export default function Forum(): React.ReactNode {
         }
         </div>
       )}
-      {
-        publishedBuilds.length === 0 && width! < 400 &&
-        <CreeperLoad/>
-      }
-      {
-        publishedBuilds.length === 0 && width! > 400 &&
-        <ZombieChaseLoad/>
+      {publishedBuilds.length !== 0 && 
+        <div className='pagination-container'>
+          <Pagination total={data.total} value={page} onChange={handlePageChange} />
+        </div>
       }
     </section>
   );
