@@ -53,9 +53,13 @@ export default function Inbox({}){
               <IconBell size={34} />
           </ActionIcon>
       </Popover.Target>
-      <Popover.Dropdown>
-        <ScrollArea>
-            <Stack>
+      <Popover.Dropdown style={{ width: "400px" }}>
+        <ScrollArea w="100%" h={150}>
+            <Stack
+            align="stretch"
+            justify="center"
+            gap="md"
+            >
               {notifications.length > 0 ? (
                 notifications.map((notif, index) => (
                 <Card 
@@ -74,7 +78,9 @@ export default function Inbox({}){
                 </Card>
                 ))
               ) : (
-                <Text>You have no notifications</Text>
+                <Card>
+                  <Text>You have no new notifications</Text>
+                </Card>
               )}
             </Stack>
         </ScrollArea>
