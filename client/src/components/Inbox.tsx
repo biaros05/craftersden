@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { errorMessage } from "../utils/notification_utils";
 import { Popover, ScrollArea, Stack, Card, Group, Text, ActionIcon, Indicator, Button } from "@mantine/core";
-import { IconBell } from "@tabler/icons-react";
+import { IconBell } from '@tabler/icons-react';
 
 type message = {
     id: string,
