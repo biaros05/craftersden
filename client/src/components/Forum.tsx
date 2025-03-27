@@ -82,7 +82,7 @@ export default function Forum(): React.ReactNode {
                 key={`publishing-${i}`}
                 imageURL={build.progressPicture}
                 description={build.description}
-                username={build.username}
+                builderUsername={build.username}
                 buildId={build._id}
                 liked={build.likedBy.includes(id)}
                 saved={build.savedBy.includes(id)}

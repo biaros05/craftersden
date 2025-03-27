@@ -11,7 +11,7 @@ type propTypes = {
   liked: boolean,
   saved: boolean;
   imageURL: string
-  username: string
+  builderUsername: string
   buildId: string,
   viewPostOnClick?: () => void
   tags: []
@@ -26,20 +26,39 @@ type propTypes = {
  * @param {boolean} props.saved Whether the post is saved
  * Rida was here
  * @param {string} props.imageURL Snapshot of the build
- * @param {string} props.username Username of the creator
+ * @param {string} props.builderUsername Username of the creator
  * @param {Function} props.viewPostOnClick - Function to call when the post is clicked
  * @param {string} props.buildId the id of the build
  * @param {Array} props.tags tags of the build post
  * @returns {React.ReactNode} The Post
  */
 export default function Post(
-  { description, liked, saved, imageURL, username, viewPostOnClick, buildId, tags}: propTypes): React.ReactNode {
+  { description, liked, saved, imageURL, builderUsername, viewPostOnClick, buildId, tags}: propTypes): React.ReactNode {
 
   const [isLiked, setIsLiked] = useState(liked);
   const [isSaved, setIsSaved] = useState(saved);
   const [likes, setLikes] = useState(null);
   const [saves, setSaves] = useState(null);
-  const {id} = useAuth() ?? {};
+  const {id, username} = useAuth() ?? {};
+
+  async function sendNotification(message : string){
+    const data = {
+      message
+    };
+
+    const requestOptions = {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(data)
+    };
+
+    const response = await fetch('/api/notifications/post', requestOptions);
+
+    if(!response.ok){
+      const err = new Error('Notfication system failed.');
+      throw err;
+    }
+  }
 
   useEffect(() => {
     const controller = new AbortController();
@@ -87,7 +106,12 @@ export default function Post(
   
       setIsLiked(!isLiked);
       setLikes(prevLikes => (isLiked ? prevLikes - 1 : prevLikes + 1)); 
-  
+      
+      if(!isLiked){
+        const message = `${username} liked your build "${description}"`;
+        sendNotification(message);
+      }
+
       successMessage(json.message);
     } catch (err) {
       console.error(err);
@@ -125,6 +149,10 @@ export default function Post(
       setIsSaved(!isSaved);
       setSaves(prevSaves => (isSaved ? prevSaves - 1 : prevSaves + 1));
 
+      if(!isSaved){
+        const message = `${username} saved your build "${description}"`;
+        sendNotification(message);
+      }
       successMessage(json.message);
 
     } catch(err){
@@ -135,7 +163,7 @@ export default function Post(
 
   return (
     <div className="post">
-      <p style={{textAlign: 'center'}}>{username}</p>
+      <p style={{textAlign: 'center'}}>{builderUsername}</p>
       <Carousel
         height={125}
         slideSize="100%"

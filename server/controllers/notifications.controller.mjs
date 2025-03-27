@@ -1,4 +1,5 @@
 import Notification from "../models/Notification.js";
+import User from "../models/User.mjs";
 
 /**
  * Adds a notification to user's inbox.
@@ -10,15 +11,20 @@ import Notification from "../models/Notification.js";
 async function addNotification(req, res, next){
   try{
 
-    const { userId } = req.body;
+    const { username } = req.body;
     
-    if (!userId) {
+    if (!username) {
       return res.status(400).json({ message: "User ID is required" });
+    }
+
+    const userid = User.findOne({username : username}).select({_id: 1});
+    if(!userid){
+      return res.status(404).json({message: `User with id ${userid}`});
     }
 
     const notification = new Notification({
       message: req.body.message,
-      user: req.body.userId,
+      user: userid,
       viewed: false
     });
 

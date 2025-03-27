@@ -39,7 +39,7 @@ export default function SavedPosts({ savedPosts, id }: { savedPosts: Post[], id:
             key={`saved-${i}`}
             imageURL={build.progressPicture}
             description={build.description}
-            username={build.username}
+            builderUsername={build.username}
             buildId={build._id}
             liked={build.likedBy.includes(id)}
             saved={build.savedBy.includes(id)}
