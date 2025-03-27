@@ -1,4 +1,5 @@
 import './index.css';
+import React from 'react';
 import { Outlet } from 'react-router-dom';
 const ErrorPage = React.lazy(() => import('./error-page.jsx'));
 const Login = React.lazy(() => import('./components/Login.tsx'));
@@ -11,7 +12,6 @@ import Header from './components/Header.tsx';
 import Footer from './components/Footer.tsx';
 import Welcome from './components/Welcome.tsx';
 import { ToastContainer, Slide } from 'react-toastify';
-import React from 'react';
 
 /**
  * Main layout of the app. Renders header
