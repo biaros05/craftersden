@@ -9,6 +9,13 @@ import Notification from "../models/Notification";
  */
 async function addNotification(req, res, next){
   try{
+
+    const { userId } = req.body;
+    
+    if (!userId) {
+      return res.status(400).json({ message: "User ID is required" });
+    }
+
     const notification = new Notification({
       message: req.body.message,
       user: req.body.userId,
@@ -16,6 +23,7 @@ async function addNotification(req, res, next){
     });
 
     await notification.save();
+
     return res.status(200).json({message: 'Notification added'});
   } catch(err){
     err.status = 500;
@@ -30,8 +38,15 @@ async function addNotification(req, res, next){
  * @param {*} next - Next
  * @returns - The response object
  */
-async function getAllNotifications(req, res, next){
+async function getUserNotifications(req, res, next){
   try{
+
+    const { userId } = req.body;
+    
+    if (!userId) {
+      return res.status(400).json({ message: "User ID is required" });
+    }
+
     const notifications = await Notification.find({ user: req.body.userId });
     
     return res.status(200).json({notifications: notifications});
@@ -49,6 +64,13 @@ async function getAllNotifications(req, res, next){
  */
 async function readAllNotifications(req, res, next) {
   try {
+
+    const { userId } = req.body;
+    
+    if (!userId) {
+      return res.status(400).json({ message: "User ID is required" });
+    }
+
     const notifications = await Notification.find({ user: req.body.userId });
 
     const notificationsViewed = await Promise.all(
@@ -102,7 +124,7 @@ async function clearNotifications(req, res, next) {
 
 export {
   addNotification,
-  getAllNotifications,
+  getUserNotifications,
   readAllNotifications,
   clearNotifications
 }
