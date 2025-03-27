@@ -112,6 +112,7 @@ export default function PublishForm({ opened, close, buildId, updateBuildStatus 
           <MinecraftButton
             type="submit" 
             variant="filled"
+            onClick={() => setDescription('')}
           >
             Submit
           </MinecraftButton>

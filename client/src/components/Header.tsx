@@ -7,6 +7,7 @@ import '../styles/header.css';
 import { useBuildUpdate } from "../hooks/BuildContext";
 import ZombieChaseLoad from "./Loader/ZombieChaseLoad";
 import MinecraftButton from "./Custom/MinecraftButton";
+import Inbox from "./Inbox";
 
 /**
  * Header component that allows users to visit
@@ -30,21 +31,27 @@ export default function Header() {
     }
 
     return <header id="site-header">
-        <Link to='/profile'>
-            <Avatar src={avatar} />
+    <Link to="/profile">
+        <Avatar src={avatar} />
+    </Link>
+
+    <h2>
+        <Link to={isDen ? `/den` : `/forum`} state={{ canGoBack: true }}>
+            {isDen ? `Crafter's Den` : `Crafter's Forum`}
         </Link>
-        <h2>
-            <Link to={isDen ? `/den` : `/forum`} state={{canGoBack: true}}>
-                {isDen ? `Crafter's Den` : `Crafter's Forum`}
-            </Link>
-        </h2>
-        <Link 
-            to={!isDen ? `/den` : `/forum`}
-            state={{canGoBack: true}}
-            onClick={handleDenClick}>
-            <MinecraftButton>
-                {!isDen ? `Den` : `Forum`}
-            </MinecraftButton>
-        </Link>
+    </h2>
+    <div className="header-right">
+    {avatar && <Inbox/>}
+    <Link 
+        to={!isDen ? `/den` : `/forum`}
+        state={{ canGoBack: true }}
+        onClick={handleDenClick}
+    >
+        <MinecraftButton>
+            {!isDen ? `Den` : `Forum`}
+        </MinecraftButton>
+    </Link>
+    </div>
     </header>
+
 }
