@@ -14,3 +14,5 @@ notificationsRouter.get('/', isAuthenticated, getUserNotifications);
 notificationsRouter.post('/post', isAuthenticated, addNotification);
 notificationsRouter.post('/read-all', isAuthenticated, readAllNotifications);
 notificationsRouter.delete('/clear', isAuthenticated, clearNotifications);
+
+export default notificationsRouter;
