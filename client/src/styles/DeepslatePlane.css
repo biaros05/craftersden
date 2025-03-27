@@ -1,6 +1,7 @@
 .plane-container {
     position: relative;
     flex: 2;
+    height: 100%;
 }
 
 .blockstate-panel {
@@ -15,6 +16,7 @@
 }
 
 #deepslate-plane {
+    max-height: 100%;
     width: 100%;
     aspect-ratio: 1;
 
