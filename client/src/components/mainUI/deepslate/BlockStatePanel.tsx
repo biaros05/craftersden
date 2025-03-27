@@ -37,6 +37,32 @@ export default function BlockStatePanel(
   const state = currentState.current;
 
   useEffect(() => {
+    /**
+     * Event handler to cycle through different states
+     * @param {KeyboardEvent} e - Event object 
+     */
+    function keyboardControls(e: KeyboardEvent) {
+      if (!advancedMode) {
+        const keyPressed = e.key.toLocaleLowerCase();
+        
+        if (keyPressed === 'arrowright' || keyPressed === 'd') {
+          e.preventDefault();
+          keyIndex.current = (keyIndex.current + 1) % stateMappings.current.length;
+          updateBlockstate(stateMappings.current[keyIndex.current]);
+        } else if (keyPressed === 'arrowleft' || keyPressed === 'a') {
+          e.preventDefault();
+          keyIndex.current = (keyIndex.current - 1 + stateMappings.current.length) % stateMappings.current.length;
+          updateBlockstate(stateMappings.current[keyIndex.current]);
+        }
+      }
+    }
+
+    document.addEventListener('keydown', keyboardControls);
+
+    return () => document.removeEventListener('keydown', keyboardControls);
+  }, [advancedMode]);
+
+  useEffect(() => {
     stateMappings.current = generateStates(possibleBlockstates);
   }, [blockName])
 
@@ -88,25 +114,7 @@ export default function BlockStatePanel(
     previewInteractiveCanvas.current?.redraw();
   }
 
-  /**
-   * Event handler to cycle through different states
-   * @param {React.KeyboardEvent<HTMLDivElement>} e - Event object 
-   */
-  function keyboardControls(e: React.KeyboardEvent<HTMLDivElement>): void {
-    const keyPressed = e.key.toLocaleLowerCase();
-    
-    if (keyPressed === 'arrowright' || keyPressed === 'd') {
-      e.preventDefault();
-      keyIndex.current = (keyIndex.current + 1) % stateMappings.current.length;
-      updateBlockstate(stateMappings.current[keyIndex.current]);
-    } else if (keyPressed === 'arrowleft' || keyPressed === 'a') {
-      e.preventDefault();
-      keyIndex.current = (keyIndex.current - 1 + stateMappings.current.length) % stateMappings.current.length;
-      updateBlockstate(stateMappings.current[keyIndex.current]);
-    }
-  }
-
-  return <div className="blockstate-panel" tabIndex={0} onKeyDown={!advancedMode ? keyboardControls : undefined}>
+  return <div className="blockstate-panel" tabIndex={0}>
     <canvas className="blockstate-preview" width={100} height={100} ref={blockStatePreview}></canvas>
     <label htmlFor="advanced">Advanced mode </label>
     <input type="checkbox" name="advanced" id="advanced" defaultChecked={advancedMode} onChange={(e) => setAdvancedMode(Boolean(e.target.checked))} />
