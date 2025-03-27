@@ -16,23 +16,23 @@ export default function ProtectedRoute({ authed, children }:
   {authed: boolean, children: React.ReactNode}
 ): React.ReactNode {
   const { username, loading } = useAuth() ?? {};
+
+  if (loading) {
+    return <CreeperLoad/>;
+  }
+
   const location = useLocation();
 
   const goBack = useGoBack('/');
 
   useEffect(() => {
-    if (username && !authed || !username && authed) {
+    if (!loading && (username && !authed || !username && authed)) {
       if (location.pathname !== '/logout' && location.pathname !== '/login') {
         errorMessage("Please log in to access this page!");
       }
       goBack();
     }
   });
-
-  if (loading) {
-    return <CreeperLoad/>;
-  }
-
 
   return children;
 };

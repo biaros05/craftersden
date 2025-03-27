@@ -8,10 +8,10 @@ type ContextProviderProps = {
 };
 
 export type AuthContextType = {
-    id: string,
-    username: string,
-    email: string,
-    avatar: string,
+    id: string | null,
+    username: string | null,
+    email: string | null,
+    avatar: string | null,
     loading: boolean, 
     login: (googleCredentials: CredentialResponse) => void,
     logout: () => void
@@ -20,10 +20,10 @@ export type AuthContextType = {
 export const AuthContext = createContext<null | AuthContextType>(null);
 
 export const AuthProvider = ({ children }: ContextProviderProps) => {
-  const [id, setId] = useState('');
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [avatar, setAvatar] = useState('');
+  const [id, setId] = useState<string | null>(null);
+  const [username, setUsername] = useState<string | null>(null);
+  const [email, setEmail] = useState<string | null>(null);
+  const [avatar, setAvatar] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -81,10 +81,10 @@ export const AuthProvider = ({ children }: ContextProviderProps) => {
   const logout = async () => {
     try {
       await fetch('/api/logout');
-      setId('');
-      setUsername('');
-      setEmail('');
-      setAvatar('');
+      setId(null);
+      setUsername(null);
+      setEmail(null);
+      setAvatar(null);
       successMessage("Successfully logged out");
     } catch (e) {
       errorPopup('Error logging out!');
