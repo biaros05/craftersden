@@ -30,8 +30,6 @@ export default function BlockSearchBar({blockList, searchValue, setSearchValue, 
   // data in Autocomplete cannot have duplicate values, so use a set, better solution possible??
   const [blockHistory, setBlockHistory] = useState(new Set<string>());
 
-  const { storeBlock } = useContext(CurrentBlockContext);
-
   const filteredData = searchValue.length > 0 
     ? blockList.map(block => block.name)
     : Array.from(blockHistory);
@@ -42,7 +40,6 @@ export default function BlockSearchBar({blockList, searchValue, setSearchValue, 
    */
   function handleOptionSubmit(value: string) {
     setBlockHistory(new Set([...blockHistory, value]));
-    storeBlock(blockList.find(block => block.name === value));
   }
   return (
     <Autocomplete
