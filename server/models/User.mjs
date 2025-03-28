@@ -11,7 +11,7 @@ const UserSchema = new Schema({
   },
   liked: [{type: Schema.Types.ObjectId, ref: 'Post'}],
   saved: [{type: Schema.Types.ObjectId, ref: 'Post'}],
-  role: string = 'user'
+  role: String 
 });
 
 // Compile model from schema, name of collection in the
