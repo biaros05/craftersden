@@ -11,7 +11,10 @@ import {
   unpublishBuild,
   toggleLikeBuild,
   toggleSaveBuild,
-  getLikesSaves
+  getLikesSaves,
+  getUserPosts,
+  getPostsByDescription,
+  postSearch
 } from '../controllers/post.controller.mjs';
 import multer from 'multer';
 import { body } from 'express-validator';
@@ -107,5 +110,10 @@ postRouter.post('/toggle-save', isAuthenticated, toggleSaveBuild);
 postRouter.get('/:buildId/likes-saves', isAuthenticated, getLikesSaves);
 
 postRouter.get('/', getPublishedBuilds);
+
+postRouter.get('/posts/:username', isAuthenticated, getUserPosts);
+postRouter.get('/posts/:description', isAuthenticated, getPostsByDescription);
+
+postRouter.get('/search', isAuthenticated, postSearch);
 
 export default postRouter;
