@@ -223,10 +223,11 @@ async function getPublishedBuilds(req, res, next) {
 
     const publishBuildsWithUsername = await Promise.all(
       publishedBuilds.map(async (build) => {
-        const username = await User.findOne({ _id: build.user }).select({ username: 1, _id: 0 });
+        const user = await User.findOne({ _id: build.user }).select({ username: 1, avatar: 1, _id: 0 });
         return {
           ...build.toObject(),
-          username: username ? username.username : 'Unknown'
+          username: username ? username.username : 'Unknown',
+          avatar: avatar
         };
       })
     );

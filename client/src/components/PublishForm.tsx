@@ -49,6 +49,7 @@ export default function PublishForm({ opened, close, buildId, updateBuildStatus 
 
       successMessage(json.message);
       updateBuildStatus(buildId, true);
+      setDescription('');
 
     } catch (err) {
       console.error(err);
@@ -112,7 +113,6 @@ export default function PublishForm({ opened, close, buildId, updateBuildStatus 
           <MinecraftButton
             type="submit" 
             variant="filled"
-            onClick={() => setDescription('')}
           >
             Submit
           </MinecraftButton>
