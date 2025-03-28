@@ -25,19 +25,17 @@ async function getBlocks(req, res, next) {
 
     const countResult = await Block.aggregate(pipeline).count('count');
     const count = countResult[0]?.count;
-    
+
     const totalPages = Math.ceil(count / limit);
     if (page > totalPages) {
       return res.status(404).json({ message: 'Page not found' });
     }
 
-    if (req.query.page) {
-      pipeline.push(
-        { $limit: limit },
-        { $skip: (page - 1) * limit },
-      );
-    }
-
+    pipeline.push(
+      { $skip: (page - 1) * limit },
+      { $limit: limit },
+    );
+    
     pipeline.push(
       {
         $project: {
