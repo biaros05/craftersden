@@ -434,12 +434,6 @@ async function postSearch(req, res, next){
   try{
     const { query } = req.query;
 
-    if(!query){
-      const err = new Error('Must contain search query');
-      err.status = 403;
-      return next(err);
-    }
-
     const descriptions = await Post.find({
       description: { $regex: query , $options: "i"}
     }).select({description: 1, _id: 0});
