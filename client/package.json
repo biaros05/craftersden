@@ -38,6 +38,7 @@
     "swr": "^2.3.2",
     "three": "^0.173.0",
     "typescript-eslint": "^8.25.0",
+    "use-debounce": "^10.0.4",
     "vite": "^6.2.0"
   },
   "devDependencies": {
