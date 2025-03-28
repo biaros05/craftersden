@@ -119,6 +119,9 @@ async function publishBuild(req, res, next) {
       updateData.description = req.body.description;
     }
 
+    const tags = JSON.parse(req.body.tags || []);
+    updateData.tags = tags;
+
     const publishedBuild = await Post.findOneAndUpdate(
       { _id: req.body.buildId },
       updateData,
@@ -171,7 +174,8 @@ async function unpublishBuild(req, res, next) {
     const unpublishedBuild = await Post.findOneAndUpdate(
       { _id: req.body.buildId },
       { isPublished: false },
-      { returnDocument: 'after' }
+      { returnDocument: 'after' },
+      { tags: []}
     );
 
     if (!unpublishedBuild) {
@@ -196,8 +200,23 @@ async function unpublishBuild(req, res, next) {
  */
 async function getPublishedBuilds(req, res, next) {
   try {
-    const publishedBuilds = await Post.find({ isPublished: true });
+    const { page = 1, limit = 50 } = req.query;
+    
+    if (isNaN(page) || isNaN(limit)) {
+      return res.status(400).json({ message: 'page and limit parameters must be numbers'});
+    }
+    
+    const totalPages = Math.ceil(await Post.countDocuments({isPublished: true}) / limit);
 
+    if (page > totalPages) {
+      return res.status(404).json({ message: 'Page not found' });
+    }
+
+    const publishedBuilds = await Post.find({ isPublished: true }).
+      sort({_id: 1}).
+      limit(limit).
+      skip((page - 1) * limit);
+    
     if (publishedBuilds.length === 0) {
       return res.status(100).json({ message: 'There are no published builds at this moment.' });
     }
@@ -214,7 +233,8 @@ async function getPublishedBuilds(req, res, next) {
 
     return res.status(200).json({
       message: 'Published builds fetched!',
-      builds: publishBuildsWithUsername
+      builds: publishBuildsWithUsername,
+      total: totalPages,
     });
 
   } catch (err) {

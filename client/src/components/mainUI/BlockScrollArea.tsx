@@ -23,11 +23,8 @@ export default function BlockScrollArea({ style = {}}): React.ReactNode {
     scrollToTop();
   };
 
-  // TODO do we still need these errors, remove eslint ignore
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { data: pageCountData, error: pageCountError } = useSWR('/api/blocks/page-count', fetcher);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { data: blockData, error: blockDataError } = useSWR('/api/blocks', fetcher);
+  const { data: pageCountData } = useSWR('/api/blocks/page-count', fetcher);
+  const { data: blockData } = useSWR('/api/blocks', fetcher);
 
   const pageCount = pageCountData?.totalPages;
 

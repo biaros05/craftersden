@@ -7,14 +7,32 @@
   cursor: pointer;
 } 
 
-.post{
+.post {
   width: 250px;
-  height: 230px;
+  height: 280px; 
   border: 2px rgb(201, 201, 201) solid;
   border-radius: 5px;
-  padding: 5px
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; 
 }
+
+.post-information {
+  flex-grow: 1;
+  overflow: auto;
+}
+
 
 .post:hover{
   border: 3px #75bd82 solid;;
+}
+
+.publish-form{
+  display: flex;
+  flex-direction: column;
+}
+
+.tag{
+  background: #4CAF50;
 }

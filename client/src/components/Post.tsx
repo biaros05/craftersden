@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Carousel } from '@mantine/carousel';
 import { IconBookmark, IconBookmarkFilled, IconHeart, IconHeartFilled } from '@tabler/icons-react';
-import { Image, Text, Box, ActionIcon } from '@mantine/core';
+import { Image, Text, Box, ActionIcon, Pill, ScrollArea } from '@mantine/core';
 import '../styles/Post.css';
 import { errorMessage, successMessage } from '../utils/notification_utils';
 import { useAuth } from '../hooks/useAuth';
@@ -11,9 +11,10 @@ type propTypes = {
   liked: boolean,
   saved: boolean;
   imageURL: string
-  username: string
+  builderUsername: string
   buildId: string,
   viewPostOnClick?: () => void
+  tags: []
 }
 
 /**
@@ -25,19 +26,45 @@ type propTypes = {
  * @param {boolean} props.saved Whether the post is saved
  * Rida was here
  * @param {string} props.imageURL Snapshot of the build
- * @param {string} props.username Username of the creator
+ * @param {string} props.builderUsername Username of the creator
  * @param {Function} props.viewPostOnClick - Function to call when the post is clicked
  * @param {string} props.buildId the id of the build
+ * @param {Array} props.tags tags of the build post
  * @returns {React.ReactNode} The Post
  */
 export default function Post(
-  { description, liked, saved, imageURL, username, viewPostOnClick, buildId}: propTypes): React.ReactNode {
+  { description, liked, saved, imageURL, builderUsername, viewPostOnClick, buildId, tags = []}: propTypes): React.ReactNode {
 
   const [isLiked, setIsLiked] = useState(liked);
   const [isSaved, setIsSaved] = useState(saved);
   const [likes, setLikes] = useState(null);
   const [saves, setSaves] = useState(null);
-  const {id} = useAuth() ?? {};
+  const {id, username} = useAuth() ?? {};
+
+  /**
+   * Posts a notification to user's inbox in database with custom message.
+   * @param {string} message - The message to be assigned to notification.
+   */
+  async function sendNotification(message : string){
+    const data = {
+      message,
+      username: builderUsername
+    };
+
+    const requestOptions = {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(data)
+    };
+
+    const response = await fetch('/api/notifications/post', requestOptions);
+
+    if(!response.ok){
+      const json = await response.json();
+      errorMessage(json.message || "Notification system failed.");
+      throw new Error(json.message);
+    }
+  }
 
   useEffect(() => {
     const controller = new AbortController();
@@ -85,7 +112,12 @@ export default function Post(
   
       setIsLiked(!isLiked);
       setLikes(prevLikes => (isLiked ? prevLikes - 1 : prevLikes + 1)); 
-  
+      
+      if(!isLiked){
+        const message = `${username} liked your build "${description}"`;
+        sendNotification(message);
+      }
+
       successMessage(json.message);
     } catch (err) {
       console.error(err);
@@ -123,6 +155,10 @@ export default function Post(
       setIsSaved(!isSaved);
       setSaves(prevSaves => (isSaved ? prevSaves - 1 : prevSaves + 1));
 
+      if(!isSaved){
+        const message = `${username} saved your build "${description}"`;
+        sendNotification(message);
+      }
       successMessage(json.message);
 
     } catch(err){
@@ -133,7 +169,7 @@ export default function Post(
 
   return (
     <div className="post">
-      <p style={{textAlign: 'center'}}>{username}</p>
+      <p style={{textAlign: 'center'}}>{builderUsername}</p>
       <Carousel
         height={125}
         slideSize="100%"
@@ -156,7 +192,7 @@ export default function Post(
             className="icons"
             color="rgba(74, 173, 24, 1)"
             variant="subtle"
-            aria-label="Settings"
+            aria-label="save"
             onClick={() => {
               toggleSave();
             }}
@@ -173,7 +209,7 @@ export default function Post(
             className="icons"
             color="rgba(74, 173, 24, 1)"
             variant="subtle"
-            aria-label="Settings"
+            aria-label="like"
             onClick={() => {
               toggleLike();
             }}
@@ -188,10 +224,42 @@ export default function Post(
           </ActionIcon>
         </div>
         <Box>
-          <Text size={'xs'} component="p" lineClamp={3} inline={false}>
+          <Text size={'xs'} 
+          component="p" 
+          lineClamp={3} 
+          inline={false}
+          style={{
+            overflow: 'hidden', 
+            textOverflow: 'ellipsis',
+            whiteSpace: 'normal', 
+            wordBreak: 'break-word', 
+            padding: '15px'
+          }}
+          >
             {description}
           </Text>
         </Box>
+        {tags.length !== 0 && (
+          <ScrollArea className="tags-area" h={80}>
+            {tags.map((tag, i) => {
+              return(
+                <Pill 
+                style={{
+                  backgroundColor: '#4CAF50',
+                  color: 'white', 
+                  fontWeight: 'bold',
+                  margin: '2px'
+                }}
+                size="sm"
+                className="tag"
+                key={`tag-${i}`}
+                >
+                  {tag}
+                </Pill>
+              )
+            })}
+          </ScrollArea>
+        )}
       </section>
     </div>
   );

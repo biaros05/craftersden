@@ -67,6 +67,7 @@ describe('Post publish endpoints', () => {
     const response = await request(app).
       post('/api/post/publish').
       field('buildId', '9898').
+      field('tags', JSON.stringify(['blah'])).
       set('Cookie', cookie);
 
     const query = await request(app).
