@@ -11,11 +11,7 @@ import Block from '../models/Block.js';
  */
 async function getBlocks(req, res, next) {
   try {
-    const { page = 1, limit = 50, search } = req.query;
-
-    if (search) {
-      return searchBlocks(req, res, next);
-    }
+    const { page = 1, limit = 50, search = ''} = req.query;
 
     if (isNaN(page) || isNaN(limit)) {
       return res.status(400).json({ message: 'page and limit parameters must be numbers'});
@@ -25,19 +21,29 @@ async function getBlocks(req, res, next) {
     if (page > totalPages) {
       return res.status(404).json({ message: 'Page not found' });
     }
-    
-    if (!req.query.page && !req.query.limit) {
-      const blocks = await Block.find({}, 'name inventoryTexture').sort({ name: 1 });
-      return res.status(200).json({
-        blocks: blocks,
-        totalBlocks: blocks.length
-      });
-    }
 
-    const blocks = await Block.find({}, 'name inventoryTexture').
-      sort({ name: 1 }).
-      limit(limit).
-      skip((page - 1) * limit);
+    const pipeline = [];
+
+    if (search) {
+      pipeline.push(constructSearchPipeline(search));
+    } else {
+      pipeline.push({ $match: {} });
+    }
+    
+    pipeline.push(
+      {
+        $project: {
+          _id: 0,
+          name: 1,
+          inventoryTexture: 1,
+        }
+      },
+      { $limit: limit },
+      { $skip: (page - 1) * limit },
+      { $sort: { name: 1} },
+    );
+
+    const blocks = await Block.aggregate(pipeline);
 
     return res.status(200).json({
       blocks: blocks,
@@ -50,42 +56,23 @@ async function getBlocks(req, res, next) {
 }
 
 /**
- * Searches for blocks by name using an autocomplete search.
- * 
- * @param {object} req - Request
- * @param {string} req.query.search - Search term
- * @param {object} res - Response
- * @param {Function} next - Next
- * @returns {void} - Response object with the list of blocks
+ * Returns a search pipeline for the given search value.
+ * @param {string} searchValue - Search value
+ * @returns {object} - object containing the search pipeline
  */
-async function searchBlocks(req, res, next) {
-  try {
-    const { search } = req.query;
-
-    const blocks = await Block.aggregate([
-      {
-        $search: {
-          autocomplete: {
-            query: search, 
-            path: 'name', 
-            tokenOrder: 'any', 
-          },
-          index: 'block-name'
-        }
-      },
-      {
-        $project: {
-          _id: 0,
-          name: 1,
-          inventoryTexture: 1,
-        }
-      },
-    ]);
-
-    return res.status(200).json(blocks);
-  } catch (error) {
-    next(error);
-  }
+function constructSearchPipeline(searchValue) {
+  return [
+    {
+      $search: {
+        autocomplete: {
+          query: searchValue, 
+          path: 'name', 
+          tokenOrder: 'any', 
+        },
+        index: 'block-name'
+      }
+    },
+  ];
 }
 
 /**
