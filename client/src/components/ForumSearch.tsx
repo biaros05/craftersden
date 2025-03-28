@@ -11,6 +11,11 @@ type Description = {
   description: string
 }
 
+/**
+ * 
+ * @returns {React.ReactNode} - Returns Autocomplete component with search bar for 
+ * users and build's descriptions.
+ */
 export function ForumSearch() {
   const [search, setSearch] = useState("");
   const [users, setUsers] = useState<User[]>([]);
@@ -49,7 +54,7 @@ export function ForumSearch() {
     return () => controller.abort();
   }, [search]);
 
-  const userData = users.flatMap((user, i) => ({
+  const userData = users.flatMap((user) => ({
     value: user.username,
     group: "Users",
     items: [(
@@ -60,7 +65,7 @@ export function ForumSearch() {
     )],
   }));
 
-  const descriptionData = descriptions.flatMap((desc, i) => ({
+  const descriptionData = descriptions.flatMap((desc) => ({
     value: desc.description,
     group: "Build Descriptions",
     items: [desc.description]

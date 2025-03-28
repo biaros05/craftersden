@@ -3,8 +3,7 @@ import Post from './Post';
 import '../styles/forum.css';
 import useNavigate from "./Navigation/useNavigate.tsx"
 import { useBuildUpdate } from '../hooks/BuildContext.tsx';
-import { TextInput, Pagination } from '@mantine/core';
-import { IconSearch } from '@tabler/icons-react';
+import { Pagination } from '@mantine/core';
 import { useState } from 'react';
 import { useAuth } from '../hooks/useAuth.tsx';
 import useSwr from 'swr';
