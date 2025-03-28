@@ -68,7 +68,8 @@ export default function BlockStatePanel(
   useEffect(() => {
     const gl = blockStatePreview?.current?.getContext('webgl');
     if (gl && resources) {
-      previewStructure.current.addBlock([0, 0, 0], `${blockNamespace}:${blockName}`, state);
+      previewStructure.current = new Structure([1, 1, 1]);
+      previewStructure.current.addBlock([0, 0, 0], `${blockNamespace}:${blockName}`, currentState.current);
       
       previewRenderer.current = new StructureRenderer(gl, previewStructure.current, resources);
 
