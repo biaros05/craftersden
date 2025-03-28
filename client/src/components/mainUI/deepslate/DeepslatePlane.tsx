@@ -35,12 +35,13 @@ const selectedBlock = {
  * @param {boolean} props.isViewMode - View mode state of plane
  * @returns {React.ReactNode} - Deepslate plane
  */
-export default function DeepslatePlane({canvas, structure, blocks, isViewMode}: { canvas: React.RefObject<HTMLCanvasElement | null>; structure: React.RefObject<CloneableStructure>; blocks: React.RefObject<PlaneBlock[]>; isViewMode: boolean; }): React.ReactNode {
+export default function DeepslatePlane({canvas, structure, isViewMode}: { canvas: React.RefObject<HTMLCanvasElement | null>; structure: React.RefObject<CloneableStructure>; isViewMode: boolean; }): React.ReactNode {
   const projectionMatrix = useRef<mat4>(null);
   const viewMatrix = useRef<mat4>(null);
   const cameraPosition = useRef<vec3>(null);
   const interactiveCanvas = useRef<InteractiveCanvas>(null);
   const structureRenderer = useRef<InteractiveStructureRenderer>(null);
+  const blocks = useRef<PlaneBlock[]>(structureBlockToPlaneBlock(structure.current.getBlocks()));
   const blockstate = useRef<{[key: string]: string}>({});
   const [resources, setResources] = useState<Resources>();
   const canvasRect = useRef<DOMRect>(null);
