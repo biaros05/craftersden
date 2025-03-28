@@ -64,7 +64,7 @@ export default function CraftersDen(): React.ReactNode {
   // useBuild returns an object that contains build
   const build = useBuild()?.build;
   const { setBuild } = useBuildUpdate();
-  const [isBuildOwner, setBuildOwner] = useState<boolean>(build?.user === id || build === null);
+  const [isBuildOwner,] = useState<boolean>(build?.user === id || build === null);
 
   // A null build signifies a new build
 
