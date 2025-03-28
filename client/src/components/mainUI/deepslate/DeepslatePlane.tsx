@@ -118,7 +118,6 @@ export default function DeepslatePlane({canvas, structure, isViewMode}: { canvas
     const mouseX = e.clientX - canvasRect.current!.left;
     const mouseY = e.clientY - canvasRect.current!.top;
 
-    console.log(canvasRect.current, 'raycast')
     const canvasSize = {width: canvas.current!.clientWidth, height: canvas.current!.clientHeight}
 
     const ray = screenToWorldRay(mouseX, mouseY, viewMat, projectionMat, canvasSize, camPos);
@@ -152,11 +151,9 @@ export default function DeepslatePlane({canvas, structure, isViewMode}: { canvas
    * @param {React.MouseEvent<HTMLCanvasElement>} e - Mouse event object
    */
   function placeBlock(e: React.MouseEvent<HTMLCanvasElement>) {
-    console.log(viewMatrix, projectionMatrix, cameraPosition)
     if (viewMatrix.current && projectionMatrix.current && cameraPosition.current) {
       const {point, normal} = rayCast(e, viewMatrix.current, projectionMatrix.current, cameraPosition.current) ?? {};
       if (point && normal) {
-        console.log(point, normal)
         // Point is coordinates of the the block that was clicked on
         const newBlockPosVec = vec3.add(vec3.create(), point, normal);
         const newBlockPos: [number, number, number] = [newBlockPosVec[0], newBlockPosVec[1], newBlockPosVec[2]];

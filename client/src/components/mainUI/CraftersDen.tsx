@@ -127,10 +127,8 @@ function loadStructure(build) {
   if ( serializedBlocks.structure !== "{}" && serializedBlocks.structure) {
     const newStructure = CloneableStructure.fromJson(serializedBlocks.structure);
     localStorage.clear();
-    console.log('local')
     return newStructure;
   } else if (build && build.buildJSON) {
-    console.log('build')
     const newStructure = CloneableStructure.fromJson(build.buildJSON);
     return newStructure;
   } else {

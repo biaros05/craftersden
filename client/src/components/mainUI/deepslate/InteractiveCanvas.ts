@@ -23,7 +23,6 @@ export default class InteractiveCanvas {
         xPos = 0,
         yPos = 0,
     ) {
-        console.log('CONSTRUCTING')
         this.xPosition = xPos;
         this.yPosition = yPos;
 
@@ -40,22 +39,18 @@ export default class InteractiveCanvas {
     }
 
     public subscribe() {
-        console.log("Subscribing from", this.canvas);
         this.canvas.addEventListener('mousedown', this.mousedownHandlerBind)
         this.canvas.addEventListener('mousemove', this.mousemoveHandlerBind)
         this.canvas.addEventListener('mouseup', this.mouseupHandlerBind)
         this.canvas.addEventListener('wheel', this.wheelHandlerBind)
         this.subscribed = true;
-        this.animate();
     }
 
     public unsubscribe() {
-        console.log("Unsubscribing from", this.canvas);
         this.canvas.removeEventListener('mousedown', this.mousedownHandlerBind);
         this.canvas.removeEventListener('mousemove', this.mousemoveHandlerBind);
         this.canvas.removeEventListener('mouseup', this.mouseupHandlerBind);
         this.canvas.removeEventListener('wheel', this.wheelHandlerBind);
-        // this.abortController.abort();
         this.subscribed = false;
     }
 
@@ -90,16 +85,7 @@ export default class InteractiveCanvas {
     }
 
     public redraw() {
-        console.log('redrawing')
         requestAnimationFrame(() => this.renderImmediately());
-    }
-
-    private animate() {
-        // console.log('animating', this.subscribed);
-        // if (this.subscribed) {
-        //     this.renderImmediately();
-        //     requestAnimationFrame(() => {this.animate()});
-        // }
     }
 
     private renderImmediately() {
@@ -129,7 +115,6 @@ export default class InteractiveCanvas {
      * @returns {InteractiveCanvas} new InteractiveCanvas
      */
     public clone(newCanvas?: HTMLCanvasElement, onRender?: (arg0: mat4) => void): InteractiveCanvas {
-        // console.log('CLONING')
         const render = onRender ?? this.onRender;
         const canvas = newCanvas ?? this.canvas;
         const newInteractiveCanvas = new InteractiveCanvas(
@@ -147,7 +132,6 @@ export default class InteractiveCanvas {
     }
 
     public cleanup() {
-        console.log('DISPOSING', this)
         if (this) {
             if (this.canvas) {
                 if (this.subscribed) {
