@@ -12,7 +12,7 @@ type ButtonPanelProps = {
   canvas: React.RefObject<HTMLCanvasElement | null>,
   savePost: (arg0: string) => void,
   isViewMode: boolean,
-  email: string,
+  email?: string,
   structure: CloneableStructure
 }
 

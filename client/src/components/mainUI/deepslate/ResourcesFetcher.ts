@@ -2,6 +2,7 @@ import React from 'react';
 import type { Resources } from 'deepslate'
 import { BlockDefinition, BlockModel, Identifier, TextureAtlas, upperPowerOfTwo } from 'deepslate'
 
+/* --- Code mostly from deepslatejs demo code --- */
 const MCMETA = 'https://raw.githubusercontent.com/misode/mcmeta/';
 
 /**

@@ -2,7 +2,7 @@ import BlockSelection from './BlockSelection';
 import ButtonPanel from './ButtonPanel';
 import { useAuth } from '../../hooks/useAuth';
 import './CraftersDen.css';
-import { useEffect, useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import React from 'react';
 import {toByteArray} from 'base64-js';
 import {encode} from '@msgpack/msgpack'; 
@@ -11,9 +11,7 @@ import { successMessage, errorMessage } from '../../utils/notification_utils';
 import { StatusError } from '../../utils/building_plane_utils';
 import { CurrentBlockContext } from '../../context/currentBlockContext';
 import CloneableStructure from './deepslate/CloneableStructure';
-import { JSON_PLANE } from './deepslate/PlanePresets';
-import {structureBlockToPlaneBlock, PlaneBlock} from './deepslate/DeepslatePlane.tsx';
-
+import { GRASS_PLANE } from './deepslate/PlanePresets';
 import DeepslatePlane from './deepslate/DeepslatePlane.tsx';
 
 /**
@@ -32,54 +30,35 @@ export function serializeBlocks(structure: CloneableStructure): Uint8Array<Array
  * @returns {React.ReactNode} - A div element with the id 'main-ui' to render the den.
  */
 export default function CraftersDen(): React.ReactNode {
-  // const canvas = useRef(null);
+  const build = useBuild();
+  console.log(build)
   const canvas = useRef<HTMLCanvasElement>(null);
-  const [structure, setStructure] = useState<CloneableStructure>(JSON_PLANE);
+  const structure = useRef<CloneableStructure>(loadStructure(build?.build));
+
   const {email} = useAuth() ?? {};
   const [isViewMode, setIsViewMode] = useState(false);
   // const [blocks, setBlocks] = useState<BlockType[]>([]);
   const [currentBlock, setCurrentBlock] = useState(null);
-  const [blocks, setBlocks] = useState<PlaneBlock[]>([]);
 
-  const build = useBuild();
   const { setBuild } = useBuildUpdate();
-
-  useEffect(() => {
-    const serializedBlocks = JSON.parse(localStorage.getItem("build") ?? "{}");
-    
-    if ( serializedBlocks.structure !== "{}" && serializedBlocks.structure) {
-      const newStructure = CloneableStructure.fromJson(serializedBlocks.structure);
-      setStructure(newStructure);
-      setBlocks(structureBlockToPlaneBlock(newStructure.getBlocks()));
-      localStorage.clear();
-    }
-    else if (build.build !== undefined && build.build !== null) {
-      const newStructure = CloneableStructure.fromJson(build.build.buildJSON);
-      setStructure(newStructure);
-      setBlocks(structureBlockToPlaneBlock(newStructure.getBlocks()));
-
-    }
-    else{
-      setStructure(structure);
-      setBlocks(structureBlockToPlaneBlock(structure.getBlocks()));
-    }
-  }, []);
 
   let curBuildId = null;
 
-  if(build.build !== undefined && build.build !== null){
+  if(build?.build){
     curBuildId = build.build._id;
+    console.log(curBuildId)
   }
 
-    /**
-     * Fetches the complete block data from the api, and stores it in CurrentBlockContext.
-     * @param {object} block - block object to fetch from the api
-     */
-    async function storeBlock(block) {
-      const response = await fetch(`/api/block/${block._id}`);
-      const completeBlockData = await response.json();
-      setCurrentBlock(completeBlockData);
-    }
+  /**
+   * Fetches the complete block data from the api, and stores it in CurrentBlockContext.
+   * @param {object} block - block object to fetch from the api
+   * @param {{_id: string}} block._id - Blockid of the block
+   */
+  async function storeBlock(block: {_id: string}) {
+    const response = await fetch(`/api/block/${block._id}`);
+    const completeBlockData = await response.json();
+    setCurrentBlock(completeBlockData);
+  }
 
   /**
    * Saves the current build in the db
@@ -87,8 +66,7 @@ export default function CraftersDen(): React.ReactNode {
    */
   async function savePost(progressPicture: string) {
     // fetch dataURL to get the blob
-    console.log(JSON.stringify(structure.toJson()));
-    const arrayBufferBlocks = serializeBlocks(structure);
+    const arrayBufferBlocks = serializeBlocks(structure.current);
     const serializedBlocks = new Blob([arrayBufferBlocks], { type: 'application/octet-stream' });
     try {
       const base64Data = progressPicture.split(',')[1];
@@ -112,8 +90,7 @@ export default function CraftersDen(): React.ReactNode {
         throw err;
       }
 
-      console.log(build);
-      setBuild({...{'_id': json.id}, ...build.build})
+      setBuild({...{'_id': json.id, buildJSON: structure.current.toJson()}})
       successMessage(json.message);
     } catch (e) {
       errorMessage(e.message);
@@ -127,15 +104,13 @@ export default function CraftersDen(): React.ReactNode {
             <DeepslatePlane 
             canvas={canvas} 
             structure={structure} 
-            setStructure={setStructure} 
-            setBlocks={setBlocks}
-            blocks={blocks}
+            isViewMode={isViewMode}
             />
           {!isViewMode && <BlockSelection />}
         </section>
         <ButtonPanel 
         canvas={canvas}
-        structure={structure}
+        structure={structure.current}
         setIsViewMode={setIsViewMode} 
         savePost={savePost} 
         isViewMode={isViewMode}
@@ -143,4 +118,25 @@ export default function CraftersDen(): React.ReactNode {
       </div>
     </CurrentBlockContext.Provider>
   );
+}
+
+
+/**
+ * Loads initial structure
+ * @param {object} build - Build from build context
+ * @returns {CloneableStructure} initial structure to use
+ */
+function loadStructure(build) {
+  const serializedBlocks = JSON.parse(localStorage.getItem("build") ?? "{}");
+  
+  if ( serializedBlocks.structure !== "{}" && serializedBlocks.structure) {
+    const newStructure = CloneableStructure.fromJson(serializedBlocks.structure);
+    localStorage.clear();
+    return newStructure;
+  } else if (build && build.buildJSON) {
+    const newStructure = CloneableStructure.fromJson(build.buildJSON);
+    return newStructure;
+  } else {
+    return GRASS_PLANE.clone();
+  }
 }
