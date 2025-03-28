@@ -80,15 +80,6 @@ export default function PublishForm({ opened, close, buildId, updateBuildStatus 
             }}
             maxLength={50}
           />
-{/* 
-          <Select
-            placeholder="Search Tags.."
-            data={[
-              { group: 'General', items: ['Survival Base', 'Creative Base', 'Hardcore'] },
-              { group: 'Structure', items: ['Hut', 'House', 'Mansion', 'Farm', 'Village', 'Barn'] },
-              { group: 'Themes', items: ['Medieval', 'Cottage', 'Fantasy', 'Minimalistic', 'Modern', 'Rustic'] }
-            ]}
-          /> */}
           <MultiSelect
             onChange={(value) => setTags(value)}
             checkIconPosition="right"

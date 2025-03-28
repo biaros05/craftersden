@@ -8,12 +8,14 @@ import { IconSearch } from '@tabler/icons-react';
 import { useState } from 'react';
 import { useAuth } from '../hooks/useAuth.tsx';
 import useSwr from 'swr';
+import { ForumSearch } from './ForumSearch.tsx';
 
 type Post = {
   _id: string,
   user: string,
   progressPicture: string,
-  username: string,  
+  username: string,
+  avatar: string,  
   description: string,
   buildJSON: object,
   isPublished: boolean,
@@ -52,11 +54,7 @@ export default function Forum(): React.ReactNode {
 
   return (
     <section className="forum-page">
-      <TextInput
-        placeholder="Username or description"
-        leftSection={<IconSearch size={18} />}
-        w={200}
-      />
+      <ForumSearch/>
       {publishedBuilds.length !== 0 && (
       <div className="posts" ref={forumDiv}>
           {publishedBuilds.map((build, i) => {
@@ -65,6 +63,7 @@ export default function Forum(): React.ReactNode {
                 key={`publishing-${i}`}
                 imageURL={build.progressPicture}
                 description={build.description}
+                avatar={build.avatar}
                 builderUsername={build.username}
                 buildId={build._id}
                 liked={build.likedBy.includes(id)}

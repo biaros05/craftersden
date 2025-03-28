@@ -226,8 +226,8 @@ async function getPublishedBuilds(req, res, next) {
         const user = await User.findOne({ _id: build.user }).select({ username: 1, avatar: 1, _id: 0 });
         return {
           ...build.toObject(),
-          username: username ? username.username : 'Unknown',
-          avatar: avatar
+          username: user ? user.username : 'Unknown',
+          avatar: user.avatar
         };
       })
     );
@@ -424,6 +424,39 @@ async function getLikesSaves(req, res, next) {
 };
 
 /**
+ * Handles user's query search in forum search, posts descriptions and usernames.
+ * @param {object} req  - The request object.
+ * @param {object} res - The respond object.
+ * @param {*} next - Next
+ * @returns {Response} - The response of the function.
+ */
+async function postSearch(req, res, next){
+  try{
+    const { query } = req.query;
+
+    if(!query){
+      const err = new Error('Must contain search query');
+      err.status = 403;
+      return next(err);
+    }
+
+    const descriptions = await Post.find({
+      description: { $regex: query , $options: "i"}
+    }).select({description: 1, _id: 0});
+
+    const users = await User.find({
+      username: { $regex: query, $options: "i"}
+    }).select({username: 1, avatar: 1, _id: 1});
+
+    return res.status(200).json({message: 'Search results fetched', descriptions: descriptions, users: users});
+
+  } catch(err){
+    err.status = 500;
+    next(err);
+  }
+}
+
+/**
  * This function takes a username and returns posts with the user's id.
  * @param {object} req  - The request object.
  * @param {object} res - The respond object.
@@ -432,21 +465,51 @@ async function getLikesSaves(req, res, next) {
  */
 async function getUserPosts(req, res, next){
   try{
-    const user = await User.find({ username: req.params.username}).select({ "_id": 1});
+    // const user = await User.find({ username: req.params.username}).select({ "_id": 1});
 
-    if(!user){
-      const error = new Error('Cannot find user in the database');
-      error.status = 404;
-      next(error);
+    // if(!user){
+    //   const error = new Error('Cannot find user in the database');
+    //   error.status = 404;
+    //   next(error);
+    // }
+
+    const userid = req.params.id;
+
+    if(!userid){
+      const error = new Error('Invalid user id for posts fetch');
+      err.status = 403;
+      next(err);
     }
 
-    const posts = await Post.find({ user: user._id });
+    const posts = await Post.find({ user: userid });
     
     return res.status(200).json({ message: `User's builds retrieved`, posts: posts });
 
   } catch( error){
     error.status = 500;
     next(error);
+  }
+};
+
+/**
+ * Fetches all the posts by description if contains query instance case insensitive
+ * @param {object} req  - The request object.
+ * @param {object} res - The respond object.
+ * @param {*} next - Next
+ * @returns {Response} - The response of the function.
+ */
+async function getPostsByDescription(req, res, next){
+  try{
+
+    const posts = Post.find({
+      description: { $regex: req.params.description , $options: "i"}
+    });
+
+    return res.status(200).json({message: 'Searched posts success', posts: posts});
+
+  } catch(err){
+    err.status = 500;
+    next(err);
   }
 }
 
@@ -464,5 +527,7 @@ export {
   toggleLikeBuild,
   toggleSaveBuild,
   getLikesSaves,
-  getUserPosts
+  getUserPosts,
+  getPostsByDescription,
+  postSearch
 };

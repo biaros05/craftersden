@@ -141,6 +141,23 @@ async function getUserSavedPosts(req, res, next){
     e.status = 500;
     next(e);
   }
+};
+
+/**
+ * Fetches all the users, usernames and avatars only.
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ * @param {*} next - Next
+ * @returns {Response} - Response with status code, message, and users.
+ */
+async function getUsers(req, res, next){
+  try{
+    const users = User.find().select({username: 1, avatar:1, _id: 0});
+    return res.status(200).json({message: 'Users fetched', users: users});
+  } catch(err){
+    err.status = 500;
+    next(err);
+  }
 }
 
 
