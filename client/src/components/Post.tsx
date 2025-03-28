@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Carousel } from '@mantine/carousel';
 import { IconBookmark, IconBookmarkFilled, IconHeart, IconHeartFilled } from '@tabler/icons-react';
-import { Image, Text, Box, ActionIcon, Pill, ScrollArea } from '@mantine/core';
+import { Image, Text, Box, ActionIcon, Pill, ScrollArea, Avatar, Group } from '@mantine/core';
 import '../styles/Post.css';
 import { errorMessage, successMessage } from '../utils/notification_utils';
 import { useAuth } from '../hooks/useAuth';
@@ -15,6 +15,7 @@ type propTypes = {
   buildId: string,
   viewPostOnClick?: () => void
   tags: []
+  avatar: Blob
 }
 
 /**
@@ -27,13 +28,14 @@ type propTypes = {
  * Rida was here
  * @param {string} props.imageURL Snapshot of the build
  * @param {string} props.builderUsername Username of the creator
+ * @param {string} props.avatar Profile avatar of user.
  * @param {Function} props.viewPostOnClick - Function to call when the post is clicked
  * @param {string} props.buildId the id of the build
  * @param {Array} props.tags tags of the build post
  * @returns {React.ReactNode} The Post
  */
 export default function Post(
-  { description, liked, saved, imageURL, builderUsername, viewPostOnClick, buildId, tags = []}: propTypes): React.ReactNode {
+  { description, liked, saved, imageURL, builderUsername, avatar, viewPostOnClick, buildId, tags = []}: propTypes): React.ReactNode {
 
   const [isLiked, setIsLiked] = useState(liked);
   const [isSaved, setIsSaved] = useState(saved);
@@ -169,7 +171,10 @@ export default function Post(
 
   return (
     <div className="post">
-      <p style={{textAlign: 'center'}}>{builderUsername}</p>
+      <Group align="center" gap="sm">
+        <Avatar src={avatar} radius="xl" size="md" />
+        <Text weight={500} size="sm">{builderUsername}</Text>
+      </Group>
       <Carousel
         height={125}
         slideSize="100%"
