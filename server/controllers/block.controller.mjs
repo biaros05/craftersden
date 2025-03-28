@@ -34,6 +34,7 @@ async function getBlocks(req, res, next) {
     }
 
     pipeline.push(
+      { $sort: { name: 1} },
       { $skip: (page - 1) * limit },
       { $limit: parseInt(limit) },
     );
@@ -46,7 +47,6 @@ async function getBlocks(req, res, next) {
           inventoryTexture: 1,
         }
       },
-      { $sort: { name: 1} },
     );
 
     const blocks = await Block.aggregate(pipeline);
