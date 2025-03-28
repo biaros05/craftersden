@@ -17,13 +17,17 @@ async function getBlocks(req, res, next) {
       return res.status(400).json({ message: 'page and limit parameters must be numbers'});
     }
 
+    if (page < 1 || limit < 1) {
+      return res.status(400).json({ message: 'page and limit parameters must be greater than 0'});
+    }
+
     const pipeline = [];
 
     if (search) {
       pipeline.push(...constructSearchPipeline(search));
     }
 
-    const totalPages = await getTotalPages(limit, pipeline);
+    const totalPages = await getTotalPages(limit, search);
     
     if (page > totalPages) {
       return res.status(404).json({ message: 'Page not found' });
@@ -31,7 +35,7 @@ async function getBlocks(req, res, next) {
 
     pipeline.push(
       { $skip: (page - 1) * limit },
-      { $limit: limit },
+      { $limit: parseInt(limit) },
     );
 
     pipeline.push(
@@ -100,13 +104,12 @@ async function getPageCount(req, res, next) {
  * @async
  * @function getTotalPages
  * @param {number} limit - The maximum number of items per page
- * @param {Array<object>} [pipeline] - An optional MongoDB aggregation pipeline
+ * @param {string} [search] - An optional MongoDB aggregation pipeline
  * @returns {Promise<number>} The total number of pages.
  */
-async function getTotalPages(limit, pipeline = []) {
-  if (pipeline) {
-    const countResult = await Block.aggregate(pipeline).count('count');
-    const count = countResult[0]?.count;
+async function getTotalPages(limit, search) {
+  if (search) {
+    const count = await Block.countDocuments({name : {$regex: search, $options: 'i'}});
     return Math.ceil(count / limit);
   } else {
     const count = await Block.countDocuments();
