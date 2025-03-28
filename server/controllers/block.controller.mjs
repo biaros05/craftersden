@@ -17,19 +17,27 @@ async function getBlocks(req, res, next) {
       return res.status(400).json({ message: 'page and limit parameters must be numbers'});
     }
 
-    const totalPages = Math.ceil(await Block.countDocuments() / limit);
-    if (page > totalPages) {
-      return res.status(404).json({ message: 'Page not found' });
-    }
-
     const pipeline = [];
 
     if (search) {
       pipeline.push(...constructSearchPipeline(search));
-    } else {
-      pipeline.push({ $match: {} });
     }
+
+    const countResult = await Block.aggregate(pipeline).count('count');
+    const count = countResult[0]?.count;
     
+    const totalPages = Math.ceil(count / limit);
+    if (page > totalPages) {
+      return res.status(404).json({ message: 'Page not found' });
+    }
+
+    if (req.query.page) {
+      pipeline.push(
+        { $limit: limit },
+        { $skip: (page - 1) * limit },
+      );
+    }
+
     pipeline.push(
       {
         $project: {
@@ -38,8 +46,6 @@ async function getBlocks(req, res, next) {
           inventoryTexture: 1,
         }
       },
-      { $limit: limit },
-      { $skip: (page - 1) * limit },
       { $sort: { name: 1} },
     );
 
