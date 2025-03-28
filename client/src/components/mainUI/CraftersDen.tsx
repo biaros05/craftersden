@@ -37,7 +37,7 @@ export default function CraftersDen(): React.ReactNode {
 
   const {id, email} = useAuth() ?? {};
   const [isViewMode, setIsViewMode] = useState(false);
-  const [currentBlock, setCurrentBlock] = useState(null);
+  const [currentBlock, setCurrentBlock] = useState({name: 'stone'});
 
   const { setBuild } = useBuildUpdate();
   console.log(id, build?.user)
