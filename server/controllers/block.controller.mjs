@@ -23,10 +23,8 @@ async function getBlocks(req, res, next) {
       pipeline.push(...constructSearchPipeline(search));
     }
 
-    const countResult = await Block.aggregate(pipeline).count('count');
-    const count = countResult[0]?.count;
-
-    const totalPages = Math.ceil(count / limit);
+    const totalPages = await getTotalPages(limit, pipeline);
+    
     if (page > totalPages) {
       return res.status(404).json({ message: 'Page not found' });
     }
@@ -35,7 +33,7 @@ async function getBlocks(req, res, next) {
       { $skip: (page - 1) * limit },
       { $limit: limit },
     );
-    
+
     pipeline.push(
       {
         $project: {
@@ -89,14 +87,33 @@ function constructSearchPipeline(searchValue) {
  */
 async function getPageCount(req, res, next) {
   try {
-    const { limit = 50 } = req.query;
-    const totalPages = Math.ceil(await Block.countDocuments() / limit);
+    const totalPages = await getTotalPages(req.query.limit || 50);
     return res.status(200).json({ totalPages });
   } catch (error) {
     next(error);
   }
 }
 
+/**
+ * Calculates the total number of pages based on the given limit 
+ * and an optional aggregation pipeline
+ *
+ * @async
+ * @function getTotalPages
+ * @param {number} limit - The maximum number of items per page
+ * @param {Array<Object>} [pipeline=[]] - An optional MongoDB aggregation pipeline
+ * @returns {Promise<number>} The total number of pages.
+ */
+async function getTotalPages(limit, pipeline = []) {
+  if (pipeline) {
+    const countResult = await Block.aggregate(pipeline).count('count');
+    const count = countResult[0]?.count;
+    return Math.ceil(count / limit);
+  } else {
+    const count = await Block.countDocuments();
+    return Math.ceil(count / limit);
+  }
+}
 /**
  * Gets a block by its id.
  * @param {object} req - Request
