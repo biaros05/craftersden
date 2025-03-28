@@ -25,7 +25,7 @@ async function getBlocks(req, res, next) {
     const pipeline = [];
 
     if (search) {
-      pipeline.push(constructSearchPipeline(search));
+      pipeline.push(...constructSearchPipeline(search));
     } else {
       pipeline.push({ $match: {} });
     }
