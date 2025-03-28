@@ -61,13 +61,12 @@ export default function CraftersDen(): React.ReactNode {
   const [isViewMode, setIsViewMode] = useState(true);
   const [blocks, setBlocks] = useState<BlockType[]>([]);
   const [currentBlock, setCurrentBlock] = useState(null);
-
   // useBuild returns an object that contains build
   const build = useBuild()?.build;
   const { setBuild } = useBuildUpdate();
+  const [isBuildOwner, setBuildOwner] = useState<boolean>(build?.user === id || build === null);
 
   // A null build signifies a new build
-  const isBuildOwner = build?.user === id || build === null;
 
   let curBuildId = null;
   

@@ -48,7 +48,8 @@
     gap: 10px 0;
     padding: 10px;
     flex: 100%;
-    width: 100%
+    width: 100%;
+    height: fit-content;
 }
 
 #mantine-6x0g87hhx-panel-builds {
