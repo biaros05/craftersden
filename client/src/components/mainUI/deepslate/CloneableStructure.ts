@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { BlockPos, BlockState, Identifier, NbtCompound, Structure } from "deepslate";
+
 export default class CloneableStructure extends Structure {
 
     protected getPalette(): BlockState[] {
@@ -11,13 +12,13 @@ export default class CloneableStructure extends Structure {
     }
 
     public clone(size: [number, number, number] = this.getSize()) {
-        return new CloneableStructure(size, this.getPalette(), this.getPlacedBlocks());
+        return new CloneableStructure(size, [...this.getPalette()], [...this.getPlacedBlocks()]);
     }
 
     public removeBlockAndClone(pos: BlockPos) {
         const blocks = this.getPlacedBlocks().filter(b => !BlockPos.equals(b.pos, pos));
 
-        return new CloneableStructure(this.getSize(), this.getPalette(), blocks)
+        return new CloneableStructure(this.getSize(), this.getPalette(), blocks);
     }
 
     public addBlock(pos: BlockPos, name: Identifier | string, properties?: { [key: string]: string; }, nbt?: NbtCompound): this {
@@ -29,14 +30,13 @@ export default class CloneableStructure extends Structure {
 
     public toJson() {
         return {
-            size: this.getSize(),
-            palette: this.getPalette(),
-            placedBlocks: this.getPlacedBlocks(),
+            size: [...this.getSize()],
+            palette: [...this.getPalette()],
+            placedBlocks: [...this.getPlacedBlocks()],
         };
     }
 
     public static fromJson(json: object) {
-        console.log("PALETTE", json.palette);
         const palette = json.palette.map(b => new BlockState(`${b.name.namespace}:${b.name.path}`, b.properties)) as any;
 
         return new CloneableStructure(json.size, palette, json.placedBlocks);
