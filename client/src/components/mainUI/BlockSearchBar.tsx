@@ -12,7 +12,7 @@ type BlockListItem = {
 type BlockSearchBarProps = {
   blockList: BlockListItem[]
   searchValue: string,
-  setSearchValue: VoidFunction,
+  setSearchValue: (value: string) => void,
   style?: CSSProperties | undefined
 }
 /**
