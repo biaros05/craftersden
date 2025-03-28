@@ -36,12 +36,14 @@ export default function CraftersDen(): React.ReactNode {
   const canvas = useRef<HTMLCanvasElement>(null);
   const structure = useRef<CloneableStructure>(loadStructure(build?.build));
 
-  const {email} = useAuth() ?? {};
+  const {id, email} = useAuth() ?? {};
   const [isViewMode, setIsViewMode] = useState(false);
   const [currentBlock, setCurrentBlock] = useState(null);
 
   const { setBuild } = useBuildUpdate();
-  const [isBuildOwner,] = useState<boolean>(build?.user === id || build === null);
+  console.log(id, build?.user)
+  console.log(build)
+  const [isBuildOwner,] = useState<boolean>(build?.user === id || build?.build === null);
 
   // A null build signifies a new build
 
@@ -50,27 +52,6 @@ export default function CraftersDen(): React.ReactNode {
   if(build && isBuildOwner) {
     curBuildId = build._id;
   }
-
-  // ?-? Could we put this in useRef default
-  useEffect(() => {
-    const serializedBlocks = JSON.parse(localStorage.getItem("build") ?? "{}");
-    
-    if ( serializedBlocks.structure !== "{}" && serializedBlocks.structure) {
-      const newStructure = CloneableStructure.fromJson(serializedBlocks.structure);
-      structure.current = newStructure;
-      // ?-? Could move blocks down into plane and update them on initial load.
-      blocks.current = structureBlockToPlaneBlock(newStructure.getBlocks());
-      localStorage.clear();
-    } else if (build?.build) {
-      const newStructure = CloneableStructure.fromJson(build.build.buildJSON);
-      structure.current = newStructure;
-      blocks.current = structureBlockToPlaneBlock(newStructure.getBlocks());
-
-    }
-    else {
-      // Use default
-    }
-  }, []);
 
   /**
    * Fetches the complete block data from the api, and stores it in CurrentBlockContext.
@@ -113,7 +94,7 @@ export default function CraftersDen(): React.ReactNode {
         throw err;
       }
 
-      setBuild({...{'_id': json.id, buildJSON: structure.current.toJson()}})
+      setBuild({...{'_id': json.id, buildJSON: structure.current.toJson(), user: id}})
       successMessage(json.message);
     } catch (e) {
       errorMessage(e.message);

@@ -3,6 +3,7 @@ import React, { createContext, useContext, useState } from "react";
 interface BuildContextType {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   build: any;   
+  user: any;
 }
 
 //React.Dispatch<React.SetStateAction<any>> is a Typescript type for a state setter 
