@@ -4,7 +4,6 @@ import BlockSearchBar from './BlockSearchBar';
 import BlockPage from './BlockPage';
 import useSWR from 'swr';
 import { useDebounce } from 'use-debounce';
-import { serializeBlocks } from './CraftersDen';
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 

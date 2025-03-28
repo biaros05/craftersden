@@ -1,7 +1,6 @@
-import React, {CSSProperties, useState, useContext } from 'react';
+import React, {CSSProperties, useState } from 'react';
 import { Autocomplete } from '@mantine/core';
 import { IconSearch } from '@tabler/icons-react';
-import { CurrentBlockContext } from '../../context/currentBlockContext';
 
 const SEARCH_ICON = <IconSearch/>;
 
