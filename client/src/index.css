@@ -1,7 +1,21 @@
-body, * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+@font-face {
+  font-family: "Minecraft";
+  src: url('/assets/MinecraftTen-VGORe.ttf'); 
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: "Minecraft";
+  src: url('/assets/MinecraftTen-VGORe.ttf');
+  font-weight: normal;
+}
+
+h1, h2, h3, .mantine-Button-label, .mantine-UnstyledButton-root, .inbox-messages {
+  font-family: "Minecraft";
+}
+
+.mantine-Button-label {
+  letter-spacing: 1px;
 }
 
 html, body{
@@ -61,11 +75,6 @@ form input {
   justify-content: space-between;
 }
 
-body, html {
-  width: 100%;
-  height: 100%;
-}
-
 .posts {
   height: 100%;
   width: 100%;
@@ -74,4 +83,18 @@ body, html {
   gap: 30px 20px;
   justify-items: center;
   padding: 10px;
+}
+
+body, * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body, html, #root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }

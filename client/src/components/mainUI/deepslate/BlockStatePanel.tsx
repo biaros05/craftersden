@@ -111,7 +111,6 @@ export default function BlockStatePanel(
     previewRenderer.current?.setStructure(structure);
     currentState.current = blockstate;
     previewInteractiveCanvas.current?.redraw();
-    console.log(blockstate);
   }
 
   return <div className="blockstate-panel" tabIndex={0}>

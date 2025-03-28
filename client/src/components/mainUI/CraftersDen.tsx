@@ -2,7 +2,7 @@ import BlockSelection from './BlockSelection';
 import ButtonPanel from './ButtonPanel';
 import { useAuth } from '../../hooks/useAuth';
 import './CraftersDen.css';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import React from 'react';
 import {toByteArray} from 'base64-js';
 import {encode} from '@msgpack/msgpack'; 
@@ -10,9 +10,11 @@ import { useBuild, useBuildUpdate } from '../../hooks/BuildContext';
 import { successMessage, errorMessage } from '../../utils/notification_utils';
 import { StatusError } from '../../utils/building_plane_utils';
 import { CurrentBlockContext } from '../../context/currentBlockContext';
+import { isMobile } from 'react-device-detect';
 import CloneableStructure from './deepslate/CloneableStructure';
 import { GRASS_PLANE } from './deepslate/PlanePresets';
 import DeepslatePlane from './deepslate/DeepslatePlane.tsx';
+import { structureBlockToPlaneBlock } from './deepslate/DeepslatePlane.tsx';
 
 /**
  * Takes an array of objects and takes care of serializing their THREE objects
@@ -31,26 +33,24 @@ export function serializeBlocks(structure: CloneableStructure): Uint8Array<Array
  */
 export default function CraftersDen(): React.ReactNode {
   const build = useBuild();
-  console.log(build)
   const canvas = useRef<HTMLCanvasElement>(null);
   const structure = useRef<CloneableStructure>(loadStructure(build?.build));
 
-  const {email} = useAuth() ?? {};
+  const {id, email} = useAuth() ?? {};
   const [isViewMode, setIsViewMode] = useState(false);
-  // const [blocks, setBlocks] = useState<BlockType[]>([]);
-  const [currentBlock, setCurrentBlock] = useState(
-    {
-    name: 'stone'
-    }
-  );
+  const [currentBlock, setCurrentBlock] = useState(null);
 
   const { setBuild } = useBuildUpdate();
+  console.log(id, build?.user)
+  console.log(build)
+  const [isBuildOwner,] = useState<boolean>(build?.user === id || build?.build === null);
+
+  // A null build signifies a new build
 
   let curBuildId = null;
-
-  if(build?.build){
-    curBuildId = build.build._id;
-    console.log(curBuildId)
+  
+  if(build && isBuildOwner) {
+    curBuildId = build._id;
   }
 
   /**
@@ -94,11 +94,19 @@ export default function CraftersDen(): React.ReactNode {
         throw err;
       }
 
-      setBuild({...{'_id': json.id, buildJSON: structure.current.toJson()}})
+      setBuild({...{'_id': json.id, buildJSON: structure.current.toJson(), user: id}})
       successMessage(json.message);
     } catch (e) {
       errorMessage(e.message);
     }
+  }
+
+  if (isMobile) {
+    return (
+      <div id="main-ui">
+        <h1>You must be on a computer to use the den.</h1>
+      </div>
+    )
   }
 
   return (
@@ -118,7 +126,8 @@ export default function CraftersDen(): React.ReactNode {
         setIsViewMode={setIsViewMode} 
         savePost={savePost} 
         isViewMode={isViewMode}
-        email={email}/>
+        isUserLoggedIn={id !== null}
+        isBuildOwner={isBuildOwner} />
       </div>
     </CurrentBlockContext.Provider>
   );

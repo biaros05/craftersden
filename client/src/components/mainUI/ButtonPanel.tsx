@@ -1,10 +1,8 @@
 import React from 'react';
-import {Button} from '@mantine/core';
-import useNavigate from '../Navigation/useNavigate.tsx';
 import '../../styles/ButtonPanel.css';
-import { toast } from 'react-toastify';
-import CustomNotification from './CustomNotification.tsx'
-import { Slide } from 'react-toastify';
+import useNavigate from '../Navigation/useNavigate.tsx';
+import {buildLoginNotification, buildCopyNotification} from '../Notifications/buildNotifications';
+import MinecraftButton from '../Custom/MinecraftButton.tsx';
 import CloneableStructure from './deepslate/CloneableStructure.ts';
 
 type ButtonPanelProps = { 
@@ -12,66 +10,50 @@ type ButtonPanelProps = {
   canvas: React.RefObject<HTMLCanvasElement | null>,
   savePost: (arg0: string) => void,
   isViewMode: boolean,
-  email?: string,
+  isUserLoggedIn: boolean,
+  isBuildOwner: boolean,
   structure: CloneableStructure
 }
 
 /**
  * Displays Save and Toggle view mode buttons
  * @param {object} props React props
- * @param {React.RefObject} props.canvas React ref to canvas element
+ * @param {React.RefObject} props.canvas React ref Cto canvas element
  * @param {Function} props.setIsViewMode Callback to set isViewModel state 
  * @param {Function} props.savePost thumbnail url
  * @param {boolean} props.isViewMode isViewMode state.
- * @param {string} props.email email of current user.
+ * @param {string} props.isUserLoggedIn email of current user.
+ * @param {boolean} props.isBuildOwner is current user the owner of the build.
  * @param {CloneableStructure} props.structure build blocks.
  * @returns {React.ReactNode} Button panel section with buttons
  */
-function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode, email, structure}: ButtonPanelProps): React.ReactNode {
+function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode, isUserLoggedIn, isBuildOwner, structure}: ButtonPanelProps): React.ReactNode {
   const navigate = useNavigate();
-
   return (
     <section className="button-panel">
-      <Button 
-        variant="outline" 
-        color="green" radius="md" 
+      <MinecraftButton 
         className="save-button"
         onClick={() => {
-          if (!email) {
+          if (!isUserLoggedIn) {
             const serializedBlocks = structure.toJson();
             localStorage.setItem("build", JSON.stringify({"structure": serializedBlocks}));
-
-            toast.info(CustomNotification, {
-              data: {
-                redirect: navigate,
-                content: 'Please login to save your build',
-              },
-              ariaLabel: 'Something went wrong',
-              position: "bottom-right",
-              autoClose: 10000,
-              hideProgressBar: false,
-              closeOnClick: false,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: "colored",
-              transition: Slide,
-            });
-          } else {
+            buildLoginNotification(() => navigate('/login'));
+          } else if (!isBuildOwner) {
+            buildCopyNotification(() => savePost(canvas.current!.toDataURL('image/png')));
+          }
+          else {
             savePost(canvas.current!.toDataURL('image/png'));
           }
         }}
       >
         Save
-      </Button>
-      <Button 
+      </MinecraftButton>
+      <MinecraftButton 
         onClick={() => setIsViewMode(!isViewMode)}
-        variant="outline" 
-        color="green" radius="md" 
         className="save-button"
       >
         Toggle Mode
-      </Button>
+      </MinecraftButton>
     </section>
   );
 }

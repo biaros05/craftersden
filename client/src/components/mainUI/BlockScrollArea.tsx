@@ -3,6 +3,7 @@ import { ScrollArea, Pagination } from '@mantine/core';
 import BlockSearchBar from './BlockSearchBar';
 import BlockPage from './BlockPage';
 import useSWR from 'swr';
+import { useDebounce } from 'use-debounce';
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -15,6 +16,8 @@ export default function BlockScrollArea({ style = {}}): React.ReactNode {
 
   const scrollViewport = useRef<HTMLDivElement>(null);
   const [pageIndex, setPageIndex] = useState<number>(1);
+  const [searchValue, setSearchValue] = useState<string>('');
+  const [debouncedSearch] = useDebounce(searchValue, 400);
 
   const scrollToTop = () => scrollViewport.current!.scrollTo({ top: 0, behavior: 'smooth' });
 
@@ -23,24 +26,48 @@ export default function BlockScrollArea({ style = {}}): React.ReactNode {
     scrollToTop();
   };
 
-  // TODO do we still need these errors, remove eslint ignore
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { data: pageCountData, error: pageCountError } = useSWR('/api/blocks/page-count', fetcher);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { data: blockData, error: blockDataError } = useSWR('/api/blocks', fetcher);
+  // reset back to page 1 as each search will have it's own pages
+  const handleSearchChange = (value: string) => {
+    setSearchValue(value);
+    setPageIndex(1);
+  }
 
-  const pageCount = pageCountData?.totalPages;
+  const { data: blockData } = useSWR(`/api/blocks?search=${debouncedSearch}&page=${1}`, fetcher);
+
+  const { data: allBlockData } = useSWR('/api/blocks', fetcher);
+
+  const pageCount = blockData?.totalPages
 
   return (
     <section id="block-scroll-area" style={style}>
-      <BlockSearchBar blockList={blockData?.blocks}/>
+      <BlockSearchBar 
+        blockList={allBlockData?.blocks} 
+        searchValue={searchValue} 
+        setSearchValue={handleSearchChange}/>
+
       {/* Cache next page */}
       {pageIndex < pageCount &&
-        <div style={{ display: 'none' }}><BlockPage index={ pageIndex + 1 }/></div> }
-      {pageCount && <Pagination total={pageCount} value={pageIndex} onChange={handlePageChange} withPages={true}/>}
-      <ScrollArea h={"30vw"} type="always" scrollbarSize={12} style={{ padding: '1em'}} viewportRef={scrollViewport}>
-        <BlockPage index={pageIndex}/>
-      </ScrollArea>
+        <div style={{ display: 'none' }}><BlockPage index={ pageIndex + 1 } searchValue={debouncedSearch}/></div> }
+
+      {pageCount && 
+      <Pagination 
+        total={pageCount} 
+        value={pageIndex} 
+        onChange={handlePageChange} 
+        withPages={true}/>}
+
+      <ScrollArea.Autosize 
+        mah={300} 
+        maw={400} 
+        mx="auto" 
+        type="always" 
+        scrollbarSize={12} 
+        style={{ padding: '1em'}} 
+        viewportRef={scrollViewport}>
+        <BlockPage 
+          index={pageIndex} 
+          searchValue={debouncedSearch}/>
+      </ScrollArea.Autosize>
     </section>
   );
 }

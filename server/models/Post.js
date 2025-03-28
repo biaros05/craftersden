@@ -24,7 +24,10 @@ const PostSchema = new Schema({
   },
   isPublished: Boolean,
   thumnails: [],
-  progressPicture: String
+  progressPicture: String,
+  likedBy: [{ type: Schema.Types.ObjectId, ref:'User'}],
+  savedBy: [{ type: Schema.Types.ObjectId, ref: 'User'}],
+  tags: []
 });
 
 

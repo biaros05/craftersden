@@ -9,8 +9,10 @@ import authRouter from './routers/auth.router.mjs';
 import blockRouter from './routers/block.router.mjs';
 import userRouter from './routers/user.router.mjs';
 import postRouter from './routers/post.router.mjs'
+import notificationsRouter from './routers/notifications.router.mjs';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
+import mongoose from 'mongoose';
 
 dotenv.config();
 const app = express();
@@ -74,6 +76,7 @@ if (!process.env.SECRET) {
   console.error('SECRET NOT SPECIFIED, THIS IS A BIG SECURITY RISK');
 }
 
+app.set('trust proxy', 1);
 app.use(session({
   secret: process.env.SECRET ?? 'UNSECURE',
   name: 'id',
@@ -84,7 +87,7 @@ app.use(session({
     collection: 'sessions'
   }) : null,
   cookie: { 
-    maxAge: 1000 * 60 * 20,
+    maxAge: 1000 * 60 * 60,
     secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
     sameSite: 'strict'
@@ -114,12 +117,25 @@ app.get('/api/helloworld', (req, res) => {
   res.send('hello world!');
 });
 
+
 app.use('/api', authRouter);
 app.use('/api', blockRouter);
 
 app.use('/api/user', userRouter);
 
 app.use('/api/post', postRouter);
+
+app.use('/api/notifications', notificationsRouter);
+
+app.get('/api/health', (req, res) => {
+  res.set('Cache-Control', 'max-age=300');
+  const healthData = {};
+
+  healthData.alive = true;
+  healthData.db = mongoose.STATES[mongoose.connection.readyState];
+
+  return res.json(healthData);
+});
 
 // Serve index.html for all other routes
 app.get('*', html, (req, res) => {
@@ -132,6 +148,7 @@ app.use((req, res, next) => {
   res.status(404).json({message: 'not found'});
   return;
 });
+
 
 app.use(function (err, req, res, next) {
   console.error(err);

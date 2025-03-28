@@ -9,31 +9,47 @@ import Block from '../models/Block.js';
  * @param {Function} next - Next
  * @returns {void}
  */
-export async function getBlocks(req, res, next) {
+async function getBlocks(req, res, next) {
   try {
-    const { page = 1, limit = 50 } = req.query;
+    const { page = 1, limit = 50, search = ''} = req.query;
 
     if (isNaN(page) || isNaN(limit)) {
       return res.status(400).json({ message: 'page and limit parameters must be numbers'});
     }
 
-    const totalPages = Math.ceil(await Block.countDocuments() / limit);
+    if (page < 1 || limit < 1) {
+      return res.status(400).json({ message: 'page and limit parameters must be greater than 0'});
+    }
+
+    const pipeline = [];
+
+    if (search) {
+      pipeline.push(...constructSearchPipeline(search));
+    }
+
+    const totalPages = await getTotalPages(limit, search);
+    
     if (page > totalPages) {
       return res.status(404).json({ message: 'Page not found' });
     }
-    
-    if (!req.query.page && !req.query.limit) {
-      const blocks = await Block.find({}, 'name inventoryTexture').sort({ name: 1 });
-      return res.status(200).json({
-        blocks: blocks,
-        totalBlocks: blocks.length
-      });
-    }
 
-    const blocks = await Block.find({}, 'name inventoryTexture').
-      sort({ name: 1 }).
-      limit(limit).
-      skip((page - 1) * limit);
+    pipeline.push(
+      { $skip: (page - 1) * limit },
+      { $limit: parseInt(limit) },
+    );
+
+    pipeline.push(
+      {
+        $project: {
+          _id: 1,
+          name: 1,
+          inventoryTexture: 1,
+        }
+      },
+      { $sort: { name: 1} },
+    );
+
+    const blocks = await Block.aggregate(pipeline);
 
     return res.status(200).json({
       blocks: blocks,
@@ -46,6 +62,26 @@ export async function getBlocks(req, res, next) {
 }
 
 /**
+ * Returns a search pipeline for the given search value.
+ * @param {string} searchValue - Search value
+ * @returns {object} - object containing the search pipeline
+ */
+function constructSearchPipeline(searchValue) {
+  return [
+    {
+      $search: {
+        autocomplete: {
+          query: searchValue, 
+          path: 'name', 
+          tokenOrder: 'any', 
+        },
+        index: 'block-name'
+      }
+    },
+  ];
+}
+
+/**
  * Gets the total number of pages. Default is 50 items per page.
  * @param {object} req - Request
  * @param {number} [req.query.limit] - Number of items per page
@@ -53,16 +89,33 @@ export async function getBlocks(req, res, next) {
  * @param {Function} next - Next
  * @returns {void}
  */
-export async function getPageCount(req, res, next) {
+async function getPageCount(req, res, next) {
   try {
-    const { limit = 50 } = req.query;
-    const totalPages = Math.ceil(await Block.countDocuments() / limit);
+    const totalPages = await getTotalPages(req.query.limit || 50);
     return res.status(200).json({ totalPages });
   } catch (error) {
     next(error);
   }
 }
 
+/**
+ * Calculates the total number of pages based on the given limit 
+ * and an optional aggregation pipeline
+ * @async
+ * @function getTotalPages
+ * @param {number} limit - The maximum number of items per page
+ * @param {string} [search] - An optional MongoDB aggregation pipeline
+ * @returns {Promise<number>} The total number of pages.
+ */
+async function getTotalPages(limit, search) {
+  if (search) {
+    const count = await Block.countDocuments({name : {$regex: search, $options: 'i'}});
+    return Math.ceil(count / limit);
+  } else {
+    const count = await Block.countDocuments();
+    return Math.ceil(count / limit);
+  }
+}
 /**
  * Gets a block by its id.
  * @param {object} req - Request
@@ -71,7 +124,7 @@ export async function getPageCount(req, res, next) {
  * @param {Function} next - Next
  * @returns {void}
  */
-export async function getBlock(req, res, next) {
+async function getBlock(req, res, next) {
   try {
     const { id } = req.params;
     const block = await Block.findById(id);
@@ -83,3 +136,5 @@ export async function getBlock(req, res, next) {
     next(error);
   }
 }
+
+export { getBlocks, getBlock, getPageCount };
