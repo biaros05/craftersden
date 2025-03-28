@@ -97,11 +97,10 @@ async function getPageCount(req, res, next) {
 /**
  * Calculates the total number of pages based on the given limit 
  * and an optional aggregation pipeline
- *
  * @async
  * @function getTotalPages
  * @param {number} limit - The maximum number of items per page
- * @param {Array<Object>} [pipeline=[]] - An optional MongoDB aggregation pipeline
+ * @param {Array<object>} [pipeline] - An optional MongoDB aggregation pipeline
  * @returns {Promise<number>} The total number of pages.
  */
 async function getTotalPages(limit, pipeline = []) {
