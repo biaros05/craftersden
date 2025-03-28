@@ -41,7 +41,7 @@ async function getBlocks(req, res, next) {
     pipeline.push(
       {
         $project: {
-          _id: 0,
+          _id: 1,
           name: 1,
           inventoryTexture: 1,
         }
