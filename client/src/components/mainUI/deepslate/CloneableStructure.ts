@@ -12,7 +12,7 @@ export default class CloneableStructure extends Structure {
     }
 
     public clone(size: [number, number, number] = this.getSize()) {
-        return new CloneableStructure(size, this.getPalette(), this.getPlacedBlocks());
+        return new CloneableStructure(size, [...this.getPalette()], [...this.getPlacedBlocks()]);
     }
 
     public removeBlockAndClone(pos: BlockPos) {
@@ -30,9 +30,9 @@ export default class CloneableStructure extends Structure {
 
     public toJson() {
         return {
-            size: this.getSize(),
-            palette: this.getPalette(),
-            placedBlocks: this.getPlacedBlocks(),
+            size: [...this.getSize()],
+            palette: [...this.getPalette()],
+            placedBlocks: [...this.getPlacedBlocks()],
         };
     }
 
