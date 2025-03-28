@@ -153,6 +153,11 @@ export default function CraftersDen(): React.ReactNode {
 }
 
 
+/**
+ * Loads initial structure
+ * @param build - Build from build context
+ * @returns {CloneableStructure} initial structure to use
+ */
 function loadStructure(build) {
   const serializedBlocks = JSON.parse(localStorage.getItem("build") ?? "{}");
   
