@@ -31,7 +31,6 @@ const selectedBlock = {
  * @param {object} props - React props
  * @param {React.RefObject<HTMLCanvasElement>} props.canvas - canvas of the plane 
  * @param {React.RefObject<CloneableStructure>} props.structure - current structure
- * @param {React.RefObject<PlaneBlock[]>} props.blocks - current blocks within the structure
  * @param {boolean} props.isViewMode - View mode state of plane
  * @returns {React.ReactNode} - Deepslate plane
  */
