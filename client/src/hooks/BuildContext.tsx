@@ -2,7 +2,8 @@ import React, { createContext, useContext, useState } from "react";
 
 interface BuildContextType {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  build: any;   
+  build: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   user: any;
 }
 

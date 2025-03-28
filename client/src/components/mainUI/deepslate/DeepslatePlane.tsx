@@ -23,11 +23,6 @@ for (let x = 0; x < 20; x++) {
   }
 }
 
-const selectedBlock = {
-  namespace: 'minecraft',
-  name: 'acacia_fence',
-};
-
 /**
  * @param {object} props - React props
  * @param {React.RefObject<HTMLCanvasElement>} props.canvas - canvas of the plane 

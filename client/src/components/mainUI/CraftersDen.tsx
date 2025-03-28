@@ -2,7 +2,7 @@ import BlockSelection from './BlockSelection';
 import ButtonPanel from './ButtonPanel';
 import { useAuth } from '../../hooks/useAuth';
 import './CraftersDen.css';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import React from 'react';
 import {toByteArray} from 'base64-js';
 import {encode} from '@msgpack/msgpack'; 
@@ -14,7 +14,6 @@ import { isMobile } from 'react-device-detect';
 import CloneableStructure from './deepslate/CloneableStructure';
 import { GRASS_PLANE } from './deepslate/PlanePresets';
 import DeepslatePlane from './deepslate/DeepslatePlane.tsx';
-import { structureBlockToPlaneBlock } from './deepslate/DeepslatePlane.tsx';
 
 /**
  * Takes an array of objects and takes care of serializing their THREE objects
