@@ -29,11 +29,9 @@ export default function BlockStatePanel(
   const [advancedMode, setAdvancedMode] = useState(false);
 
   const possibleBlockstates = allBlockstates[blockName][0];
-
-  // If currentState is empty use default and update buildPlane
-  if (Object.keys(currentState.current).length === 0) {
-    currentState.current = allBlockstates[blockName][1];
-  }
+  useEffect(() => {
+      currentState.current = allBlockstates[blockName][1];
+  }, [blockName]);
   const state = currentState.current;
 
   useEffect(() => {
@@ -112,6 +110,7 @@ export default function BlockStatePanel(
     previewRenderer.current?.setStructure(structure);
     currentState.current = blockstate;
     previewInteractiveCanvas.current?.redraw();
+    console.log(blockstate);
   }
 
   return <div className="blockstate-panel" tabIndex={0}>

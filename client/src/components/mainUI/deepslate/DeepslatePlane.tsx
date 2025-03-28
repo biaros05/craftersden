@@ -1,5 +1,5 @@
 /* eslint-disable jsdoc/no-undefined-types */
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState, useContext } from 'react';
 import fetchResources from './ResourcesFetcher';
 import { Mesh, getCameraPosition, checkBlocksForIntersect, computePoint, computeTriangleNormal, computeTrianglesOfCube, screenToWorldRay } from './RaycastUtils';
 import { BlockPos, PlacedBlock, Resources } from 'deepslate';
@@ -9,6 +9,7 @@ import InteractiveStructureRenderer from './InteractiveStructureRenderer';
 import CloneableStructure from './CloneableStructure';
 import '../../../styles/DeepslatePlane.css';
 import BlockStatePanel from './BlockStatePanel';
+import { CurrentBlockContext } from '../../../context/currentBlockContext';
 
 export interface PlaneBlock extends Mesh {
 	name: string;
@@ -44,6 +45,10 @@ export default function DeepslatePlane({canvas, structure, isViewMode}: { canvas
   const blockstate = useRef<{[key: string]: string}>({});
   const [resources, setResources] = useState<Resources>();
   const canvasRect = useRef<DOMRect>(null);
+
+    const {
+      currentBlock
+    } = useContext(CurrentBlockContext);
 
   // Layout effect to make sure dom is ready to paint
   useLayoutEffect(() => {
@@ -157,7 +162,7 @@ export default function DeepslatePlane({canvas, structure, isViewMode}: { canvas
         const newBlockPosVec = vec3.add(vec3.create(), point, normal);
         const newBlockPos: [number, number, number] = [newBlockPosVec[0], newBlockPosVec[1], newBlockPosVec[2]];
         if (!structure.current.getBlock(newBlockPos) && structure.current.isInside(point)) {
-          structure.current.addBlock(newBlockPos, `${selectedBlock.namespace}:${selectedBlock.name}`, {...blockstate.current});
+          structure.current.addBlock(newBlockPos, `${'minecraft'}:${currentBlock.name}`, {...blockstate.current});
           blocks.current.push(...structureBlockToPlaneBlock([structure.current.getBlock(newBlockPos)!]));
 
           structureRenderer.current!.setStructure(structure.current);
@@ -205,7 +210,7 @@ export default function DeepslatePlane({canvas, structure, isViewMode}: { canvas
 
   return <div className="plane-container">
     <canvas id='deepslate-plane' width={800} height={800} ref={canvas} onMouseDown={!isViewMode ? handleClick : undefined} onContextMenu={(e) => e.preventDefault()}></canvas>
-    {!isViewMode && <BlockStatePanel blockName={selectedBlock.name} blockNamespace={selectedBlock.namespace} currentState={blockstate} resources={resources} />}
+    {!isViewMode && <BlockStatePanel blockName={currentBlock.name} blockNamespace={'minecraft'} currentState={blockstate} resources={resources} />}
   </div>;
 }
 
