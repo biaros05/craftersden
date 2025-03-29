@@ -8,15 +8,10 @@ type User = {
 };
 
 type Description = {
-  description: string
-}
+  description: string;
+};
 
-/**
- * 
- * @returns {React.ReactNode} - Returns Autocomplete component with search bar for 
- * users and build's descriptions.
- */
-export function ForumSearch() {
+export function ForumSearch({ username, description, setUsername, setDescription }) {
   const [search, setSearch] = useState("");
   const [users, setUsers] = useState<User[]>([]);
   const [descriptions, setDescriptions] = useState<Description[]>([]);
@@ -54,38 +49,54 @@ export function ForumSearch() {
     return () => controller.abort();
   }, [search]);
 
-  const userData = users.flatMap((user) => ({
+  function handleSubmit(selectedValue: string) {
+    const isUser = users.some((user) => user.username === selectedValue);
+    const isDescription = descriptions.some((desc) => desc.description === selectedValue);
+
+    if (isUser) {
+      setUsername(selectedValue);
+      setDescription(''); // Clear description if username is selected
+    }
+
+    if (isDescription) {
+      setDescription(selectedValue);
+      setUsername(''); // Clear username if description is selected
+    }
+
+    setSearch(''); // Clear input field after selection
+  }
+
+  const userData = users.map((user) => ({
     value: user.username,
     group: "Users",
-    items: [(
+    items: (
       <Group key={user.username} gap="sm">
         <Avatar src={user.avatar} size={36} radius="xl" />
         <Text size="sm">{user.username}</Text>
       </Group>
-    )],
+    ),
   }));
 
-  const descriptionData = descriptions.flatMap((desc) => ({
+  const descriptionData = descriptions.map((desc) => ({
     value: desc.description,
     group: "Build Descriptions",
-    items: [desc.description]
   }));
 
   return (
     <Autocomplete
-      clearable 
-      defaultValue=''
-      style={{width: '400px'}}
+      clearable
+      style={{ width: "400px" }}
       label="Search for Posts"
       placeholder="Search username or description..."
       limit={50}
-      // data={[...userData, ...descriptionData]}
-      data={[
-        { group: 'Users', items: userData},
-        { group: 'Builds', items: descriptionData}
-      ]}
+      data={[...userData, ...descriptionData]}
       onChange={setSearch}
       value={search}
+      onOptionSubmit={handleSubmit}
+      onClear={() => {
+        setDescription('');
+        setUsername('');
+      }}
     />
   );
 }

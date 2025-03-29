@@ -36,15 +36,25 @@ export default function Forum(): React.ReactNode {
   const navigate = useNavigate();
   const { setBuild } = useBuildUpdate();
   const { id } = useAuth() ?? {};
+  const [username, setUsername] = useState('');
+  const [description, setDescription] = useState('');
 
   const handlePostClick = (build: Post) => {
     setBuild(build)
     navigate('/den');
   }
 
-  const {data} = useSwr(`/api/post?page=${page}&limit=20`, fetcher, {suspense: true});
-  const publishedBuilds = data.builds;
-  const scrollToTop = () => forumDiv.current!.scrollTo({ top: 0, behavior: 'smooth' });
+  const queryParams = new URLSearchParams();
+  queryParams.append('page', page.toString());
+  queryParams.append('limit', '20');
+  if (username) queryParams.append('username', username);
+  if (description) queryParams.append('description', description);
+  
+  const { data } = useSwr(`/api/post?${queryParams.toString()}`, fetcher, { suspense: true });
+  
+  const publishedBuilds = data?.builds || [];
+
+  const scrollToTop = () => forumDiv.current?.scrollTo({ top: 0, behavior: 'smooth' });
 
   const handlePageChange = (index: number) => {
     setPage(index);
@@ -53,7 +63,7 @@ export default function Forum(): React.ReactNode {
 
   return (
     <section className="forum-page">
-      <ForumSearch/>
+      <ForumSearch username={username} description={description} setUsername={setUsername} setDescription={setDescription} />
       {publishedBuilds.length !== 0 && (
       <div className="posts" ref={forumDiv}>
           {publishedBuilds.map((build, i) => {

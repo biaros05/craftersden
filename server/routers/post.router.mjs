@@ -111,8 +111,8 @@ postRouter.get('/:buildId/likes-saves', isAuthenticated, getLikesSaves);
 
 postRouter.get('/', getPublishedBuilds);
 
-postRouter.get('/posts/:username', isAuthenticated, getUserPosts);
-postRouter.get('/posts/:description', isAuthenticated, getPostsByDescription);
+postRouter.get('/posts/user/:username', isAuthenticated, getUserPosts);
+postRouter.get('/posts/description/:description', isAuthenticated, getPostsByDescription);
 
 postRouter.get('/search', isAuthenticated, postSearch);
 

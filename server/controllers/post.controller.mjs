@@ -200,7 +200,7 @@ async function unpublishBuild(req, res, next) {
  */
 async function getPublishedBuilds(req, res, next) {
   try {
-    const { page = 1, limit = 50 } = req.query;
+    const { page = 1, limit = 50, username, description } = req.query;
     
     if (isNaN(page) || isNaN(limit)) {
       return res.status(400).json({ message: 'page and limit parameters must be numbers'});
@@ -212,14 +212,37 @@ async function getPublishedBuilds(req, res, next) {
       return res.status(404).json({ message: 'Page not found' });
     }
 
-    const publishedBuilds = await Post.find({ isPublished: true }).
+    let publishedBuilds = []
+
+    if(username){
+      const user = await User.find({ username: username}).select({ "_id": 1});
+      publishedBuilds = await Post.find(
+        { isPublished: true,
+          user: user._id}
+      ).
       sort({_id: 1}).
       limit(limit).
       skip((page - 1) * limit);
-    
+    }
+    else if(description){
+      publishedBuilds = await Post.find({
+        description: { $regex: description, $options: 'i'},
+        isPublished: true
+      }).
+      sort({_id: 1}).
+      limit(limit).
+      skip((page - 1) * limit);   
+    }
+    else{
+      publishedBuilds = await Post.find({ isPublished: true }).
+        sort({_id: 1}).
+        limit(limit).
+        skip((page - 1) * limit);
+    }
+
     if (publishedBuilds.length === 0) {
       return res.status(100).json({ message: 'There are no published builds at this moment.' });
-    }
+    };
 
     const publishBuildsWithUsername = await Promise.all(
       publishedBuilds.map(async (build) => {
@@ -244,7 +267,7 @@ async function getPublishedBuilds(req, res, next) {
     err.status = 500;
     next(err);
   }
-}
+};
 
 /**
  * Obtains the file content and stores it in azure blob.
