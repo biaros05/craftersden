@@ -2,19 +2,19 @@ import React, {CSSProperties, ReactNode} from 'react';
 import {Tabs} from '@mantine/core';
 import BlockScrollArea from './BlockScrollArea';
 import Materials from './Materials';
-import { PlacedBlock } from 'deepslate';
+import CloneableStructure from './deepslate/CloneableStructure';
 
 /**
  * Displays a tabbed block selection area.
  * @param {object} props React props
- * @param {PlacedBlock[]} props.blocks Blocks used
+ * @param {CloneableStructure} props.structure Structure built
  * @param {CSSProperties?} props.style optional style applied to the block selection section
  * @example ```tsx
  * <BlockSelectio style={{width: '30%'}}/>
  * ```
  * @returns {ReactNode} Block selection panel
  */
-export default function BlockSelection({blocks, style}: {blocks: PlacedBlock[]; style?: CSSProperties;}): ReactNode {
+export default function BlockSelection({structure, style}: {structure: React.RefObject<CloneableStructure>; style?: CSSProperties;}): ReactNode {
   return (
     <div id="block-selection" style={style ?? {}}>
       <Tabs defaultValue="all">
@@ -32,7 +32,7 @@ export default function BlockSelection({blocks, style}: {blocks: PlacedBlock[]; 
         </Tabs.Panel>
       
         <Tabs.Panel value="materials">
-          <Materials blocks={blocks} />
+          <Materials structure={structure} planeBlock='minecraft:grass_block' />
         </Tabs.Panel>
 
       </Tabs>
