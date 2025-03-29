@@ -106,7 +106,7 @@ export default function BlockStatePanel(
    */
   function updateBlockstate(blockstate: {[key: string]: string}) {
     const structure = new Structure([1, 1, 1]);
-    structure.addBlock([0, 0, 0], `${blockNamespace}:${blockName}`, blockstate);
+    structure.addBlock([0, 0, 0], `${blockNamespace}:${blockName}`, {...blockstate});
     previewStructure.current = structure;
     previewRenderer.current?.setStructure(structure);
     currentState.current = blockstate;
