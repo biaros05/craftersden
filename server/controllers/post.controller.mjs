@@ -482,63 +482,6 @@ async function postSearch(req, res, next){
   }
 }
 
-/**
- * This function takes a username and returns posts with the user's id.
- * @param {object} req  - The request object.
- * @param {object} res - The respond object.
- * @param {*} next - Next
- * @returns {Response} - The response of the function.
- */
-async function getUserPosts(req, res, next){
-  try{
-    // const user = await User.find({ username: req.params.username}).select({ "_id": 1});
-
-    // if(!user){
-    //   const error = new Error('Cannot find user in the database');
-    //   error.status = 404;
-    //   next(error);
-    // }
-
-    const userid = req.params.id;
-
-    if(!userid){
-      const err = new Error('Invalid user id for posts fetch');
-      err.status = 403;
-      next(err);
-    }
-
-    const posts = await Post.find({ user: userid });
-    
-    return res.status(200).json({ message: `User's builds retrieved`, posts: posts });
-
-  } catch( error){
-    error.status = 500;
-    next(error);
-  }
-};
-
-/**
- * Fetches all the posts by description if contains query instance case insensitive
- * @param {object} req  - The request object.
- * @param {object} res - The respond object.
- * @param {*} next - Next
- * @returns {Response} - The response of the function.
- */
-async function getPostsByDescription(req, res, next){
-  try{
-    const posts = Post.find({
-      description: { $regex: req.params.description, $options: 'i'}
-    });
-
-    return res.status(200).json({message: 'Searched posts success', posts: posts});
-
-  } catch(err){
-    err.status = 500;
-    next(err);
-  }
-}
-
-
 export {
   saveBuild,
   uploadValidation,
@@ -552,7 +495,5 @@ export {
   toggleLikeBuild,
   toggleSaveBuild,
   getLikesSaves,
-  getUserPosts,
-  getPostsByDescription,
   postSearch
 };

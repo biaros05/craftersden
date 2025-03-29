@@ -12,8 +12,6 @@ import {
   toggleLikeBuild,
   toggleSaveBuild,
   getLikesSaves,
-  getUserPosts,
-  getPostsByDescription,
   postSearch
 } from '../controllers/post.controller.mjs';
 import multer from 'multer';
@@ -110,9 +108,6 @@ postRouter.post('/toggle-save', isAuthenticated, toggleSaveBuild);
 postRouter.get('/:buildId/likes-saves', isAuthenticated, getLikesSaves);
 
 postRouter.get('/', getPublishedBuilds);
-
-postRouter.get('/posts/user/:username', isAuthenticated, getUserPosts);
-postRouter.get('/posts/description/:description', isAuthenticated, getPostsByDescription);
 
 postRouter.get('/search', isAuthenticated, postSearch);
 

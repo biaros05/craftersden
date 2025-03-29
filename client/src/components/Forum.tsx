@@ -3,7 +3,7 @@ import Post from './Post';
 import '../styles/forum.css';
 import useNavigate from "./Navigation/useNavigate.tsx"
 import { useBuildUpdate } from '../hooks/BuildContext.tsx';
-import { Pagination } from '@mantine/core';
+import { Pagination, Text } from '@mantine/core';
 import { useState } from 'react';
 import { useAuth } from '../hooks/useAuth.tsx';
 import useSwr from 'swr';
@@ -64,7 +64,7 @@ export default function Forum(): React.ReactNode {
   return (
     <section className="forum-page">
       <ForumSearch username={username} description={description} setUsername={setUsername} setDescription={setDescription} />
-      {publishedBuilds.length !== 0 && (
+      {publishedBuilds.length !== 0 ? (
       <div className="posts" ref={forumDiv}>
           {publishedBuilds.map((build, i) => {
             return (
@@ -84,6 +84,8 @@ export default function Forum(): React.ReactNode {
           })
         }
         </div>
+      ) : (
+        <Text>No posts to display!</Text>
       )}
       {publishedBuilds.length !== 0 && 
         <div className='pagination-container'>
