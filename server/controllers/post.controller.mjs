@@ -212,7 +212,7 @@ async function getPublishedBuilds(req, res, next) {
       return res.status(404).json({ message: 'Page not found' });
     }
 
-    let publishedBuilds = []
+    let publishedBuilds = [];
 
     if(username){
       console.log(username);  
@@ -226,20 +226,18 @@ async function getPublishedBuilds(req, res, next) {
         { isPublished: true,
           user: user._id}
       ).
-      sort({_id: 1}).
-      limit(limit).
-      skip((page - 1) * limit);
-    }
-    else if(description){
+        sort({_id: 1}).
+        limit(limit).
+        skip((page - 1) * limit);
+    } else if(description){
       publishedBuilds = await Post.find({
         description: { $regex: description, $options: 'i'},
         isPublished: true
       }).
-      sort({_id: 1}).
-      limit(limit).
-      skip((page - 1) * limit);   
-    }
-    else{
+        sort({_id: 1}).
+        limit(limit).
+        skip((page - 1) * limit);   
+    } else{
       publishedBuilds = await Post.find({ isPublished: true }).
         sort({_id: 1}).
         limit(limit).
@@ -470,8 +468,8 @@ async function postSearch(req, res, next){
     }).select({description: 1, _id: 0});
 
     const users = await User.find({
-      username: { $regex: query, $options: 'i'}})
-      .select({username: 1, avatar: 1, _id: 1});
+      username: { $regex: query, $options: 'i'}}).
+      select({username: 1, avatar: 1, _id: 1});
 
     return res.status(200).json({
       message: 'Search results fetched', 
