@@ -40,6 +40,7 @@ export default function DeepslatePlane({canvas, structure, isViewMode}: { canvas
   const blockstate = useRef<{[key: string]: string}>({});
   const [resources, setResources] = useState<Resources>();
   const canvasRect = useRef<DOMRect>(null);
+  const [isPlaneHover, setIsPlaneHover] = useState<boolean>(false);
 
     const {
       currentBlock
@@ -203,9 +204,11 @@ export default function DeepslatePlane({canvas, structure, isViewMode}: { canvas
 		}
 	}
 
-  return <div className="plane-container">
+  return <div className="plane-container" 
+    onMouseEnter={() => setIsPlaneHover(true)}
+    onMouseLeave={() => setIsPlaneHover(false)}>
     <canvas id='deepslate-plane' width={800} height={800} ref={canvas} onMouseDown={!isViewMode ? handleClick : undefined} onContextMenu={(e) => e.preventDefault()}></canvas>
-    {!isViewMode && <BlockStatePanel blockName={currentBlock.name} blockNamespace={'minecraft'} currentState={blockstate} resources={resources} />}
+    {!isViewMode && <BlockStatePanel blockName={currentBlock.name} blockNamespace={'minecraft'} currentState={blockstate} resources={resources} isPlaneHover={isPlaneHover}/>}
   </div>;
 }
 

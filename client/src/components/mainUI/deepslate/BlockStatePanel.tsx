@@ -12,12 +12,13 @@ const MCMETA = 'https://raw.githubusercontent.com/misode/mcmeta/refs/heads/summa
  * @param {object} props - React props
  * @param {string} props.blockName Name of block selected
  * @param {Resources} props.resources resource object
+ * @param {boolean} props.isPlaneHover If the user is hovering the build plane
  * @param {React.RefObject<{[key: string]: string}>} props.currentState State of the block
  * @returns {React.ReactNode} block state panel
  */
 export default function BlockStatePanel(
-  {blockName, blockNamespace, resources, currentState}:
-  {blockName: string, blockNamespace: string, currentState: React.RefObject<{ [key: string]: string }>, resources?: Resources | undefined}
+  {blockName, blockNamespace, resources, currentState, isPlaneHover}:
+  {blockName: string, blockNamespace: string, currentState: React.RefObject<{ [key: string]: string }>, resources?: Resources | undefined, isPlaneHover: boolean}
 ): React.ReactNode {
   const {data: allBlockstates} = useSWR(MCMETA, fetcher, {suspense: true});
   const blockStatePreview = useRef<HTMLCanvasElement>(null);
@@ -27,6 +28,7 @@ export default function BlockStatePanel(
   const keyIndex = useRef(0);
   const stateMappings = useRef<{[key:string]: string}[]>([]);
   const [advancedMode, setAdvancedMode] = useState(false);
+  const keyboardControlsRef = useRef<(e: KeyboardEvent) => void>(null);
 
   const possibleBlockstates = allBlockstates[blockName][0];
   useEffect(() => {
@@ -34,31 +36,45 @@ export default function BlockStatePanel(
   }, [blockName]);
   const state = currentState.current;
 
-  useEffect(() => {
-    /**
-     * Event handler to cycle through different states
-     * @param {KeyboardEvent} e - Event object 
-     */
-    function keyboardControls(e: KeyboardEvent) {
-      if (!advancedMode) {
-        const keyPressed = e.key.toLocaleLowerCase();
-        
-        if (keyPressed === 'arrowright' || keyPressed === 'd') {
-          e.preventDefault();
-          keyIndex.current = (keyIndex.current + 1) % stateMappings.current.length;
-          updateBlockstate(stateMappings.current[keyIndex.current]);
-        } else if (keyPressed === 'arrowleft' || keyPressed === 'a') {
-          e.preventDefault();
-          keyIndex.current = (keyIndex.current - 1 + stateMappings.current.length) % stateMappings.current.length;
-          updateBlockstate(stateMappings.current[keyIndex.current]);
-        }
+
+  /**
+   * Event handler to cycle through different states
+   * @param {KeyboardEvent} e - Event object 
+   */
+  function keyboardControls(e: KeyboardEvent) {
+    // Don't trigger controls when outside of preview
+    console.log('actual state', isPlaneHover);
+    if (!isPlaneHover) {
+      return;
+    }
+    if (!advancedMode) {
+      const keyPressed = e.key.toLocaleLowerCase();
+      
+      if (keyPressed === 'arrowright' || keyPressed === 'd') {
+        e.preventDefault();
+        keyIndex.current = (keyIndex.current + 1) % stateMappings.current.length;
+        updateBlockstate(stateMappings.current[keyIndex.current]);
+      } else if (keyPressed === 'arrowleft' || keyPressed === 'a') {
+        e.preventDefault();
+        keyIndex.current = (keyIndex.current - 1 + stateMappings.current.length) % stateMappings.current.length;
+        updateBlockstate(stateMappings.current[keyIndex.current]);
       }
     }
+  }
 
-    document.addEventListener('keydown', keyboardControls);
+  useEffect(() => {
+    keyboardControlsRef.current = keyboardControls;
+  }, [advancedMode, isPlaneHover]);
 
-    return () => document.removeEventListener('keydown', keyboardControls);
-  }, [advancedMode]);
+  useEffect(() => {
+    const handler = (e : KeyboardEvent) => {
+      if (keyboardControlsRef.current) {
+        keyboardControlsRef.current(e);
+      }
+    }
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, []);
 
   useEffect(() => {
     stateMappings.current = generateStates(possibleBlockstates);
