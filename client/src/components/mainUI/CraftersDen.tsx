@@ -71,6 +71,21 @@ export default function CraftersDen(): React.ReactNode {
   }
 
   /**
+   * Adds a block to InventoryBlockContext. Makes sure there are no more than 9 blocks currently stored..
+   * @param {object} block - block object being added  to inventory
+   * @param {string} block.name - block name
+   * @param {string} block.inventoryTexture - block inventoryTexture
+   */
+  async function addBlockToInventory(block: {name: string, inventoryTexture: string}) {
+    if (inventoryBlocks.length >= 9) {
+      setInventoryBlocks(currentInventory => {
+        currentInventory.shift();
+        return [...currentInventory, block]
+      })
+    }
+  }
+
+  /**
    * Saves the current build in the db
    * @param {string} progressPicture URL
    */
@@ -117,7 +132,7 @@ export default function CraftersDen(): React.ReactNode {
 
   return (
     <CurrentBlockContext.Provider value={{currentBlock, storeBlock}}>
-      <InventoryBlockContext.Provider value={{inventoryBlocks, setInventoryBlocks}}>
+      <InventoryBlockContext.Provider value={{inventoryBlocks, addBlockToInventory}}>
         <div id="main-ui">
           <section className="build-tools">
               <DeepslatePlane 
