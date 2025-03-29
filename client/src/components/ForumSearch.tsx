@@ -15,15 +15,26 @@ export function ForumSearch({ username, description, setUsername, setDescription
   const [search, setSearch] = useState("");
   const [users, setUsers] = useState<User[]>([]);
   const [descriptions, setDescriptions] = useState<Description[]>([]);
+  const [debouncedSearch, setDebouncedSearch] = useState("");
 
   useEffect(() => {
-    if (!search) return;
+    const handler = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 500); 
+
+    return () => {
+      clearTimeout(handler); 
+    };
+  }, [search]);
+
+  useEffect(() => {
+    if (!debouncedSearch) return;
 
     const controller = new AbortController();
 
     const handleSearch = async () => {
       try {
-        const response = await fetch(`/api/post/search?query=${search}`, {
+        const response = await fetch(`/api/post/search?query=${debouncedSearch}`, {
           method: "GET",
           signal: controller.signal,
         });
@@ -47,7 +58,7 @@ export function ForumSearch({ username, description, setUsername, setDescription
     handleSearch();
 
     return () => controller.abort();
-  }, [search]);
+  }, [debouncedSearch]); 
 
   function handleSubmit(selectedValue: string) {
     const isUser = users.some((user) => user.username === selectedValue);
@@ -55,15 +66,15 @@ export function ForumSearch({ username, description, setUsername, setDescription
 
     if (isUser) {
       setUsername(selectedValue);
-      setDescription(''); // Clear description if username is selected
+      setDescription("");
     }
 
     if (isDescription) {
       setDescription(selectedValue);
-      setUsername(''); // Clear username if description is selected
+      setUsername("");
     }
 
-    setSearch(''); // Clear input field after selection
+    setSearch("");
   }
 
   const userData = users.map((user) => ({
@@ -94,8 +105,8 @@ export function ForumSearch({ username, description, setUsername, setDescription
       value={search}
       onOptionSubmit={handleSubmit}
       onClear={() => {
-        setDescription('');
-        setUsername('');
+        setDescription("");
+        setUsername("");
       }}
     />
   );

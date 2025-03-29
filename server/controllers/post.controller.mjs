@@ -215,7 +215,13 @@ async function getPublishedBuilds(req, res, next) {
     let publishedBuilds = []
 
     if(username){
-      const user = await User.find({ username: username}).select({ "_id": 1});
+      console.log(username);  
+      const user = await User.findOne({ username: username});
+      if(!user){
+        const err = new Error('Cannot find user in database');
+        err.status = 404;
+        next(err);
+      }
       publishedBuilds = await Post.find(
         { isPublished: true,
           user: user._id}

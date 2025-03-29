@@ -24,7 +24,6 @@ type Post = {
   tags: []
 }
 
-const fetcher = (url) => fetch(url).then(resp => resp.json());
 /**
  * Forum page renders a Search bar and a
  * list of posts.
@@ -49,7 +48,8 @@ export default function Forum(): React.ReactNode {
   queryParams.append('limit', '20');
   if (username) queryParams.append('username', username);
   if (description) queryParams.append('description', description);
-  
+
+  const fetcher = (url) => fetch(url).then(resp => resp.json());
   const { data } = useSwr(`/api/post?${queryParams.toString()}`, fetcher, { suspense: true });
   
   const publishedBuilds = data?.builds || [];
