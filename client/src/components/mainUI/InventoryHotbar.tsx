@@ -21,7 +21,7 @@ export default function InventoryHotbar({}) {
       direction="row"
       >
       {inventoryBlocks.map((block, index) => 
-        <InventoryBlock src={block.inventoryTexture} alt={block.name} key={index}/>
+        <InventoryBlock block={block} key={index}/>
       )}
     </Flex>
   )
