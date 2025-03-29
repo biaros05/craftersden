@@ -4,11 +4,11 @@ import {Image, ActionIcon} from '@mantine/core';
 /**
  * Component that represents a block within the inventory hotbar
  * @param {object} props React props
- * @param {string} props.inventoryTexture src to use for block
+ * @param {string} props.src src to use for block
  * @param {string} props.alt alt text for block image
  * @returns {React.ReactNode} Singular block within intentory
  */
-export default function InventoryBlock({inventoryTexture, alt}: { inventoryTexture: string; alt: string; }): React.ReactNode {
+export default function InventoryBlock({src, alt}: { src: string; alt: string; }): React.ReactNode {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
@@ -18,7 +18,7 @@ export default function InventoryBlock({inventoryTexture, alt}: { inventoryTextu
     onMouseLeave={() => setIsHovered(false)}
   >
   <Image
-    src={inventoryTexture}
+    src={src}
     alt={alt}
   />
   </div>

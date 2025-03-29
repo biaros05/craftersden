@@ -39,7 +39,12 @@ export default function CraftersDen(): React.ReactNode {
   const {id, email} = useAuth() ?? {};
   const [isViewMode, setIsViewMode] = useState(false);
   const [currentBlock, setCurrentBlock] = useState({name: 'stone'});
-  const [inventoryBlocks, setInventoryBlocks] = useState([]);
+  const [inventoryBlocks, setInventoryBlocks] = useState(
+    [
+      { name: 'acacia_fence_gate', inventoryTexture: 'https://imageblobbed.blob.core.windows.net/deepslate/minecraft_acacia_fence_gate.png'},
+      { name: 'acacia_log', inventoryTexture: 'https://imageblobbed.blob.core.windows.net/deepslate/minecraft_acacia_log.png'}
+    ]
+  );
 
   const { setBuild } = useBuildUpdate();
   console.log(id, build?.user)

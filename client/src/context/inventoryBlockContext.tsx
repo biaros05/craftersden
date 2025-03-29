@@ -1,3 +1,3 @@
 import { createContext } from 'react';
 
-export const inventoryBlockContext = createContext({});
+export const InventoryBlockContext = createContext({});
