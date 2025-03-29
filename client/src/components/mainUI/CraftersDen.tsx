@@ -10,6 +10,7 @@ import { useBuild, useBuildUpdate } from '../../hooks/BuildContext';
 import { successMessage, errorMessage } from '../../utils/notification_utils';
 import { StatusError } from '../../utils/building_plane_utils';
 import { CurrentBlockContext } from '../../context/currentBlockContext';
+import { InventoryBlockContext } from '../../context/inventoryBlockContext';
 import { isMobile } from 'react-device-detect';
 import CloneableStructure from './deepslate/CloneableStructure';
 import { GRASS_PLANE } from './deepslate/PlanePresets';
@@ -38,6 +39,7 @@ export default function CraftersDen(): React.ReactNode {
   const {id, email} = useAuth() ?? {};
   const [isViewMode, setIsViewMode] = useState(false);
   const [currentBlock, setCurrentBlock] = useState({name: 'stone'});
+  const [inventoryBlocks, setInventoryBlocks] = useState([]);
 
   const { setBuild } = useBuildUpdate();
   console.log(id, build?.user)
@@ -110,24 +112,26 @@ export default function CraftersDen(): React.ReactNode {
 
   return (
     <CurrentBlockContext.Provider value={{currentBlock, storeBlock}}>
-      <div id="main-ui">
-        <section className="build-tools">
-            <DeepslatePlane 
-            canvas={canvas} 
-            structure={structure} 
-            isViewMode={isViewMode}
-            />
-          {!isViewMode && <BlockSelection />}
-        </section>
-        <ButtonPanel 
-        canvas={canvas}
-        structure={structure.current}
-        setIsViewMode={setIsViewMode} 
-        savePost={savePost} 
-        isViewMode={isViewMode}
-        isUserLoggedIn={id !== null}
-        isBuildOwner={isBuildOwner} />
-      </div>
+      <InventoryBlockContext.Provider value={{inventoryBlocks, setInventoryBlocks}}>
+        <div id="main-ui">
+          <section className="build-tools">
+              <DeepslatePlane 
+              canvas={canvas} 
+              structure={structure} 
+              isViewMode={isViewMode}
+              />
+            {!isViewMode && <BlockSelection />}
+          </section>
+          <ButtonPanel 
+          canvas={canvas}
+          structure={structure.current}
+          setIsViewMode={setIsViewMode} 
+          savePost={savePost} 
+          isViewMode={isViewMode}
+          isUserLoggedIn={id !== null}
+          isBuildOwner={isBuildOwner} />
+        </div>
+      </InventoryBlockContext.Provider>
     </CurrentBlockContext.Provider>
   );
 }
