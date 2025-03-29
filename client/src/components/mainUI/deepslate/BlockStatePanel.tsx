@@ -43,7 +43,6 @@ export default function BlockStatePanel(
    */
   function keyboardControls(e: KeyboardEvent) {
     // Don't trigger controls when outside of preview
-    console.log('actual state', isPlaneHover);
     if (!isPlaneHover) {
       return;
     }
