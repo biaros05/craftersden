@@ -85,7 +85,7 @@ export default function Forum(): React.ReactNode {
         }
         </div>
       ) : (
-        <Text>No posts to display!</Text>
+        <Text id="no-posts-message">No posts to display!</Text>
       )}
       {publishedBuilds.length !== 0 && 
         <div className='pagination-container'>

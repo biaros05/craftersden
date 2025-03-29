@@ -229,6 +229,14 @@ async function getPublishedBuilds(req, res, next) {
         sort({_id: 1}).
         limit(limit).
         skip((page - 1) * limit);
+      
+      if(publishedBuilds.length === 0){
+        return res.status(200).json({
+          message: 'No builds from this user!',
+          total: totalPages,
+        });
+      }
+
     } else if(description){
       publishedBuilds = await Post.find({
         description: { $regex: description, $options: 'i'},
@@ -237,6 +245,7 @@ async function getPublishedBuilds(req, res, next) {
         sort({_id: 1}).
         limit(limit).
         skip((page - 1) * limit);   
+        
     } else{
       publishedBuilds = await Post.find({ isPublished: true }).
         sort({_id: 1}).
