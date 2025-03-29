@@ -108,6 +108,7 @@ export function ForumSearch({ username, description, setUsername, setDescription
 
   return (
     <Autocomplete
+      id="forum-search"
       clearable
       style={{ width: '400px' }}
       label='Search for Posts'

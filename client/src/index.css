@@ -10,7 +10,7 @@
   font-weight: normal;
 }
 
-h1, h2, h3, .mantine-Button-label, .mantine-UnstyledButton-root, .inbox-messages, #no-posts-message {
+h1, h2, h3, .mantine-Button-label, .mantine-UnstyledButton-root, .inbox-messages, #no-posts-message, #forum-search {
   font-family: "Minecraft";
 }
 
