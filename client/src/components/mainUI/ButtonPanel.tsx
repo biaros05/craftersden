@@ -1,10 +1,9 @@
 import React from 'react';
 import '../../styles/ButtonPanel.css';
 import useNavigate from '../Navigation/useNavigate.tsx';
-import {buildLoginNotification, buildCopyNotification} from '../Notifications/buildNotifications'
-import {jsonifyBlocks} from '../../utils/building_plane_utils.ts';
-import { BlockType } from '../../utils/building_plane_utils.ts';
+import {buildLoginNotification, buildCopyNotification} from '../Notifications/buildNotifications';
 import MinecraftButton from '../Custom/MinecraftButton.tsx';
+import CloneableStructure from './deepslate/CloneableStructure.ts';
 
 type ButtonPanelProps = { 
   setIsViewMode: (arg0: boolean) => void,
@@ -13,7 +12,7 @@ type ButtonPanelProps = {
   isViewMode: boolean,
   isUserLoggedIn: boolean,
   isBuildOwner: boolean,
-  blocks: BlockType[]
+  structure: CloneableStructure
 }
 
 /**
@@ -25,10 +24,10 @@ type ButtonPanelProps = {
  * @param {boolean} props.isViewMode isViewMode state.
  * @param {string} props.isUserLoggedIn email of current user.
  * @param {boolean} props.isBuildOwner is current user the owner of the build.
- * @param {[]} props.blocks build blocks.
+ * @param {CloneableStructure} props.structure build blocks.
  * @returns {React.ReactNode} Button panel section with buttons
  */
-function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode, isUserLoggedIn, isBuildOwner, blocks}: ButtonPanelProps): React.ReactNode {
+function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode, isUserLoggedIn, isBuildOwner, structure}: ButtonPanelProps): React.ReactNode {
   const navigate = useNavigate();
   return (
     <section className="button-panel">
@@ -36,8 +35,8 @@ function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode, isUserLoggedI
         className="save-button"
         onClick={() => {
           if (!isUserLoggedIn) {
-            const serializedBlocks = jsonifyBlocks(blocks);
-            localStorage.setItem("build", JSON.stringify({"blocks": serializedBlocks}));
+            const serializedBlocks = structure.toJson();
+            localStorage.setItem("build", JSON.stringify({"structure": serializedBlocks}));
             buildLoginNotification(() => navigate('/login'));
           } else if (!isBuildOwner) {
             buildCopyNotification(() => savePost(canvas.current!.toDataURL('image/png')));
