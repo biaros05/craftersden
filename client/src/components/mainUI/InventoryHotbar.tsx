@@ -11,13 +11,17 @@ export default function InventoryHotbar({}) {
     inventoryBlocks
   } = useContext(InventoryBlockContext);
 
+  useEffect(() => {
+    console.log(inventoryBlocks);
+  })
+
   return (
     <Flex 
       className='inventory-hotbar'
       direction="row"
       >
-      {inventoryBlocks.map(block => 
-        <InventoryBlock src={block.inventoryTexture} alt={block.name} />
+      {inventoryBlocks.map((block, index) => 
+        <InventoryBlock src={block.inventoryTexture} alt={block.name} key={index}/>
       )}
     </Flex>
   )

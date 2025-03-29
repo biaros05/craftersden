@@ -39,12 +39,7 @@ export default function CraftersDen(): React.ReactNode {
   const {id, email} = useAuth() ?? {};
   const [isViewMode, setIsViewMode] = useState(false);
   const [currentBlock, setCurrentBlock] = useState({name: 'stone'});
-  const [inventoryBlocks, setInventoryBlocks] = useState(
-    [
-      { name: 'acacia_fence_gate', inventoryTexture: 'https://imageblobbed.blob.core.windows.net/deepslate/minecraft_acacia_fence_gate.png'},
-      { name: 'acacia_log', inventoryTexture: 'https://imageblobbed.blob.core.windows.net/deepslate/minecraft_acacia_log.png'}
-    ]
-  );
+  const [inventoryBlocks, setInventoryBlocks] = useState<Array<Object>>([]);
 
   const { setBuild } = useBuildUpdate();
   console.log(id, build?.user)
@@ -59,31 +54,41 @@ export default function CraftersDen(): React.ReactNode {
     curBuildId = build._id;
   }
 
+
+  async function getFullBlockData(block: {_id: string}) {
+    const response = await fetch(`/api/block/${block._id}`); 
+    return await response.json();
+  }
   /**
    * Fetches the complete block data from the api, and stores it in CurrentBlockContext.
    * @param {object} block - block object to fetch from the api
    * @param {{_id: string}} block._id - Blockid of the block
    */
   async function storeBlock(block: {_id: string}) {
-    const response = await fetch(`/api/block/${block._id}`);
-    const completeBlockData = await response.json();
+    const completeBlockData = await getFullBlockData(block);
     setCurrentBlock(completeBlockData);
   }
 
   /**
    * Adds a block to InventoryBlockContext. Makes sure there are no more than 9 blocks currently stored..
    * @param {object} block - block object being added  to inventory
-   * @param {string} block.name - block name
-   * @param {string} block.inventoryTexture - block inventoryTexture
+   * @param {string} block._id - BlockIf do of the block
    */
-  async function addBlockToInventory(block: {name: string, inventoryTexture: string}) {
+  async function addBlockToInventory(block: {_id: string}) {
+    if (inventoryBlocks.find(blockInInventory => blockInInventory._id == block._id)) {
+      return;
+    }
+    const completeBlockData = await getFullBlockData(block);
+    console.log('calling addBlockToInventory', completeBlockData)
     if (inventoryBlocks.length >= 9) {
       setInventoryBlocks(currentInventory => {
         currentInventory.shift();
-        return [...currentInventory, block]
-      })
+        return [...currentInventory, completeBlockData]
+      }) 
+    } else {
+        setInventoryBlocks(currentInventory => [...currentInventory, completeBlockData]);
     }
-  }
+  };
 
   /**
    * Saves the current build in the db
