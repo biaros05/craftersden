@@ -1,6 +1,5 @@
-import React, {useState, useContext, useEffect} from 'react';
+import React, {useState } from 'react';
 import {Image} from '@mantine/core';
-import { CurrentBlockContext } from '../../context/currentBlockContext';
 
 type InventoryBlockProps = {
   block: {
@@ -8,26 +7,24 @@ type InventoryBlockProps = {
     inventoryTexture: string
     name: string
   }
+  onClick?: () => void
 }
 /**
  * Component that represents a block within the inventory hotbar
  * @param {object} props React props
  * @param {object} props.block Block object
+ * @param {VoidFunction} props.onClick
  * @returns {React.ReactNode} Singular block within intentory
  */
-export default function InventoryBlock({ block }: InventoryBlockProps): React.ReactNode {
+export default function InventoryBlock({ block, onClick }: InventoryBlockProps): React.ReactNode {
   const [isHovered, setIsHovered] = useState(false);
-
-  const {
-    storeBlock
-  } = useContext(CurrentBlockContext);
 
   return (
   <div 
     className={`inventory-block ${isHovered ? 'hovered': ''}`}
     onMouseEnter={() => setIsHovered(true)}
     onMouseLeave={() => setIsHovered(false)}
-    onClick={() => storeBlock(block)}
+    onClick={onClick}
   >
   <Image
     src={block.inventoryTexture}
