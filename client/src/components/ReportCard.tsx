@@ -29,6 +29,13 @@ type Post = {
   tags: []
 }
 
+/**
+ *
+ * @param root0
+ * @param root0.report
+ * @param root0.index
+ * @param root0.setReports
+ */
 export default function ReportCard({ report, index, setReports }) {
   const [user, setUser] = useState<User | null>(null);
   const [reporter, setReporter] = useState<User | null>(null);
@@ -37,6 +44,9 @@ export default function ReportCard({ report, index, setReports }) {
   useEffect(() => {
     const controller = new AbortController();
 
+    /**
+     *
+     */
     async function setCardData() {
       if (report.user_id) {
         const response = await fetch(`/api/user/${report.user_id}`, { method: 'GET' });
@@ -79,6 +89,9 @@ export default function ReportCard({ report, index, setReports }) {
     }
   }, []);
 
+  /**
+   *
+   */
   async function deleteReport(){
 
     const data = {

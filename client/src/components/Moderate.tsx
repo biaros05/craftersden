@@ -5,6 +5,9 @@ import { ScrollArea, Title, Text} from "@mantine/core";
 import ReportCard from "./ReportCard";
 import { useAuth } from "../hooks/useAuth";
 
+/**
+ *
+ */
 export default function Moderate(){
   const [reports, setReports] = useState([]);
   const {role} = useAuth() ?? {};
@@ -12,6 +15,9 @@ export default function Moderate(){
   useEffect(() => {
     const controller = new AbortController();
 
+    /**
+     *
+     */
     async function fetchReports(){
       const response = await fetch('/api/report/reports', {method: 'GET'});
       const json = await response.json();

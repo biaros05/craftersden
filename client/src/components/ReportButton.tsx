@@ -12,6 +12,13 @@ type Data = {
   post_id: string | undefined
 }
 
+/**
+ *
+ * @param root0
+ * @param root0.buildId
+ * @param root0.userId
+ * @param root0.username
+ */
 export default function ReportButton({ buildId, userId, username }) {
   const [opened, { open, close }] = useDisclosure(false);
   const [formOpened, { open: openForm, close: closeForm }] = useDisclosure(false);
@@ -24,6 +31,9 @@ export default function ReportButton({ buildId, userId, username }) {
     openForm();
   }
 
+  /**
+   *
+   */
   async function handleSubmit() {
     try {
       const data: Data = {
