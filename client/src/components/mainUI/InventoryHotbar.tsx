@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useRef} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import { InventoryBlockContext } from '../../context/inventoryBlockContext';
 import { CurrentBlockContext } from '../../context/currentBlockContext';
 import InventoryBlock from './InventoryBlock.tsx';
@@ -18,6 +18,8 @@ export default function InventoryHotbar({}) {
 
   const keyboardControlsRef = useRef<(e: KeyboardEvent) => void>(null);
 
+  const [selectedBlockIndex, setSelectedBlockIndex] = useState<number | null>(null);
+
   /**
    * Event handler to cycle through different states
    * @param {KeyboardEvent} e - Event object 
@@ -30,6 +32,7 @@ export default function InventoryHotbar({}) {
     const selectedBlock = inventoryBlocks[keyPressed - 1];
     if (selectedBlock) {
       storeBlock(selectedBlock);
+      setSelectedBlockIndex(keyPressed - 1);
     }
   }
 
@@ -56,7 +59,11 @@ export default function InventoryHotbar({}) {
         <InventoryBlock 
           block={block} 
           key={index} 
-          onClick={() => storeBlock(block)}
+          isSelected={index == selectedBlockIndex}
+          onClick={() => {
+            storeBlock(block);
+            setSelectedBlockIndex(index);
+          }}
           />
       )}
     </Flex>
