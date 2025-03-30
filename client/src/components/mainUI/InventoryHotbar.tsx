@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useRef, useState} from 'react';
+import React, {useContext, useEffect, useRef, useState, KeyboardEvent} from 'react';
 import { InventoryBlockContext } from '../../context/inventoryBlockContext';
 import { CurrentBlockContext } from '../../context/currentBlockContext';
 import InventoryBlock from './InventoryBlock.tsx';

@@ -54,7 +54,12 @@ export default function CraftersDen(): React.ReactNode {
     curBuildId = build._id;
   }
 
-
+  /**
+   * Fetches the complete block data for a given block that only has it's _id
+   * @param {object} block block object
+   * @param {string} block._id block id
+   * @returns {Promise<object>} the complete block data
+   */
   async function getFullBlockData(block: {_id: string}) {
     const response = await fetch(`/api/block/${block._id}`); 
     return await response.json();
