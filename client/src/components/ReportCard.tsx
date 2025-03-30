@@ -60,7 +60,7 @@ export default function ReportCard({report, index}){
     return () => {
       controller.abort();
     }
-  })
+  }, []);
 
   const timeStamp = report.createdAt.now.toISOString().slice(0, 16).replace('T', ' ');
 
