@@ -51,16 +51,15 @@ export default function InventoryHotbar({}) {
     return () => document.removeEventListener('keydown', handler);
   }, []);
 
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>, index: number) => {
     e.preventDefault();
     const data = JSON.parse(e.dataTransfer.getData('draggedBlock'));
-    addBlockToInventory(data);
+    addBlockToInventory(data, index);
   }
   return (
     <Flex 
       className='inventory-hotbar'
       direction="row"
-      onDrop={handleDrop}
       onDragOver={(e) => e.preventDefault()}
       >
       {inventoryBlocks.map((block, index) => 
@@ -72,6 +71,7 @@ export default function InventoryHotbar({}) {
             storeBlock(block);
             setSelectedBlockIndex(index);
           }}
+          onDrop={(e) => handleDrop(e, index)}
           />
       )}
     </Flex>

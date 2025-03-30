@@ -73,13 +73,21 @@ export default function CraftersDen(): React.ReactNode {
    * Adds a block to InventoryBlockContext. Makes sure there are no more than 9 blocks currently stored..
    * @param {object} block - block object being added  to inventory
    * @param {string} block._id - BlockIf do of the block
+   * @param {number} index - index of inventory to overwrite
    */
-  async function addBlockToInventory(block: {_id: string}) {
+  async function addBlockToInventory(block: {_id: string}, index?: number) {
     // don't add if block exists
     if (inventoryBlocks.find(blockInInventory => blockInInventory?._id == block._id)) {
       return;
     }
     const completeBlockData = await getFullBlockData(block);
+    if (index) {
+      setInventoryBlocks(currentInventory => {
+        currentInventory[index] = completeBlockData;
+        return [...currentInventory];
+      })
+      return;
+    }
     setInventoryBlocks(currentInventory => {
       const nullIndex = currentInventory.findIndex(block => block === null);
       if (nullIndex !== -1) {
