@@ -10,6 +10,7 @@ import CloneableStructure from './CloneableStructure';
 import '../../../styles/DeepslatePlane.css';
 import BlockStatePanel from './BlockStatePanel';
 import { CurrentBlockContext } from '../../../context/currentBlockContext';
+import InventoryHotbar from '../InventoryHotbar';
 
 export interface PlaneBlock extends Mesh {
 	name: string;
@@ -209,6 +210,7 @@ export default function DeepslatePlane({canvas, structure, isViewMode}: { canvas
     onMouseLeave={() => setIsPlaneHover(false)}>
     <canvas id='deepslate-plane' width={800} height={800} ref={canvas} onMouseDown={!isViewMode ? handleClick : undefined} onContextMenu={(e) => e.preventDefault()}></canvas>
     {!isViewMode && <BlockStatePanel blockName={currentBlock.name} blockNamespace={'minecraft'} currentState={blockstate} resources={resources} isPlaneHover={isPlaneHover}/>}
+    <InventoryHotbar/>
   </div>;
 }
 

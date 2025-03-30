@@ -10,6 +10,7 @@ import { useBuild, useBuildUpdate } from '../../hooks/BuildContext';
 import { successMessage, errorMessage } from '../../utils/notification_utils';
 import { StatusError } from '../../utils/building_plane_utils';
 import { CurrentBlockContext } from '../../context/currentBlockContext';
+import { InventoryBlockContext } from '../../context/inventoryBlockContext';
 import { isMobile } from 'react-device-detect';
 import CloneableStructure from './deepslate/CloneableStructure';
 import { GRASS_PLANE } from './deepslate/PlanePresets';
@@ -35,6 +36,7 @@ export default function CraftersDen(): React.ReactNode {
   const {id, email} = useAuth() ?? {};
   const [isViewMode, setIsViewMode] = useState(false);
   const [currentBlock, setCurrentBlock] = useState({name: 'stone'});
+  const [inventoryBlocks, setInventoryBlocks] = useState<Array<object | null>>(Array(9).fill(null));
 
   const { setBuild } = useBuildUpdate();
   const build = useBuild()?.build;
@@ -52,15 +54,51 @@ export default function CraftersDen(): React.ReactNode {
   }
 
   /**
+   * Fetches the complete block data for a given block that only has it's _id
+   * @param {object} block block object
+   * @param {string} block._id block id
+   * @returns {Promise<object>} the complete block data
+   */
+  async function getFullBlockData(block: {_id: string}) {
+    const response = await fetch(`/api/block/${block._id}`); 
+    return await response.json();
+  }
+  /**
    * Fetches the complete block data from the api, and stores it in CurrentBlockContext.
    * @param {object} block - block object to fetch from the api
    * @param {{_id: string}} block._id - Blockid of the block
    */
   async function storeBlock(block: {_id: string}) {
-    const response = await fetch(`/api/block/${block._id}`);
-    const completeBlockData = await response.json();
+    const completeBlockData = await getFullBlockData(block);
     setCurrentBlock(completeBlockData);
   }
+
+  /**
+   * Adds a block to InventoryBlockContext. Makes sure there are no more than 9 blocks currently stored..
+   * @param {object} block - block object being added  to inventory
+   * @param {string} block._id - BlockIf do of the block
+   * @param {number} index - index of inventory to overwrite
+   */
+  async function addBlockToInventory(block: {_id: string}, index?: number) {
+    const completeBlockData = await getFullBlockData(block);
+    if (index) {
+      setInventoryBlocks(currentInventory => {
+        currentInventory[index] = completeBlockData;
+        return [...currentInventory];
+      })
+      return;
+    }
+    setInventoryBlocks(currentInventory => {
+      const nullIndex = currentInventory.findIndex(block => block === null);
+      if (nullIndex !== -1) {
+        currentInventory[nullIndex] = completeBlockData;
+      } else {
+        currentInventory.shift();
+        currentInventory.push(completeBlockData);
+      }
+      return [...currentInventory]
+    }) 
+  };
 
   /**
    * Saves the current build in the db
@@ -109,24 +147,26 @@ export default function CraftersDen(): React.ReactNode {
 
   return (
     <CurrentBlockContext.Provider value={{currentBlock, storeBlock}}>
-      <div id="main-ui">
-        <section className="build-tools">
-            <DeepslatePlane 
-            canvas={canvas} 
-            structure={structure} 
-            isViewMode={isViewMode}
-            />
-          {!isViewMode && <BlockSelection />}
-        </section>
-        <ButtonPanel 
-        canvas={canvas}
-        structure={structure.current}
-        setIsViewMode={setIsViewMode} 
-        savePost={savePost} 
-        isViewMode={isViewMode}
-        isUserLoggedIn={id !== null}
-        isBuildOwner={isBuildOwner} />
-      </div>
+      <InventoryBlockContext.Provider value={{inventoryBlocks, addBlockToInventory}}>
+        <div id="main-ui">
+          <section className="build-tools">
+              <DeepslatePlane 
+              canvas={canvas} 
+              structure={structure} 
+              isViewMode={isViewMode}
+              />
+            {!isViewMode && <BlockSelection />}
+          </section>
+          <ButtonPanel 
+          canvas={canvas}
+          structure={structure.current}
+          setIsViewMode={setIsViewMode} 
+          savePost={savePost} 
+          isViewMode={isViewMode}
+          isUserLoggedIn={id !== null}
+          isBuildOwner={isBuildOwner} />
+        </div>
+      </InventoryBlockContext.Provider>
     </CurrentBlockContext.Provider>
   );
 }
