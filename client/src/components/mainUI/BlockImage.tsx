@@ -14,6 +14,10 @@ import { BlockType } from '../../../server/models/BlockType';
  */
 export default function BlockImage({block}: { block: BlockType; }): React.ReactNode {
 
+  const handleDrag = (e: React.DragEvent<HTMLDivElement>) => {
+    e.dataTransfer.setData('draggedBlock', JSON.stringify(block))
+  }
+
   const {
     storeBlock
   } = useContext(CurrentBlockContext);
@@ -23,7 +27,11 @@ export default function BlockImage({block}: { block: BlockType; }): React.ReactN
   } = useContext(InventoryBlockContext);
 
   return (
-    <div className="block-image" style={{ position: 'relative'}}>
+    <div 
+      className="block-image" 
+      draggable={true}
+      onDragStart={handleDrag}
+      style={{ position: 'relative'}}>
     <ActionIcon
       size="sm"
       style={{ position: 'absolute', top: "10px", right: "10px", zIndex: 2 }}

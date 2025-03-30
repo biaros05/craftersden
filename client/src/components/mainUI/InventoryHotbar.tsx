@@ -9,7 +9,8 @@ import {Flex} from '@mantine/core';
  */
 export default function InventoryHotbar({}) {
   const {
-    inventoryBlocks
+    inventoryBlocks,
+    addBlockToInventory
   } = useContext(InventoryBlockContext);
 
   const {
@@ -50,10 +51,17 @@ export default function InventoryHotbar({}) {
     return () => document.removeEventListener('keydown', handler);
   }, []);
 
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const data = JSON.parse(e.dataTransfer.getData('draggedBlock'));
+    addBlockToInventory(data);
+  }
   return (
     <Flex 
       className='inventory-hotbar'
       direction="row"
+      onDrop={handleDrop}
+      onDragOver={(e) => e.preventDefault()}
       >
       {inventoryBlocks.map((block, index) => 
         <InventoryBlock 
