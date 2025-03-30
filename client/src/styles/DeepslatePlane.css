@@ -58,6 +58,7 @@
     background-color: rgba(105, 105, 105, 0.753);
     width: 4em;
     height: 4em;
+    cursor: pointer;
 }
 
 .inventory-block.selected {
