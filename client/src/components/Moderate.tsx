@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { errorMessage } from "../utils/notification_utils";
+import '../styles/moderate.css';
 import { ScrollArea, Title, Text} from "@mantine/core";
 import ReportCard from "./ReportCard";
 

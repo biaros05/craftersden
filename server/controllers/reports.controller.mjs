@@ -1,6 +1,6 @@
-import Report from "../models/Report";
 import User from "../models/User.mjs";
 import Post from "../models/Post.mjs";
+import Report from "../models/Report.mjs";
 
 /**
  * Creates a new report 

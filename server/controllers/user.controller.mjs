@@ -1,7 +1,7 @@
 import User from '../models/User.mjs';
 import BlobServiceProvider from '../utils/BlobService.mjs';
 import { validationResult } from 'express-validator';
-import Post from '../models/Post.js';
+import Post from '../models/Post.mjs';
 
 const blobService = new BlobServiceProvider();
 

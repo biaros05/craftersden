@@ -8,6 +8,7 @@ const ProtectedRoute = React.lazy(() => import('./components/ProtectedRoute.tsx'
 const Profile = React.lazy(() => import('./components/Profile.tsx'));
 const Forum = React.lazy(() => import('./components/Forum.tsx'));
 const CraftersDen = React.lazy(() => import('./components/mainUI/CraftersDen.jsx'));
+const Moderate = React.lazy(() => import('./components/Moderate.tsx'));
 import Header from './components/Header.tsx';
 import Footer from './components/Footer.tsx';
 import Welcome from './components/Welcome.tsx';
@@ -69,6 +70,10 @@ export const routesConfig = [
       {
         path: 'den',
         element: <CraftersDen />
+      },
+      {
+        path: 'moderate',
+        element: <ProtectedRoute authed={true}> <Moderate/> </ProtectedRoute>
       }
     ]
   }

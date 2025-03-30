@@ -1,4 +1,4 @@
-import Post from '../models/Post.js';
+import Post from '../models/Post.mjs';
 import User from '../models/User.mjs';
 import dotenv from 'dotenv';
 import { validationResult } from 'express-validator';

@@ -1,5 +1,5 @@
 import React from "react";
-import { Avatar } from "@mantine/core";
+import { Avatar, Button } from "@mantine/core";
 import { useLocation } from "react-router-dom";
 import Link from './Navigation/Link';
 import { useAuth } from "../hooks/useAuth";
@@ -51,6 +51,10 @@ export default function Header() {
             {!isDen ? `Den` : `Forum`}
         </MinecraftButton>
     </Link>
+    {avatar && 
+        <Link to='/moderate'>
+            <Button variant="light" color="orange">Moderate</Button>
+        </Link>}
     </div>
     </header>
 

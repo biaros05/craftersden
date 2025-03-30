@@ -13,14 +13,14 @@ const ReportSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "User",
   },
-  reason: string,
+  reason: String,
   createdAt: {
     type: Date,
     default: Date.now,
   },
 });
 
-const Report = model("Report", ReportSchema);
+const Report = model("Report", ReportSchema, 'reports');
 
 export default Report;
 
