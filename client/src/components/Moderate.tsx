@@ -31,15 +31,15 @@ export default function Moderate(){
 
   return(
     <section className='moderator-page'>
-      <ScrollArea>
-      <Title>Reports Created by Users</Title>
-      {reports.length > 0 ? (
-        reports.map((report, index) => (
-          <ReportCard report={report} index={index}/>
-        ))
-      ):
-      <Text>No reports at this moment</Text>
-      }
+      <ScrollArea h={750}>
+        <Title id="moderate-title">Reports Created by Users</Title>
+        {reports.length > 0 ? (
+          reports.map((report, index) => (
+            <ReportCard report={report} index={index}/>
+          ))
+        ):
+        <Text>No reports at this moment</Text>
+        }
       </ScrollArea>
     </section>
   );

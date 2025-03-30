@@ -18,14 +18,13 @@ async function createReport(req, res, next) {
     }
 
     const now = new Date();
-    const timestamp = now.toISOString().slice(0, 16).replace("T", " ");
 
     const userReport = new Report({
       user_id,
       post_id,
       reporter,
       reason,
-      createdAt: timestamp
+      createdAt: now
     });
 
     await userReport.save();

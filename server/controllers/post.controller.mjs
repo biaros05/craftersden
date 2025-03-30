@@ -502,10 +502,17 @@ async function getPost(req, res, next){
     if(!post){
       const err = new Error('Cannot find post in database');
       err.status = 404;
-      next(err);
+      return next(err);
     };
 
-    return res.status(200).json({message: 'Post retrieved', post});
+    const username = await User.findOne({_id: post.user}).select({username: 1, _id: 0});
+
+    const postWithUsername = {
+      ...post.toObject(),
+      username: username.username
+    } ;
+
+    return res.status(200).json({message: 'Post retrieved', post: postWithUsername});
   } catch(err){
     err.status = 500;
     next(err);
