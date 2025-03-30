@@ -179,7 +179,7 @@ export default function Post(
           <Avatar src={avatar} radius="xl" size="md" />
           <Text className="post-usernames" weight={500} size="sm">{builderUsername}</Text>
         </div>
-        <ReportButton userId={userId} buildId={buildId}/>
+        <ReportButton userId={userId} buildId={buildId} username={builderUsername}/>
       </Group>
       <Carousel
         height={125}
