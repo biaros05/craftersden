@@ -1,14 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { ActionIcon, Modal, Button, Stack, TextInput } from '@mantine/core';
 import { IconFlag } from '@tabler/icons-react';
 import { useDisclosure } from '@mantine/hooks';
+import { errorMessage, successMessage } from '../utils/notification_utils';
+import { useAuth } from '../hooks/useAuth';
 
+type Data = {
+  reporter: string | null | undefined,
+  reason: string, 
+  user_id: string | undefined, 
+  post_id: string | undefined
+}
 
 export default function ReportButton({ buildId, userId, username }) {
   const [opened, { open, close }] = useDisclosure(false);
   const [formOpened, { open: openForm, close: closeForm }] = useDisclosure(false);
   const [reportType, setReportType] = useState('');
   const [reason, setReason] = useState('');
+  const {id} = useAuth() ?? {};
 
   const handleReportClick = (type) => {
     setReportType(type);
@@ -16,10 +25,44 @@ export default function ReportButton({ buildId, userId, username }) {
   }
 
   async function handleSubmit() {
-    const data = {
+    try {
+      const data: Data = {
+        user_id: undefined,
+        post_id: undefined,
+        reporter: id, 
+        reason
+      };
+      
+      if (reportType === 'user') {
+        data.user_id = userId;
+      } else {
+        data.post_id = buildId;
+      }
+      
 
+      const requestOptions = {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        method: 'POST',
+        body: JSON.stringify(data), 
+      };
+
+      console.log(requestOptions);
+
+      const response = await fetch('/api/report/', requestOptions);
+      const json = await response.json();
+  
+      if (!response.ok) {
+        return errorMessage(json.message);
+      }
+  
+      successMessage(json.message);
+    } catch (err) {
+      errorMessage(err.message);
     }
   }
+  
 
   return (
     <>
@@ -59,6 +102,7 @@ export default function ReportButton({ buildId, userId, username }) {
           className="report-form"
           onSubmit={(e) => {
             e.preventDefault();
+            handleSubmit();
             closeForm();
           }}
           style={{ width: "100%" }}
@@ -71,7 +115,7 @@ export default function ReportButton({ buildId, userId, username }) {
               maxLength={100}
               w="100%" 
             />
-            <Button variant="outline" color="red">
+            <Button variant="outline" color="red" type='submit'>
               Submit
             </Button>
           </Stack>
