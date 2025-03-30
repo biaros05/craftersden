@@ -68,8 +68,10 @@ export default function InventoryHotbar({}) {
           key={index} 
           isSelected={index == selectedBlockIndex}
           onClick={() => {
-            storeBlock(block);
-            setSelectedBlockIndex(index);
+            if (block) {
+              storeBlock(block);
+              setSelectedBlockIndex(index);
+            }
           }}
           onDrop={(e) => handleDrop(e, index)}
           />
