@@ -145,8 +145,13 @@ async function getUserSavedPosts(req, res, next){
 
 async function getUser(req, res, next){
   try{
+    
+    if(!req.params.id){
+      return res.status(403).json({message: 'user id required'});
+    }
+
     const user = await User.findOne(
-      {_id : req.body.userId}).select(
+      {_id : req.params.id}).select(
         { email: 1,
           username: 1, 
           avatar: 1, 
@@ -172,5 +177,6 @@ export {
   storeImageWithName, 
   uploadValidation, 
   getUsersSavedBuilds,
-  getUserSavedPosts
+  getUserSavedPosts,
+  getUser
 };

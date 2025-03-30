@@ -493,7 +493,12 @@ async function postSearch(req, res, next){
 
 async function getPost(req, res, next){
   try{ 
-    const post = await Post.findOne({_id: req.body.buildId});
+
+    if(!req.params.id){
+      return res.status(403).json({message: 'Build Id required'});
+    }
+
+    const post = await Post.findOne({_id: req.params.id});
     if(!post){
       const err = new Error('Cannot find post in database');
       err.status = 404;
@@ -520,5 +525,6 @@ export {
   toggleLikeBuild,
   toggleSaveBuild,
   getLikesSaves,
-  postSearch
+  postSearch,
+  getPost
 };

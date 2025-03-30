@@ -13,7 +13,7 @@ import Post from "../models/Post.mjs";
 async function createReport(req, res, next) {
   try{
     const {user_id, post_id, reporter, reason} = req.body;
-    if (!reporter || !reason) {
+    if (!(user_id || post_id) || !reporter || !reason) {
       return res.status(400).json({ message: 'All fields are required' });
     }
     // const timestamp = now.toISOString().slice(0, 16).replace("T", " ");

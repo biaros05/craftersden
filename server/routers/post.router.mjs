@@ -12,7 +12,8 @@ import {
   toggleLikeBuild,
   toggleSaveBuild,
   getLikesSaves,
-  postSearch
+  postSearch,
+  getPost
 } from '../controllers/post.controller.mjs';
 import multer from 'multer';
 import { body } from 'express-validator';
@@ -110,5 +111,7 @@ postRouter.get('/:buildId/likes-saves', isAuthenticated, getLikesSaves);
 postRouter.get('/', getPublishedBuilds);
 
 postRouter.get('/search', isAuthenticated, postSearch);
+
+postRouter.get('/:id', isAuthenticated, getPost);
 
 export default postRouter;
