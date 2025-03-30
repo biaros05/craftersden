@@ -62,7 +62,6 @@ export default function ReportCard({report, index}){
     }
   }, []);
 
-  const timeStamp = report.createdAt.now.toISOString().slice(0, 16).replace('T', ' ');
 
   return (
     <Card
@@ -79,7 +78,7 @@ export default function ReportCard({report, index}){
           <Text size="sm">{user.email}</Text>
           <Text>Reason of report: {report.reason}</Text>
           <Text>Reporter: {reporter?.username}</Text>
-          <Text size="sm">Created At: {timeStamp}</Text>
+          <Text size="sm">Created At: {report.createdAt}</Text>
         </Group>  
         }
     </Card>

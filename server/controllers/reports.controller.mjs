@@ -16,13 +16,16 @@ async function createReport(req, res, next) {
     if (!(user_id || post_id) || !reporter || !reason) {
       return res.status(400).json({ message: 'All fields are required' });
     }
-    // const timestamp = now.toISOString().slice(0, 16).replace("T", " ");
+
+    const now = new Date();
+    const timestamp = now.toISOString().slice(0, 16).replace("T", " ");
+
     const userReport = new Report({
       user_id,
       post_id,
       reporter,
       reason,
-      createdAt: new Date()
+      createdAt: timestamp
     });
 
     await userReport.save();

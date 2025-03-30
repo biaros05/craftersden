@@ -14,10 +14,7 @@ const ReportSchema = new Schema({
     ref: "User",
   },
   reason: String,
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
+  createdAt: String
 });
 
 const Report = model("Report", ReportSchema, 'reports');
