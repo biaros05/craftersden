@@ -6,7 +6,7 @@ const FeedbackSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "User",
   },
-  message: string
+  message: String
 });
 
 const Feedback = model("Feedback", FeedbackSchema, 'feedback');

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { errorMessage } from "../utils/notification_utils";
 import '../styles/moderate.css';
-import { ScrollArea, Title, Text} from "@mantine/core";
+import { ScrollArea, Title, Text, Tabs} from "@mantine/core";
 import ReportCard from "./ReportCard";
 import { useAuth } from "../hooks/useAuth";
 
@@ -48,17 +48,35 @@ export default function Moderate(){
   }
 
   return(
-    <section className='moderator-page'>
-      <ScrollArea h={750}>
-        <Title id="moderate-title">Reports Created by Users</Title>
-        {reports.length > 0 ? (
-          reports.map((report, index) => (
-            <ReportCard report={report} index={index} setReports={setReports}/>
-          ))
-        ):
-        <Text>No reports at this moment</Text>
-        }
-      </ScrollArea>
-    </section>
+    <Tabs defaultValue='reports'>
+      <Tabs.List>
+        <Tabs.Tab value='reports'>
+          Reports
+        </Tabs.Tab>
+        <Tabs.Tab value='feedbacks'>
+          Feedbacks
+        </Tabs.Tab>
+      </Tabs.List>
+
+      <Tabs.Panel value='reports'>
+        <section className='moderator-page'>
+        <ScrollArea h={750}>
+          <Title id="moderate-title">Reports Created by Users</Title>
+          {reports.length > 0 ? (
+            reports.map((report, index) => (
+              <ReportCard report={report} index={index} setReports={setReports}/>
+            ))
+          ):
+          <Text>No reports at this moment</Text>
+          }
+        </ScrollArea>
+        </section>
+      </Tabs.Panel>
+
+      <Tabs.Panel value='feedbacks'>
+          Feedbacks here
+      </Tabs.Panel>
+
+    </Tabs>
   );
 }

@@ -108,7 +108,7 @@ export default function ReportCard({ report, index, setReports }) {
     const json = await response.json();
 
     if(!response.ok){
-      errorMessage(json.message);
+      return errorMessage(json.message);
     }
     
     setReports(prevReports => {
@@ -125,21 +125,20 @@ export default function ReportCard({ report, index, setReports }) {
       shadow="md"
       p="md"
       withBorder
-      className="w-full max-w-[600px] transition-all hover:shadow-lg"
     >
       {report.user_id && user && (
-        <div className="space-y-4">
+        <div>
           <Group align="flex-start" spacing="md">
             <Avatar
               src={user.avatar}
               radius="xl"
               className="h-12 w-12"
             />
-            <div className="space-y-2">
+            <div>
               <Text weight={500}>
                 User: {user.username}
               </Text>
-              <div className="flex flex-wrap gap-2">
+              <div>
                 <Badge variant="outline" size="sm">
                   Role: {user.role}
                 </Badge>
@@ -150,10 +149,10 @@ export default function ReportCard({ report, index, setReports }) {
             </div>
           </Group>
 
-          <Card className="bg-gray-50">
+          <Card>
             <Card.Section p="md">
               <Text weight={500}>Report Details</Text>
-              <div className="mt-2 space-y-2">
+              <div>
                 <Text size="sm">Reason: {report.reason}</Text>
                 <Text size="sm">Reporter: {reporter?.username}</Text>
                 <Text size="sm" c="dimmed">
@@ -161,7 +160,7 @@ export default function ReportCard({ report, index, setReports }) {
                 </Text>
               </div>
             </Card.Section>
-            <Card.Section p="md" className="flex justify-end">
+            <Card.Section p="md">
             <Button
               variant="outline"
               size="sm"
