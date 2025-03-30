@@ -3,7 +3,7 @@ import Post from './Post';
 import '../styles/forum.css';
 import useNavigate from "./Navigation/useNavigate.tsx"
 import { useBuildUpdate } from '../hooks/BuildContext.tsx';
-import { Pagination } from '@mantine/core';
+import { Pagination, Text } from '@mantine/core';
 import { useState } from 'react';
 import { useAuth } from '../hooks/useAuth.tsx';
 import useSwr from 'swr';
@@ -24,7 +24,6 @@ type Post = {
   tags: []
 }
 
-const fetcher = (url) => fetch(url).then(resp => resp.json());
 /**
  * Forum page renders a Search bar and a
  * list of posts.
@@ -36,15 +35,26 @@ export default function Forum(): React.ReactNode {
   const navigate = useNavigate();
   const { setBuild } = useBuildUpdate();
   const { id } = useAuth() ?? {};
+  const [username, setUsername] = useState('');
+  const [description, setDescription] = useState('');
 
   const handlePostClick = (build: Post) => {
     setBuild(build)
     navigate('/den');
   }
 
-  const {data} = useSwr(`/api/post?page=${page}&limit=20`, fetcher, {suspense: true});
-  const publishedBuilds = data.builds;
-  const scrollToTop = () => forumDiv.current!.scrollTo({ top: 0, behavior: 'smooth' });
+  const queryParams = new URLSearchParams();
+  queryParams.append('page', page.toString());
+  queryParams.append('limit', '20');
+  if (username) queryParams.append('username', username);
+  if (description) queryParams.append('description', description);
+
+  const fetcher = (url) => fetch(url).then(resp => resp.json());
+  const { data } = useSwr(`/api/post?${queryParams.toString()}`, fetcher, { suspense: true });
+  
+  const publishedBuilds = data?.builds || [];
+
+  const scrollToTop = () => forumDiv.current?.scrollTo({ top: 0, behavior: 'smooth' });
 
   const handlePageChange = (index: number) => {
     setPage(index);
@@ -53,8 +63,8 @@ export default function Forum(): React.ReactNode {
 
   return (
     <section className="forum-page">
-      <ForumSearch/>
-      {publishedBuilds.length !== 0 && (
+      <ForumSearch username={username} description={description} setUsername={setUsername} setDescription={setDescription} />
+      {publishedBuilds.length !== 0 ? (
       <div className="posts" ref={forumDiv}>
           {publishedBuilds.map((build, i) => {
             return (
@@ -74,6 +84,8 @@ export default function Forum(): React.ReactNode {
           })
         }
         </div>
+      ) : (
+        <Text id="no-posts-message">No posts to display!</Text>
       )}
       {publishedBuilds.length !== 0 && 
         <div className='pagination-container'>
