@@ -28,10 +28,12 @@ export default function InventoryBlock({ block, isSelected, onClick }: Inventory
     onMouseLeave={() => setIsHovered(false)}
     onClick={onClick}
   >
-  <Image
+  {block && 
+    <Image
     src={block.inventoryTexture}
     alt={block.name}
   />
+  }
   </div>
   );
 }

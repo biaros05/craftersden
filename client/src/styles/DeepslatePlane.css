@@ -56,6 +56,8 @@
 .inventory-block {
     border: 5px solid rgb(119, 119, 119);
     background-color: rgba(105, 105, 105, 0.753);
+    width: 50px;
+    height: 50px;
 }
 
 .inventory-block.selected {

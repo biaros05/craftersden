@@ -39,7 +39,7 @@ export default function CraftersDen(): React.ReactNode {
   const {id, email} = useAuth() ?? {};
   const [isViewMode, setIsViewMode] = useState(false);
   const [currentBlock, setCurrentBlock] = useState({name: 'stone'});
-  const [inventoryBlocks, setInventoryBlocks] = useState<Array<Object>>([]);
+  const [inventoryBlocks, setInventoryBlocks] = useState<Array<object | null>>(Array(9).fill(null));
 
   const { setBuild } = useBuildUpdate();
   console.log(id, build?.user)
@@ -75,19 +75,21 @@ export default function CraftersDen(): React.ReactNode {
    * @param {string} block._id - BlockIf do of the block
    */
   async function addBlockToInventory(block: {_id: string}) {
-    if (inventoryBlocks.find(blockInInventory => blockInInventory._id == block._id)) {
+    // don't add if block exists
+    if (inventoryBlocks.find(blockInInventory => blockInInventory?._id == block._id)) {
       return;
     }
     const completeBlockData = await getFullBlockData(block);
-    console.log('calling addBlockToInventory', completeBlockData)
-    if (inventoryBlocks.length >= 9) {
-      setInventoryBlocks(currentInventory => {
+    setInventoryBlocks(currentInventory => {
+      const nullIndex = currentInventory.findIndex(block => block === null);
+      if (nullIndex !== -1) {
+        currentInventory[nullIndex] = completeBlockData;
+      } else {
         currentInventory.shift();
-        return [...currentInventory, completeBlockData]
-      }) 
-    } else {
-        setInventoryBlocks(currentInventory => [...currentInventory, completeBlockData]);
-    }
+        currentInventory.push(completeBlockData);
+      }
+      return [...currentInventory]
+    }) 
   };
 
   /**
