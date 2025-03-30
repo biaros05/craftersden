@@ -114,7 +114,7 @@ describe('Post endpoints', () => {
       send({token: 'faketoken'});
     cookie = loginResp.headers['set-cookie'][0].split(';')[0];
 
-    const arrayBufferBlocks  = encode([{}]);
+    const arrayBufferBlocks  = encode('{}');
     const blocksBuffer = Buffer.from(await new Blob([arrayBufferBlocks]).arrayBuffer());
     
     const response = await request(app).
@@ -141,7 +141,7 @@ describe('Post endpoints', () => {
       send({token: 'faketoken'});
     cookie = loginResp.headers['set-cookie'][0].split(';')[0];
 
-    const arrayBufferBlocks  = encode([{}]);
+    const arrayBufferBlocks  = encode('{}');
     const blocksBuffer = Buffer.from(await new Blob([arrayBufferBlocks]).arrayBuffer());
     
     const response = await request(app).
@@ -171,6 +171,7 @@ describe('Post endpoints', () => {
         contentType: 'application/octet-stream'});
     
     expect(response.status).to.equal(401);
+    return;
   });
 
   after(() => {
