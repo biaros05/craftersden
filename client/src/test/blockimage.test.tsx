@@ -5,6 +5,7 @@ import { render, screen, userEvent } from './test-utils';
 import BlockImage from '../components/mainUI/BlockImage';
 import React from 'react';
 import { CurrentBlockContext } from '../context/currentBlockContext';
+import { InventoryBlockContext } from '../context/inventoryBlockContext';
 
 const blockMock = {
   '_id': '1',
@@ -46,18 +47,41 @@ const blockMock = {
 
 describe('BlockImage tests', ()=> {
 
-  it('ActionIcon calls storeBlock from context', async () => {
+  it('ActionIcon calls addBlockToInventory from context', async () => {
     const user = userEvent.setup();
+    const addBlockToInventoryMock = vi.fn();
     const storeBlockMock = vi.fn();
 
     render(
     <CurrentBlockContext.Provider value={{currentBlock : null, storeBlock: storeBlockMock }}>
-      <BlockImage block={blockMock}/>
+      <InventoryBlockContext.Provider value={{addBlockToInventory: addBlockToInventoryMock}}>
+        <BlockImage block={blockMock}/>
+      </InventoryBlockContext.Provider>
     </CurrentBlockContext.Provider>
   );
 
   const button = screen.getByRole('button', {name : 'Add to inventory'});
   await user.click(button);
+
+  expect(addBlockToInventoryMock).toHaveBeenCalled();
+  expect(addBlockToInventoryMock).toHaveBeenCalledWith(blockMock);
+  });
+
+  it('image click calls storeBlock from context', async () => {
+    const user = userEvent.setup();
+    const addBlockToInventoryMock = vi.fn();
+    const storeBlockMock = vi.fn();
+
+    render(
+    <CurrentBlockContext.Provider value={{currentBlock : null, storeBlock: storeBlockMock }}>
+      <InventoryBlockContext.Provider value={{addBlockToInventory: addBlockToInventoryMock}}>
+        <BlockImage block={blockMock}/>
+      </InventoryBlockContext.Provider>
+    </CurrentBlockContext.Provider>
+  );
+
+  const image = screen.getByRole('img');
+  await user.click(image);
 
   expect(storeBlockMock).toHaveBeenCalled();
   expect(storeBlockMock).toHaveBeenCalledWith(blockMock);
