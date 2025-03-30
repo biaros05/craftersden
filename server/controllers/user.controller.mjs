@@ -143,6 +143,29 @@ async function getUserSavedPosts(req, res, next){
   }
 };
 
+async function getUser(req, res, next){
+  try{
+    const user = await User.findOne(
+      {_id : req.body.userId}).select(
+        { email: 1,
+          username: 1, 
+          avatar: 1, 
+          role: 1, 
+          _id: 1
+         });
+    if(!user){
+      const err = new Error('Cannot find user in database');
+      err.status = 404;
+      next(err);
+    }
+
+    return res.status(200).json({message : 'User retrieved', user});
+  } catch(err){
+    err.status = 500;
+    next(err);
+  }
+}
+
 
 export {
   uploadImage, 

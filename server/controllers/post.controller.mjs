@@ -489,6 +489,22 @@ async function postSearch(req, res, next){
     err.status = 500;
     next(err);
   }
+};
+
+async function getPost(req, res, next){
+  try{ 
+    const post = await Post.findOne({_id: req.body.buildId});
+    if(!post){
+      const err = new Error('Cannot find post in database');
+      err.status = 404;
+      next(err);
+    };
+
+    return res.status(200).json({message: 'Post retrieved', post});
+  } catch(err){
+    err.status = 500;
+    next(err);
+  }
 }
 
 export {

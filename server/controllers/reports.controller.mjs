@@ -51,3 +51,5 @@ async function getReports(req, res, next) {
     next(err);
   }
 }
+
+export { createReport, getReports };
