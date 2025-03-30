@@ -47,7 +47,7 @@ export default function Moderate(){
         <Title id="moderate-title">Reports Created by Users</Title>
         {reports.length > 0 ? (
           reports.map((report, index) => (
-            <ReportCard report={report} index={index}/>
+            <ReportCard report={report} index={index} setReports={setReports}/>
           ))
         ):
         <Text>No reports at this moment</Text>

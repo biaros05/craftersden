@@ -54,4 +54,29 @@ async function getReports(req, res, next) {
   }
 }
 
-export { createReport, getReports };
+/**
+ * Deletes a report 
+ * 
+ * @param {object} req  - Request object
+ * @param {object} res - Response object
+ * @param {next} next  - Next function
+ * @returns {Response} - Response object with status code and message
+ */
+async function deleteReport(req, res, next){
+  try{
+    const report = await Report.findOneAndDelete({_id: req.body.id});
+    if(!report){
+      const err = new Error('Cannot find report in database');
+      err.status = 404;
+      return next(err);
+    }
+
+    return res.status(200).json({message: 'Report deleted'});
+
+  } catch(err){
+    err.status = 500;
+    next(err);
+  }
+}
+
+export { createReport, getReports, deleteReport };

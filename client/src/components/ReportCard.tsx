@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Avatar, Card, Group, Text, Badge } from "@mantine/core";
-import { errorMessage } from "../utils/notification_utils";
+import { Avatar, Card, Group, Text, Badge, Button } from "@mantine/core";
+import { errorMessage, successMessage } from "../utils/notification_utils";
+import { IconTrash } from '@tabler/icons-react';
 import { error } from "console";
 import { ObjectId } from "mongoose";
 
@@ -28,7 +29,7 @@ type Post = {
   tags: []
 }
 
-export default function ReportCard({ report, index }) {
+export default function ReportCard({ report, index, setReports }) {
   const [user, setUser] = useState<User | null>(null);
   const [reporter, setReporter] = useState<User | null>(null);
   const [post, setPost] = useState<Post | null>(null);
@@ -78,8 +79,33 @@ export default function ReportCard({ report, index }) {
     }
   }, []);
 
-  if (post) console.log(`post`, post);
-  if (user) console.log("user:", user);
+  async function deleteReport(){
+
+    const data = {
+      id: report._id
+    };
+    
+    const requestOptions = {
+      method: 'DELETE',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(data)
+    }
+
+    const response = await fetch('/api/report/', requestOptions);
+    const json = await response.json();
+
+    if(!response.ok){
+      errorMessage(json.message);
+    }
+    
+    setReports(prevReports => {
+      const newReports = prevReports.filter(item => item._id !== report._id);
+      return newReports;
+    });
+
+    successMessage(json.message);
+  }
+
   return (
     <Card
       key={`report-${index}`}
@@ -122,6 +148,16 @@ export default function ReportCard({ report, index }) {
                 </Text>
               </div>
             </Card.Section>
+            <Card.Section p="md" className="flex justify-end">
+            <Button
+              variant="outline"
+              size="sm"
+              color="red"
+              onClick={deleteReport}
+            >
+              <IconTrash />
+            </Button>
+          </Card.Section>
           </Card>
         </div>
       )}
@@ -136,9 +172,19 @@ export default function ReportCard({ report, index }) {
               <Text size="sm">{post.description}</Text>
               <Text size="sm">Creator: {post.username}</Text>
               <Text size="sm" c="dimmed">
-                  Created At: {report.createdAt}
+                Created At: {report.createdAt}
               </Text>
             </div>
+          </Card.Section>
+          <Card.Section p="md">
+            <Button
+              onClick={deleteReport}
+              variant="outline"
+              size="sm"
+              color="red"
+            >
+              <IconTrash />
+            </Button>
           </Card.Section>
         </Card>
       )}
