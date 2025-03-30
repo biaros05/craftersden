@@ -10,17 +10,21 @@ type InventoryBlockProps = {
   isSelected: boolean,
   onClick?: () => void,
   onDrop?: (e: React.DragEvent<HTMLDivElement>) => void,
+  onDragStart?: (e: React.DragEvent<HTMLDivElement>) => void,
+  draggable?: true
 }
 /**
  * Component that represents a block within the inventory hotbar
  * @param {object} props React props
  * @param {object} props.block Block object
  * @param {boolean} props.isSelected if the block is currently selected
- * @param {VoidFunction} props.onClick
- * @param {VoidFunction} props.onDrop
+ * @param {Function} props.onClick optional callback
+ * @param {Function} props.onDrop optional callback
+ * @param {Function} props.onDragStart optional callback
+ * @param {boolean} props.draggable needed if onDragStart is provided
  * @returns {React.ReactNode} Singular block within intentory
  */
-export default function InventoryBlock({ block, isSelected, onClick, onDrop }: InventoryBlockProps): React.ReactNode {
+export default function InventoryBlock({ block, isSelected, onClick, onDrop, onDragStart, draggable}: InventoryBlockProps): React.ReactNode {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
@@ -30,6 +34,8 @@ export default function InventoryBlock({ block, isSelected, onClick, onDrop }: I
     onMouseLeave={() => setIsHovered(false)}
     onClick={onClick}
     onDrop={onDrop}
+    onDragStart={onDragStart}
+    draggable={draggable}
   >
   {block && 
     <Image

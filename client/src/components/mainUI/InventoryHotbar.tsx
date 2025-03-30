@@ -56,6 +56,13 @@ export default function InventoryHotbar({}) {
     const data = JSON.parse(e.dataTransfer.getData('draggedBlock'));
     addBlockToInventory(data, index);
   }
+
+  const handleDrag = (e: React.DragEvent<HTMLDivElement>, block?) => {
+    if (block) {
+      e.dataTransfer.setData('draggedBlock', JSON.stringify(block))
+    }
+  }
+
   return (
     <Flex 
       className='inventory-hotbar'
@@ -73,6 +80,8 @@ export default function InventoryHotbar({}) {
               setSelectedBlockIndex(index);
             }
           }}
+          draggable={true}
+          onDragStart={(e) => handleDrag(e, block)}
           onDrop={(e) => handleDrop(e, index)}
           />
       )}
