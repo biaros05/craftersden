@@ -76,6 +76,7 @@ if (!process.env.SECRET) {
   console.error('SECRET NOT SPECIFIED, THIS IS A BIG SECURITY RISK');
 }
 
+app.set('trust proxy', 1);
 app.use(session({
   secret: process.env.SECRET ?? 'UNSECURE',
   name: 'id',

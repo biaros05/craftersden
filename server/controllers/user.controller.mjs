@@ -141,7 +141,7 @@ async function getUserSavedPosts(req, res, next){
     e.status = 500;
     next(e);
   }
-}
+};
 
 
 export {

@@ -38,7 +38,7 @@ function uploadValidation(req, res, next) {
 async function saveBuild(req, res, next) {
   const encoded = req.files['blocks'][0];
   const buffer = Buffer.from(encoded.buffer, encoded.byteOffset, encoded.byteLength);
-  const blocks = decode(buffer);
+  const blocks = JSON.parse(decode(buffer));
   const email = req.body.email;
   try {
     if (req.body.buildId !== 'null' && req.body.buildId !== undefined) {
@@ -200,32 +200,87 @@ async function unpublishBuild(req, res, next) {
  */
 async function getPublishedBuilds(req, res, next) {
   try {
-    const publishedBuilds = await Post.find({ isPublished: true });
+    const { page = 1, limit = 50, username, description } = req.query;
+    
+    if (isNaN(page) || isNaN(limit)) {
+      return res.status(400).json({ message: 'page and limit parameters must be numbers'});
+    }
+    
+    const totalPages = Math.ceil(await Post.countDocuments({isPublished: true}) / limit);
+
+    if (page > totalPages) {
+      return res.status(404).json({ message: 'Page not found' });
+    }
+
+    let publishedBuilds = [];
+
+    if(username){
+      console.log(username);  
+      const user = await User.findOne({ username: username});
+      if(!user){
+        const err = new Error('Cannot find user in database');
+        err.status = 404;
+        next(err);
+      }
+      publishedBuilds = await Post.find(
+        { isPublished: true,
+          user: user._id}
+      ).
+        sort({_id: 1}).
+        limit(limit).
+        skip((page - 1) * limit);
+      
+      if(publishedBuilds.length === 0){
+        return res.status(200).json({
+          message: 'No builds from this user!',
+          total: totalPages,
+        });
+      }
+
+    } else if(description){
+      publishedBuilds = await Post.find({
+        description: { $regex: description, $options: 'i'},
+        isPublished: true
+      }).
+        sort({_id: 1}).
+        limit(limit).
+        skip((page - 1) * limit);   
+        
+    } else{
+      publishedBuilds = await Post.find({ isPublished: true }).
+        sort({_id: 1}).
+        limit(limit).
+        skip((page - 1) * limit);
+    }
 
     if (publishedBuilds.length === 0) {
       return res.status(100).json({ message: 'There are no published builds at this moment.' });
-    }
+    };
 
     const publishBuildsWithUsername = await Promise.all(
       publishedBuilds.map(async (build) => {
-        const username = await User.findOne({ _id: build.user }).select({ username: 1, _id: 0 });
+        const user = await User.findOne(
+          { _id: build.user }).
+          select({ username: 1, avatar: 1, _id: 0 });
         return {
           ...build.toObject(),
-          username: username ? username.username : 'Unknown'
+          username: user ? user.username : 'Unknown',
+          avatar: user.avatar
         };
       })
     );
 
     return res.status(200).json({
       message: 'Published builds fetched!',
-      builds: publishBuildsWithUsername
+      builds: publishBuildsWithUsername,
+      total: totalPages,
     });
 
   } catch (err) {
     err.status = 500;
     next(err);
   }
-}
+};
 
 /**
  * Obtains the file content and stores it in azure blob.
@@ -406,6 +461,36 @@ async function getLikesSaves(req, res, next) {
   }
 };
 
+/**
+ * Handles user's query search in forum search, posts descriptions and usernames.
+ * @param {object} req  - The request object.
+ * @param {object} res - The respond object.
+ * @param {*} next - Next
+ * @returns {Response} - The response of the function.
+ */
+async function postSearch(req, res, next){
+  try{
+    const { query } = req.query;
+
+    const descriptions = await Post.find({
+      description: { $regex: query, $options: 'i'}
+    }).select({description: 1, _id: 0});
+
+    const users = await User.find({
+      username: { $regex: query, $options: 'i'}}).
+      select({username: 1, avatar: 1, _id: 1});
+
+    return res.status(200).json({
+      message: 'Search results fetched', 
+      descriptions: descriptions, 
+      users: users});
+
+  } catch(err){
+    err.status = 500;
+    next(err);
+  }
+}
+
 export {
   saveBuild,
   uploadValidation,
@@ -418,5 +503,6 @@ export {
   unpublishBuild,
   toggleLikeBuild,
   toggleSaveBuild,
-  getLikesSaves
+  getLikesSaves,
+  postSearch
 };

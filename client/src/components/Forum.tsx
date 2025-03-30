@@ -1,22 +1,20 @@
-import React, { useEffect } from 'react';
+import React, { useRef } from 'react';
 import Post from './Post';
 import '../styles/forum.css';
 import useNavigate from "./Navigation/useNavigate.tsx"
 import { useBuildUpdate } from '../hooks/BuildContext.tsx';
-import { TextInput } from '@mantine/core';
-import { IconSearch } from '@tabler/icons-react';
+import { Pagination, Text } from '@mantine/core';
 import { useState } from 'react';
-import CreeperLoad from './Loader/CreeperLoad.tsx';
-import ZombieChaseLoad from './Loader/ZombieChaseLoad.tsx';
-import { useWindowSize } from "@uidotdev/usehooks";
 import { useAuth } from '../hooks/useAuth.tsx';
-
+import useSwr from 'swr';
+import { ForumSearch } from './ForumSearch.tsx';
 
 type Post = {
   _id: string,
   user: string,
   progressPicture: string,
-  username: string,  
+  username: string,
+  avatar: string,  
   description: string,
   buildJSON: object,
   isPublished: boolean,
@@ -32,56 +30,49 @@ type Post = {
  * @returns {React.ReactNode} Forum page.
  */
 export default function Forum(): React.ReactNode {
-
+  const forumDiv = useRef<HTMLDivElement>(null);
+  const [page, setPage] = useState(1);
   const navigate = useNavigate();
   const { setBuild } = useBuildUpdate();
   const { id } = useAuth() ?? {};
+  const [username, setUsername] = useState('');
+  const [description, setDescription] = useState('');
 
   const handlePostClick = (build: Post) => {
     setBuild(build)
     navigate('/den');
   }
 
-  const {width} = useWindowSize();
+  const queryParams = new URLSearchParams();
+  queryParams.append('page', page.toString());
+  queryParams.append('limit', '20');
+  if (username) queryParams.append('username', username);
+  if (description) queryParams.append('description', description);
 
-  const [publishedBuilds, setPublishedBuilds] = useState<Post[]>([]);
-
+  const fetcher = (url) => fetch(url).then(resp => resp.json());
+  const { data } = useSwr(`/api/post?${queryParams.toString()}`, fetcher, { suspense: true });
   
-  useEffect(() => {
-    const controller = new AbortController();
+  const publishedBuilds = data?.builds || [];
 
-    /**
-     * Retrieves all the builds that are published.
-     */
-    async function getPublishedBuilds() {
-        const response = await fetch('/api/post/', { method: 'GET' });
-        const json = await response.json();
-        
-        setPublishedBuilds([...json.builds]);
-    };
+  const scrollToTop = () => forumDiv.current?.scrollTo({ top: 0, behavior: 'smooth' });
 
-    getPublishedBuilds();
-
-    return () => {
-      controller.abort();
-    }
-  }, [])
+  const handlePageChange = (index: number) => {
+    setPage(index);
+    scrollToTop();
+  };
 
   return (
     <section className="forum-page">
-      <TextInput
-        placeholder="Search"
-        leftSection={<IconSearch size={18} />}
-        w={200}
-      />
-      {publishedBuilds.length !== 0 && (
-      <div className="posts">
+      <ForumSearch username={username} description={description} setUsername={setUsername} setDescription={setDescription} />
+      {publishedBuilds.length !== 0 ? (
+      <div className="posts" ref={forumDiv}>
           {publishedBuilds.map((build, i) => {
             return (
               <Post
                 key={`publishing-${i}`}
                 imageURL={build.progressPicture}
                 description={build.description}
+                avatar={build.avatar}
                 builderUsername={build.username}
                 buildId={build._id}
                 liked={build.likedBy.includes(id)}
@@ -93,14 +84,13 @@ export default function Forum(): React.ReactNode {
           })
         }
         </div>
+      ) : (
+        <Text id="no-posts-message">No posts to display!</Text>
       )}
-      {
-        publishedBuilds.length === 0 && width! < 400 &&
-        <CreeperLoad/>
-      }
-      {
-        publishedBuilds.length === 0 && width! > 400 &&
-        <ZombieChaseLoad/>
+      {publishedBuilds.length !== 0 && 
+        <div className='pagination-container'>
+          <Pagination total={data.total} value={page} onChange={handlePageChange} />
+        </div>
       }
     </section>
   );
