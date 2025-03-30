@@ -1,4 +1,4 @@
-.moderator-page{
+.moderator-page, .not-authorized{
   height: fit-content;
   display: flex;
   flex-direction: column;
@@ -6,3 +6,4 @@
   padding: 10px;
   flex: 100%;
 }
+

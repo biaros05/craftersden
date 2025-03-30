@@ -3,9 +3,11 @@ import { errorMessage } from "../utils/notification_utils";
 import '../styles/moderate.css';
 import { ScrollArea, Title, Text} from "@mantine/core";
 import ReportCard from "./ReportCard";
+import { useAuth } from "../hooks/useAuth";
 
 export default function Moderate(){
   const [reports, setReports] = useState([]);
+  const {role} = useAuth() ?? {};
 
   useEffect(() => {
     const controller = new AbortController();
@@ -28,6 +30,16 @@ export default function Moderate(){
     }
 
   }, []);
+
+  if (role !== 'moderator') {
+    return (
+      <section className="not-authorized">
+            <Text>
+              You are not permitted to view this page
+            </Text>
+      </section>
+    );
+  }
 
   return(
     <section className='moderator-page'>
