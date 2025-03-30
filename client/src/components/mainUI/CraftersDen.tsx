@@ -31,23 +31,22 @@ export function serializeBlocks(structure: CloneableStructure): Uint8Array<Array
  * @returns {React.ReactNode} - A div element with the id 'main-ui' to render the den.
  */
 export default function CraftersDen(): React.ReactNode {
-  const build = useBuild();
-  const canvas = useRef<HTMLCanvasElement>(null);
-  const structure = useRef<CloneableStructure>(loadStructure(build?.build));
 
   const {id, email} = useAuth() ?? {};
   const [isViewMode, setIsViewMode] = useState(false);
   const [currentBlock, setCurrentBlock] = useState({name: 'stone'});
 
   const { setBuild } = useBuildUpdate();
-  console.log(id, build?.user)
-  console.log(build)
-  const [isBuildOwner,] = useState<boolean>(build?.user === id || build?.build === null);
+  const build = useBuild()?.build;
+  const canvas = useRef<HTMLCanvasElement>(null);
+  const structure = useRef<CloneableStructure>(loadStructure(build));
 
   // A null build signifies a new build
+  const [isBuildOwner,] = useState<boolean>(build?.user === id || build === null);
 
   let curBuildId = null;
   
+  // check if editing an existing build
   if(build && isBuildOwner) {
     curBuildId = build._id;
   }
