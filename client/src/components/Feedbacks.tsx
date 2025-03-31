@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { errorMessage } from "../utils/notification_utils";
+import { ScrollArea, Title, Text } from "@mantine/core";
+import FeedbackCard from "./FeedbackCard";
 
 export default function Feedbacks(){
   const [feedbacks, setFeedbacks] = useState([]);
@@ -27,8 +29,17 @@ export default function Feedbacks(){
   }, []);
 
   return(
-    <section className="feedback-section">
-      
+    <section className="moderator-page">
+      <ScrollArea h={750}>
+        <Title className='moderator-title'>Feedbacks from User</Title>
+        {feedbacks.length > 0 ? (
+          feedbacks.map((feedback, index) => (
+            <FeedbackCard feedback={feedback} index={index} setFeedbacks={setFeedbacks}/>
+          ))
+        ): 
+        <Text>No feedbacks at this moment</Text>
+        }
+      </ScrollArea>
     </section>
   )
 }

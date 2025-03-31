@@ -7,11 +7,13 @@ async function createFeedback(req, res, next){
     if(!type || !author || !message){
       return res.status(400).json({message: 'All fields required for feedback'});
     }
-
+    const now = new Date();
+    
     const feedback = new Feedback({
       type, 
       author,
-      message
+      message,
+      createdAt: now
     });
 
     await feedback.save();

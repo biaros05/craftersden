@@ -4,6 +4,7 @@ import '../styles/moderate.css';
 import { ScrollArea, Title, Text, Tabs} from "@mantine/core";
 import ReportCard from "./ReportCard";
 import { useAuth } from "../hooks/useAuth";
+import Feedbacks from "./Feedbacks";
 
 /**
  *
@@ -61,7 +62,7 @@ export default function Moderate(){
       <Tabs.Panel value='reports'>
         <section className='moderator-page'>
         <ScrollArea h={750}>
-          <Title id="moderate-title">Reports Created by Users</Title>
+          <Title className="moderate-title">Reports Created by Users</Title>
           {reports.length > 0 ? (
             reports.map((report, index) => (
               <ReportCard report={report} index={index} setReports={setReports}/>
@@ -74,7 +75,7 @@ export default function Moderate(){
       </Tabs.Panel>
 
       <Tabs.Panel value='feedbacks'>
-          Feedbacks here
+          <Feedbacks/>
       </Tabs.Panel>
 
     </Tabs>

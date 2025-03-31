@@ -1,11 +1,20 @@
 import React from "react";
 import Link from "./Navigation/Link";
 import '../styles/footer.css'
+import { Anchor, Modal } from "@mantine/core";
+import { useDisclosure } from '@mantine/hooks';
 
 /**
  * @returns {React.ReactNode} - Footer component
  */
 export default function Footer(): React.ReactNode {
+
+    const [opened, { open, close }] = useDisclosure(false);
+    const [formData, setFormData] = useState({
+        feedback: '',
+        type: ''
+    })
+    
     return <footer className="footer-container">
         <section className="site-footer">
         <ul className="footer-links">
@@ -13,6 +22,7 @@ export default function Footer(): React.ReactNode {
             <li><Link to='/' state={{canGoBack: true}}>Welcome</Link></li>
             <li><Link to='/den' state={{canGoBack: true}}>Den</Link></li>
             <li><Link to='/forum' state={{canGoBack: true}}>Forum</Link></li>
+            <li><Anchor onClick={} c="red">Submit a feedback</Anchor></li>
         </ul>
         <ul className="footer-links">
             <h3>Account</h3>
@@ -31,5 +41,8 @@ export default function Footer(): React.ReactNode {
         <aside className="footer-copyright">
             <p>Copyright &copy; 2025</p>
         </aside>
+        <Modal opened={opened} onClose={close} title='Submit a feedback!'>
+
+        </Modal>
     </footer>;
 }
