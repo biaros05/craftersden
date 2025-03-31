@@ -11,6 +11,8 @@ import MinecraftButton from './Custom/MinecraftButton';
 export default function Welcome(): React.ReactNode {
   const {email} = useAuth() ?? {};
 
+  undefined.length;
+
     return <section id="welcome-page">
         <div id="welcome-left">
             <h1>Welcome!</h1>
