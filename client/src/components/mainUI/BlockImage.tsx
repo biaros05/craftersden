@@ -40,7 +40,7 @@ export default function BlockImage({block, allowSelectBlock = true}: { block: Bl
       onClick={() => addBlockToInventory(block)}
     >
       <IconPlus/>
-    </ActionIcon>}
+    </ActionIcon>
       <Image
         src={block.inventoryTexture}
         alt={block.name}
