@@ -10,6 +10,7 @@ import '../../../styles/DeepslatePlane.css';
 import BlockStatePanel from './BlockStatePanel';
 import { CurrentBlockContext } from '../../../context/currentBlockContext';
 import InventoryHotbar from '../InventoryHotbar';
+import fetchResources from './ResourcesFetcher';
 
 export interface PlaneBlock extends Mesh {
 	name: string;
@@ -28,42 +29,42 @@ for (let x = 0; x < 20; x++) {
  * @param {React.RefObject<HTMLCanvasElement>} props.canvas - canvas of the plane 
  * @param {React.RefObject<CloneableStructure>} props.structure - current structure
  * @param {boolean} props.isViewMode - View mode state of plane
- * @param {React.RefObject<structureRenderer | null>} props.structureRenderer - StructureRenderer responsible for renderering
- * @param {React.RefObject<PlaneBlock[]>} props.blocks - Blocks to use for raycast
- * @param {Resources} props.resources - Resources to render with
  * @returns {React.ReactNode} - Deepslate plane
  */
 export default function DeepslatePlane(
   {
     canvas, 
     structure, 
-    isViewMode, 
-    structureRenderer, 
-    blocks,
-    resources
+    isViewMode,
   }: 
   { 
     canvas: React.RefObject<HTMLCanvasElement | null>; 
     structure: React.RefObject<CloneableStructure>; 
     isViewMode: boolean;
-    structureRenderer: React.RefObject<InteractiveStructureRenderer | null>; 
-    blocks: React.RefObject<PlaneBlock[]>;
-    resources: Resources | undefined
   }
 ): React.ReactNode {
   const projectionMatrix = useRef<mat4>(null);
   const viewMatrix = useRef<mat4>(null);
   const cameraPosition = useRef<vec3>(null);
   const interactiveCanvas = useRef<InteractiveCanvas>(null);
+  const structureRenderer = useRef<InteractiveStructureRenderer>(null);
+  const blocks = useRef<PlaneBlock[]>(structureBlockToPlaneBlock(structure.current.getBlocks()));
+  const [resources, setResources] = useState<Resources>();
   const blockstate = useRef<{[key: string]: string}>({});
   const canvasRect = useRef<DOMRect>(null);
   const [isPlaneHover, setIsPlaneHover] = useState<boolean>(false);
-  const [structureRendererReady, setStructureRendererReady] = useState(false);
 
   useEffect(() => {
-    if (structureRenderer.current) {
-      projectionMatrix.current = structureRenderer.current!.getPerspectiveMatrix();
+    fetchResources(setResources);
+  }, []);
     
+  // Initializes structure renderer and Interactive canvas
+  useEffect(() => {
+    const structureGl = canvas?.current?.getContext('webgl', {preserveDrawingBuffer: true});
+    if (structureGl && resources) {
+      structureRenderer.current = new InteractiveStructureRenderer(structureGl, structure.current, resources);
+      projectionMatrix.current = structureRenderer.current!.getPerspectiveMatrix();
+  
       const size = structure.current.getSize();
       const intCanvas = new InteractiveCanvas(canvas.current!, getOnRender(structureRenderer.current!), [size[0] / 2, size[1] / 2, size[2] / 2]);
       intCanvas.subscribe();
@@ -71,13 +72,7 @@ export default function DeepslatePlane(
   
       return intCanvas?.cleanup;
     }
-  }, [structureRendererReady])
-
-  useEffect(() => {
-    if (resources) {
-      setStructureRendererReady(true)
-    }
-  }, [resources])
+  }, [resources]);
 
   const {
     currentBlock

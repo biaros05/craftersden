@@ -2,7 +2,7 @@ import BlockSelection from './BlockSelection';
 import ButtonPanel from './ButtonPanel';
 import { useAuth } from '../../hooks/useAuth';
 import './CraftersDen.css';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import React from 'react';
 import {toByteArray} from 'base64-js';
 import {encode} from '@msgpack/msgpack'; 
@@ -14,10 +14,7 @@ import { InventoryBlockContext } from '../../context/inventoryBlockContext';
 import { isMobile } from 'react-device-detect';
 import CloneableStructure from './deepslate/CloneableStructure';
 import { GRASS_PLANE } from './deepslate/PlanePresets';
-import DeepslatePlane, { PlaneBlock, structureBlockToPlaneBlock } from './deepslate/DeepslatePlane.tsx';
-import fetchResources from './deepslate/ResourcesFetcher.ts';
-import { Resources } from 'deepslate';
-import InteractiveStructureRenderer from './deepslate/InteractiveStructureRenderer.ts';
+import DeepslatePlane from './deepslate/DeepslatePlane.tsx';
 
 /**
  * Takes an array of objects and takes care of serializing their THREE objects
@@ -45,26 +42,12 @@ export default function CraftersDen(): React.ReactNode {
   const build = useBuild()?.build;
   const canvas = useRef<HTMLCanvasElement>(null);
   const structure = useRef<CloneableStructure>(loadStructure(build));
-  const structureRenderer = useRef<InteractiveStructureRenderer>(null);
-  const blocks = useRef<PlaneBlock[]>(structureBlockToPlaneBlock(structure.current.getBlocks()));
-  const [resources, setResources] = useState<Resources>();
+  const [refreshKey, setRefreshKey] = useState(1);
 
   // A null build signifies a new build
   const [isBuildOwner,] = useState<boolean>(build?.user === id || build === null);
 
   let curBuildId = null;
-  
-  useEffect(() => {
-      fetchResources(setResources);
-    }, []);
-  
-  // Initializes structure renderer and Interactive canvas
-  useEffect(() => {
-    const structureGl = canvas?.current?.getContext('webgl', {preserveDrawingBuffer: true});
-    if (structureGl && resources) {
-      structureRenderer.current = new InteractiveStructureRenderer(structureGl, structure.current, resources);
-    }
-  }, [resources]);
 
   // check if editing an existing build
   if(build && isBuildOwner) {
@@ -124,8 +107,7 @@ export default function CraftersDen(): React.ReactNode {
    */
   function updateStructure(struct: CloneableStructure) {
     structure.current = struct;
-    structureRenderer.current?.setStructure(struct);
-    blocks.current = structureBlockToPlaneBlock(structure.current.getBlocks());
+    setRefreshKey(i => i + 1);
   }
 
   /**
@@ -179,12 +161,10 @@ export default function CraftersDen(): React.ReactNode {
         <div id="main-ui">
           <section className="build-tools">
               <DeepslatePlane 
+              key={refreshKey}
               canvas={canvas} 
-              structure={structure} 
-              structureRenderer={structureRenderer}
-              blocks={blocks}
+              structure={structure}
               isViewMode={isViewMode}
-              resources={resources}
               />
             {!isViewMode && <BlockSelection />}
           </section>

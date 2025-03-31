@@ -8,49 +8,41 @@ import CloneableStructure from "./CloneableStructure";
  * @see https://github.com/EndingCredits/litematic-viewer/blob/main/src/litematic-utils.js
  */
 export function importStructure(file: Uint8Array): CloneableStructure {
-    const nbt = NbtFile.read(file);
+  const nbt = NbtFile.read(file);
 
-<<<<<<< HEAD
-    const litematic: {
-        regions: {
-            size: [number, number, number], 
-            blockPalette: BlockState[], 
-            blocks: {
-                pos: [number, number, number], 
-                state: number
-            }[]
-        }[] 
-    } = {
-        regions: []
-    };
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const regions = (nbt.root.getCompound('Regions') as any).properties;
+  const litematic: {
+      regions: {
+          size: [number, number, number], 
+          blockPalette: BlockState[], 
+          blocks: {
+              pos: [number, number, number], 
+              state: number
+          }[]
+      }[] 
+  } = {
+      regions: []
+  };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const regions = (nbt.root.getCompound('Regions') as any).properties;
 
-=======
-    const litematic = {
-        regions: []
-    };
-    const regions = nbt.root.getCompound('Regions').properties;
-    console.log(regions)
->>>>>>> 2556fb1970bde5ceb042beffd6b90c346d6ad333
-    regions.forEach((value) => {
-        const region = value.properties;
-        console.log('l', region.get('BlockStates'))
-        
-        const size = region.get('Size');
+  regions.forEach((value) => {
+    const region = value.properties;
+    console.log('l', region.get('BlockStates'))
+    
+    const size = region.get('Size');
 
-        const x = Math.abs(size.get('x').value)
-        const y = Math.abs(size.get('y').value)
-        const z = Math.abs(size.get('z').value)
+    const x = Math.abs(size.get('x').value)
+    const y = Math.abs(size.get('y').value)
+    const z = Math.abs(size.get('z').value)
 
-        const blockPalette = getPalette(region.get('BlockStatePalette'));
-        const nbits = calculateBitWidth(blockPalette.length)
-        const blocks = getBlocks(region.get('BlockStates'), nbits, {x, y, z})
+    const blockPalette = getPalette(region.get('BlockStatePalette'));
+    const nbits = calculateBitWidth(blockPalette.length)
+    const blocks = getBlocks(region.get('BlockStates'), nbits, {x, y, z})
 
-        litematic.regions.push({size: [x, y, z], blockPalette: blockPalette, blocks: blocks});
-    })
+    litematic.regions.push({size: [x, y, z], blockPalette: blockPalette, blocks: blocks});
+  })
 
-    return new CloneableStructure(litematic.regions[0].size, litematic.regions[0].blockPalette, litematic.regions[0].blocks);
+  return new CloneableStructure(litematic.regions[0].size, litematic.regions[0].blockPalette, litematic.regions[0].blocks);
 }
 
 /**
