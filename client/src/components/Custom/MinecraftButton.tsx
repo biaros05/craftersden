@@ -9,7 +9,7 @@ type buttonType = "button" | "submit" | "reset" | undefined
  * @param {JSON} children - Component's children
  * @returns {React.ReactNode} - custom button component
  */
-export default function MinecraftButton({children, className = '', type, variant,
+export default function MinecraftButton({children, className = '', variant, type = "button",
   /* eslint-disable @typescript-eslint/no-unused-vars */
   onClick = (e) => {}}: {children: React.ReactNode, className: string, type?: buttonType, variant?: string, onClick: (arg0: React.MouseEvent<HTMLButtonElement>) => void}): React.ReactNode { 
   return (
