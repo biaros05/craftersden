@@ -43,7 +43,7 @@ function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode, isUserLoggedI
       <Modal opened={importOpened} onClose={closeImport} title='Import Build'>
         <BuildImport updateStructure={updateStructure} close={closeImport} />
       </Modal>
-      <Modal opened={exportOpened} onClose={closeExport} title='Import Build'>
+      <Modal opened={exportOpened} onClose={closeExport} title='Export Build'>
         <a href={downloadLink} download>Click here to download!</a>
       </Modal>
       <MinecraftButton 

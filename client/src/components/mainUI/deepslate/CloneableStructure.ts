@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { BlockPos, BlockState, Identifier, Json, JsonValue, NbtCompound, NbtFile, NbtInt, NbtIntArray, Structure } from "deepslate";
+import { BlockPos, BlockState, Identifier, JsonValue, NbtCompound, NbtFile, Structure } from "deepslate";
 import { calculateBitWidth } from "./IOUtils";
 
 export default class CloneableStructure extends Structure {
@@ -91,7 +91,7 @@ export default class CloneableStructure extends Structure {
 
     private encodePlacedBlocks(): [number, number][] {
         const size = this.getSize();
-        const palette = this.getPalette();
+        const palette = [BlockState.AIR, ...this.getPalette()];
         const placedBlocks = this.getPlacedBlocks();
         const nbits = calculateBitWidth(palette.length)
 
@@ -104,23 +104,29 @@ export default class CloneableStructure extends Structure {
         // Initialize the region data array (will store the packed 64-bit integers)
         const regionData: [number, number][] = [];
 
-        // Iterate over all blocks and fill the regionData array
-        let currentBlockIndex = 0;
+        const blockDataLookup = new Map();
+        placedBlocks.forEach(block => {
+            const posKey = `${block.pos[0]},${block.pos[1]},${block.pos[2]}`;
+            blockDataLookup.set(posKey, block.state);
+        });
+
+        // Iterate over all possible positions in the structure
         for (let x = 0; x < width; x++) {
             for (let y = 0; y < height; y++) {
                 for (let z = 0; z < depth; z++) {
-                    // Get the current block data
-                    const block = placedBlocks[currentBlockIndex];
-                    const blockStateIndex = block.state; // Directly use the state as the palette index
-                    
+                    // Check if this position has block data; default to air if not
+                    const posKey = `${x},${y},${z}`;
+                    const blockStateIndex = blockDataLookup.get(posKey) || 0;
+
+                    // Ensure the state is within valid bounds
                     if (blockStateIndex === undefined || blockStateIndex >= palette.length) {
                         console.error(`State ${blockStateIndex} is out of bounds in the palette!`);
                         continue;
                     }
-                    
+
                     // Calculate the linear index for this block in the packed data array
                     const index = y * y_shift + z * z_shift + x;
-                    
+
                     // Determine the start and end bit indices for this block
                     const start_offset = index * nbits;
                     const start_arr_index = start_offset >>> 5;  // Divide by 32
@@ -138,7 +144,7 @@ export default class CloneableStructure extends Structure {
                         blockStart = regionData[half_ind]?.[0] || 0;
                         blockEnd = regionData[half_ind + 1]?.[1] || 0;
                     }
-                    
+
                     // Shift and mask to insert the block state index
                     const blockState = blockStateIndex & mask;
 
@@ -153,8 +159,6 @@ export default class CloneableStructure extends Structure {
                     
                     // Store the packed data back to regionData
                     regionData[half_ind] = [blockEnd, blockStart];  // Update the region data
-                    
-                    currentBlockIndex++;
                 }
             }
         }
