@@ -1,6 +1,5 @@
 /* eslint-disable jsdoc/no-undefined-types */
 import React, { useEffect, useLayoutEffect, useRef, useState, useContext } from 'react';
-import fetchResources from './ResourcesFetcher';
 import { Mesh, getCameraPosition, checkBlocksForIntersect, computePoint, computeTriangleNormal, computeTrianglesOfCube, screenToWorldRay } from './RaycastUtils';
 import { BlockPos, PlacedBlock, Resources } from 'deepslate';
 import { mat4, ReadonlyVec3, vec3 } from 'gl-matrix';
@@ -29,23 +28,60 @@ for (let x = 0; x < 20; x++) {
  * @param {React.RefObject<HTMLCanvasElement>} props.canvas - canvas of the plane 
  * @param {React.RefObject<CloneableStructure>} props.structure - current structure
  * @param {boolean} props.isViewMode - View mode state of plane
+ * @param {React.RefObject<structureRenderer | null>} props.structureRenderer - StructureRenderer responsible for renderering
+ * @param {React.RefObject<PlaneBlock[]>} props.blocks - Blocks to use for raycast
+ * @param {Resources} props.resources - Resources to render with
  * @returns {React.ReactNode} - Deepslate plane
  */
-export default function DeepslatePlane({canvas, structure, isViewMode}: { canvas: React.RefObject<HTMLCanvasElement | null>; structure: React.RefObject<CloneableStructure>; isViewMode: boolean; }): React.ReactNode {
+export default function DeepslatePlane(
+  {
+    canvas, 
+    structure, 
+    isViewMode, 
+    structureRenderer, 
+    blocks,
+    resources
+  }: 
+  { 
+    canvas: React.RefObject<HTMLCanvasElement | null>; 
+    structure: React.RefObject<CloneableStructure>; 
+    isViewMode: boolean;
+    structureRenderer: React.RefObject<InteractiveStructureRenderer | null>; 
+    blocks: React.RefObject<PlaneBlock[]>;
+    resources: Resources | undefined
+  }
+): React.ReactNode {
   const projectionMatrix = useRef<mat4>(null);
   const viewMatrix = useRef<mat4>(null);
   const cameraPosition = useRef<vec3>(null);
   const interactiveCanvas = useRef<InteractiveCanvas>(null);
-  const structureRenderer = useRef<InteractiveStructureRenderer>(null);
-  const blocks = useRef<PlaneBlock[]>(structureBlockToPlaneBlock(structure.current.getBlocks()));
   const blockstate = useRef<{[key: string]: string}>({});
-  const [resources, setResources] = useState<Resources>();
   const canvasRect = useRef<DOMRect>(null);
   const [isPlaneHover, setIsPlaneHover] = useState<boolean>(false);
+  const [structureRendererReady, setStructureRendererReady] = useState(false);
 
-    const {
-      currentBlock
-    } = useContext(CurrentBlockContext);
+  useEffect(() => {
+    if (structureRenderer.current) {
+      projectionMatrix.current = structureRenderer.current!.getPerspectiveMatrix();
+    
+      const size = structure.current.getSize();
+      const intCanvas = new InteractiveCanvas(canvas.current!, getOnRender(structureRenderer.current!), [size[0] / 2, size[1] / 2, size[2] / 2]);
+      intCanvas.subscribe();
+      interactiveCanvas.current = intCanvas;
+  
+      return intCanvas?.cleanup;
+    }
+  }, [structureRendererReady])
+
+  useEffect(() => {
+    if (resources) {
+      setStructureRendererReady(true)
+    }
+  }, [resources])
+
+  const {
+    currentBlock
+  } = useContext(CurrentBlockContext);
 
   // Layout effect to make sure dom is ready to paint
   useLayoutEffect(() => {
@@ -65,45 +101,25 @@ export default function DeepslatePlane({canvas, structure, isViewMode}: { canvas
     return () => window.removeEventListener('resize', resize);
   }, [])
 
-  useEffect(() => {
-    fetchResources(setResources);
-  }, []);
-
-/**
- * Creates on render function causing the given renderer to rerender
- * @param {InteractiveStructureRenderer} newRenderer Renderer used for the onRender
- * @returns {(view: mat4) => void} onRender function to draw structure
- */
-  function getOnRender(newRenderer: InteractiveStructureRenderer) {
-    // function that renders the structure
-    const onRender = (view: mat4) => {
-      const gl = newRenderer.getGl();
-      gl.clearColor(0,0,0,0);
-      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-      newRenderer.drawStructure(view);
-      newRenderer.drawGrid(view);
-      viewMatrix.current = view;
-      cameraPosition.current = getCameraPosition(view);
+  
+ /**
+  * Creates on render function causing the given renderer to rerender
+  * @param {InteractiveStructureRenderer} newRenderer Renderer used for the onRender
+  * @returns {(view: mat4) => void} onRender function to draw structure
+  */
+ function getOnRender(newRenderer: InteractiveStructureRenderer) {
+   // function that renders the structure
+   const onRender = (view: mat4) => {
+     const gl = newRenderer.getGl();
+     gl.clearColor(0,0,0,0);
+     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+     newRenderer.drawStructure(view);
+     newRenderer.drawGrid(view);
+     viewMatrix.current = view;
+     cameraPosition.current = getCameraPosition(view);
     };
     return onRender
   }
-
-  // Initializes structure renderer and Interactive canvas
-  useEffect(() => {
-    const structureGl = canvas?.current?.getContext('webgl', {preserveDrawingBuffer: true});
-    if (structureGl && resources) {
-      const newRenderer = new InteractiveStructureRenderer(structureGl, structure.current, resources);
-      structureRenderer.current = newRenderer;
-      projectionMatrix.current = newRenderer.getPerspectiveMatrix();
-
-      const size = structure.current.getSize();
-      const intCanvas = new InteractiveCanvas(canvas.current!, getOnRender(newRenderer), [size[0] / 2, size[1] / 2, size[2] / 2]);
-      intCanvas.subscribe();
-      interactiveCanvas.current = intCanvas;
-
-      return intCanvas?.cleanup;
-    }
-  }, [resources]);
 
   /**
    * Cast a ray to mouse position on canvas and return point and normal.

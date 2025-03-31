@@ -4,6 +4,9 @@ import useNavigate from '../Navigation/useNavigate.tsx';
 import {buildLoginNotification, buildCopyNotification} from '../Notifications/buildNotifications';
 import MinecraftButton from '../Custom/MinecraftButton.tsx';
 import CloneableStructure from './deepslate/CloneableStructure.ts';
+import { Modal } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
+import BuildImport from './BuildImport.tsx';
 
 type ButtonPanelProps = { 
   setIsViewMode: (arg0: boolean) => void,
@@ -12,7 +15,8 @@ type ButtonPanelProps = {
   isViewMode: boolean,
   isUserLoggedIn: boolean,
   isBuildOwner: boolean,
-  structure: CloneableStructure
+  structure: CloneableStructure,
+  updateStructure: (arg0: CloneableStructure) => void
 }
 
 /**
@@ -25,12 +29,18 @@ type ButtonPanelProps = {
  * @param {string} props.isUserLoggedIn email of current user.
  * @param {boolean} props.isBuildOwner is current user the owner of the build.
  * @param {CloneableStructure} props.structure build blocks.
+ * @param {(CloneableStructure) => void} props.updateStructure callback to update user structure
  * @returns {React.ReactNode} Button panel section with buttons
  */
-function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode, isUserLoggedIn, isBuildOwner, structure}: ButtonPanelProps): React.ReactNode {
+function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode, isUserLoggedIn, isBuildOwner, structure, updateStructure}: ButtonPanelProps): React.ReactNode {
+  const [importOpened, {open: openImport, close: closeImport}] = useDisclosure(false);
   const navigate = useNavigate();
+  
   return (
     <section className="button-panel">
+      <Modal opened={importOpened} onClose={closeImport} title='Import Build'>
+        <BuildImport updateStructure={updateStructure} close={closeImport} />
+      </Modal>
       <MinecraftButton 
         className="save-button"
         onClick={() => {
@@ -47,6 +57,12 @@ function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode, isUserLoggedI
         }}
       >
         Save
+      </MinecraftButton>
+      <MinecraftButton className='export-build' onClick={openImport}>
+        Import
+      </MinecraftButton>
+      <MinecraftButton className='import-build' onClick={() => {}}>
+        Export
       </MinecraftButton>
       <MinecraftButton 
         onClick={() => setIsViewMode(!isViewMode)}
