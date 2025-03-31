@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import '../../styles/ButtonPanel.css';
 import useNavigate from '../Navigation/useNavigate.tsx';
 import {buildLoginNotification, buildCopyNotification} from '../Notifications/buildNotifications';
@@ -34,12 +34,17 @@ type ButtonPanelProps = {
  */
 function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode, isUserLoggedIn, isBuildOwner, structure, updateStructure}: ButtonPanelProps): React.ReactNode {
   const [importOpened, {open: openImport, close: closeImport}] = useDisclosure(false);
+  const [exportOpened, {open: openExport, close: closeExport}] = useDisclosure(false);
+  const [downloadLink, setDownloadLink] = useState('');
   const navigate = useNavigate();
   
   return (
     <section className="button-panel">
       <Modal opened={importOpened} onClose={closeImport} title='Import Build'>
         <BuildImport updateStructure={updateStructure} close={closeImport} />
+      </Modal>
+      <Modal opened={exportOpened} onClose={closeExport} title='Import Build'>
+        <a href={downloadLink} download>Click here to download!</a>
       </Modal>
       <MinecraftButton 
         className="save-button"
@@ -61,7 +66,10 @@ function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode, isUserLoggedI
       <MinecraftButton className='export-build' onClick={openImport}>
         Import
       </MinecraftButton>
-      <MinecraftButton className='import-build' onClick={() => {}}>
+      <MinecraftButton className='import-build' onClick={() => {
+        setDownloadLink(URL.createObjectURL(new File([structure.toNbt('test_user').write()], 'test.litematic')))
+        openExport();
+      }}>
         Export
       </MinecraftButton>
       <MinecraftButton 

@@ -1,11 +1,12 @@
 import { BlockState, NbtFile } from "deepslate";
 import CloneableStructure from "./CloneableStructure";
 
+/* --- The following section was adapted from https://github.com/EndingCredits/litematic-viewer/blob/main/src/litematic-utils.js with some help from chatgpt --- */
+
 /**
  * Reads an nbt file and parses it into a cloneable structure
  * @param {Uint8Array} file to parse
  * @returns {CloneableStructure} the structure from the file
- * @see https://github.com/EndingCredits/litematic-viewer/blob/main/src/litematic-utils.js
  */
 export function importStructure(file: Uint8Array): CloneableStructure {
   const nbt = NbtFile.read(file);
@@ -60,8 +61,8 @@ function getPalette(palette: object): BlockState[] {
  * @param {number} size number to hold
  * @returns {number} smallest power of 2 > size 
  */
-function calculateBitWidth(size: number): number {
-    return Math.max(1, Math.ceil(Math.log2(size)));
+export function calculateBitWidth(size: number): number {
+  return Math.max(1, Math.ceil(Math.log2(size)));
 }
 
 /**
@@ -151,3 +152,5 @@ function processNBTRegionData(regionData: { value: []; }[], nbits: number, width
   }
   return blocks;
 }
+
+/* --- END OF SECTION --- */
