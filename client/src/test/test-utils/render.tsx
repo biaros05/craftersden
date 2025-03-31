@@ -43,7 +43,7 @@ export function render(
     username: '',
     email: '',
     avatar: '',
-    loading: true,
+    loading: false,
     login: () => vi.fn(),
     logout: () => vi.fn(),
     ...authValue,
