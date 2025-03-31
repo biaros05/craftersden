@@ -51,8 +51,6 @@ const postRouter = express.Router();
  *   post:
  *     summary: Save a new build with an image and block data
  *     tags: [Posts]
- *     security:
- *       - sessionAuth: []
  *     requestBody:
  *       required: true
  *       content:
