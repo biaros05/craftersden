@@ -4,7 +4,7 @@ export const handlers = [
   http.get('/api/query', () => {
     return HttpResponse.json({user: '1'});
   }),
-  http.get('/api/user/:email/builds', ({ params }) => {
+  http.get('/api/user/:email/builds', () => {
     return HttpResponse.json(
       {
         builds: [
