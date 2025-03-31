@@ -8,16 +8,18 @@ import { useAuth } from '../hooks/useAuth';
 type Data = {
   reporter: string | null | undefined,
   reason: string, 
-  user_id: string | undefined, 
-  post_id: string | undefined
+  userId: string | undefined, 
+  postId: string | undefined
 }
 
 /**
- *
- * @param root0
- * @param root0.buildId
- * @param root0.userId
- * @param root0.username
+ *Is the report button that prompts user for reporting selection, user or build, 
+ *and then prompts for the report message.
+   @param {object} props - React props
+ * @param {string} props.buildId - The post's id to be reported
+ * @param {string} props.userId - The user id to be reported
+ * @param {string} props.username - The username of the user to be reported
+ * @returns {React.ReactNode} - The ReportButton with the pop ups.
  */
 export default function ReportButton({ buildId, userId, username }) {
   const [opened, { open, close }] = useDisclosure(false);
@@ -32,21 +34,22 @@ export default function ReportButton({ buildId, userId, username }) {
   }
 
   /**
-   *
+   *Handles the user's report submission
+   * @returns {Function} - The error message with pop up
    */
   async function handleSubmit() {
     try {
       const data: Data = {
-        user_id: undefined,
-        post_id: undefined,
+        userId: undefined,
+        postId: undefined,
         reporter: id, 
         reason
       };
       
       if (reportType === 'user') {
-        data.user_id = userId;
+        data.userId = userId;
       } else {
-        data.post_id = buildId;
+        data.postId = buildId;
       }
       
 

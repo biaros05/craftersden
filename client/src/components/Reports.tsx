@@ -3,6 +3,10 @@ import { errorMessage } from "../utils/notification_utils";
 import { ScrollArea, Title, Text } from "@mantine/core";
 import ReportCard from "./ReportCard";
 
+/**
+ *This represents all the reports to be shown on moderator's reports panel. 
+ * @returns {React.ReactNode} - The reports tab components
+ */
 export default function Reports(){
   const [reports, setReports] = useState([]);
 
@@ -10,7 +14,7 @@ export default function Reports(){
     const controller = new AbortController();
 
     /**
-     *
+     *Fetches all reports
      */
     async function fetchReports(){
       const response = await fetch('/api/report/reports', {method: 'GET'});

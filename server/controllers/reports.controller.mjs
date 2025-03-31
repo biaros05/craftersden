@@ -1,10 +1,7 @@
-import User from "../models/User.mjs";
-import Post from "../models/Post.mjs";
-import Report from "../models/Report.mjs";
-
+import Report from '../models/Report.mjs';
+ 
 /**
  * Creates a new report 
- * 
  * @param {object} req  - Request object
  * @param {object} res - Response object
  * @param {next} next  - Next function
@@ -12,16 +9,16 @@ import Report from "../models/Report.mjs";
  */
 async function createReport(req, res, next) {
   try{
-    const {user_id, post_id, reporter, reason} = req.body;
-    if (!(user_id || post_id) || !reporter || !reason) {
+    const {userId, postId, reporter, reason} = req.body;
+    if (!(userId || postId) || !reporter || !reason) {
       return res.status(400).json({ message: 'All fields are required' });
     }
 
     const now = new Date();
 
     const userReport = new Report({
-      user_id,
-      post_id,
+      userId,
+      postId,
       reporter,
       reason,
       createdAt: now
@@ -38,7 +35,6 @@ async function createReport(req, res, next) {
 
 /**
  * Retrieves all reports from the database  
- *
  * @param {object} req  - Request object
  * @param {object} res - Response object
  * @param {next} next  - Next function
@@ -56,7 +52,6 @@ async function getReports(req, res, next) {
 
 /**
  * Deletes a report 
- * 
  * @param {object} req  - Request object
  * @param {object} res - Response object
  * @param {next} next  - Next function

@@ -12,6 +12,14 @@ type User = {
   id: string
 };
 
+/**
+ * The feedback card to be displayed in the feedback tabs in moderator
+ * @param {object} props - React props
+ * @param {object} props.feedback - The feedback to parse
+ * @param {number} props.index - The feedback index
+ * @param {React.Dispatch<React.SetStateAction<never[]>>} props.setFeedbacks - set the parent component's feedbacks
+ * @returns {React.ReactNode} - The feedback card component
+ */
 export default function FeedbackCard({ feedback, index, setFeedbacks }) {
   const [user, setUser] = useState<User | null>(null);
   console.log(`individual feedback:`, feedback)
@@ -19,6 +27,10 @@ export default function FeedbackCard({ feedback, index, setFeedbacks }) {
   useEffect(() => {
     const controller = new AbortController();
 
+    /**
+     *Sets the card's data with the correct user.
+     @returns {Function} - The error message 
+     */
     async function setCardData() {
       const response = await fetch(`/api/user/${feedback.author}`, { method: 'GET' });
       const json = await response.json();
@@ -35,6 +47,10 @@ export default function FeedbackCard({ feedback, index, setFeedbacks }) {
     }
   }, []);
 
+  /**
+   *This function deletes the feedback from the mdoerator's panel.
+   *@returns {Function} the error message pop up
+   */
   async function deleteFeedback() {
     const data = {
       id: feedback._id
@@ -54,7 +70,7 @@ export default function FeedbackCard({ feedback, index, setFeedbacks }) {
     }
 
     setFeedbacks(prevFeedbacks => {
-      const newFeedbacks = prevFeedbacks.filer(item => item._id !== feedback._id);
+      const newFeedbacks = prevFeedbacks.filter(item => item._id !== feedback._id);
       return newFeedbacks;
     })
 

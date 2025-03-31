@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Carousel } from '@mantine/carousel';
-import { IconBookmark, IconBookmarkFilled, IconHeart, IconHeartFilled, IconFlag } from '@tabler/icons-react';
+import { IconBookmark, IconBookmarkFilled, IconHeart, IconHeartFilled } from '@tabler/icons-react';
 import { Image, Text, Box, ActionIcon, Pill, ScrollArea, Avatar, Group } from '@mantine/core';
 import '../styles/Post.css';
 import { errorMessage, successMessage } from '../utils/notification_utils';

@@ -3,12 +3,19 @@ import { errorMessage } from "../utils/notification_utils";
 import { ScrollArea, Title, Text } from "@mantine/core";
 import FeedbackCard from "./FeedbackCard";
 
+/**
+ * The feedbacks component to be shown on the moderator's panel.
+ * @returns {React.ReactNode} - The feedbacks component section
+ */
 export default function Feedbacks(){
   const [feedbacks, setFeedbacks] = useState([]);
 
   useEffect(() => {
     const controller = new AbortController();
 
+    /**
+     *
+     */
     async function getFeedbacks(){
       const response = await fetch('/api/feedback/feedbacks', {method: 'GET'});
       const json = await response.json();

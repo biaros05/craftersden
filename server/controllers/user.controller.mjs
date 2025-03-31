@@ -143,6 +143,13 @@ async function getUserSavedPosts(req, res, next){
   }
 };
 
+/**
+ *Gets user by id 
+ * @param {object} req  - The request object.
+ * @param {object} res - The respond object.
+ * @param {*} next - Next
+ * @returns {Response}- Response object with status code and message.
+ */
 async function getUser(req, res, next){
   try{
     
@@ -152,12 +159,12 @@ async function getUser(req, res, next){
 
     const user = await User.findOne(
       {_id : req.params.id}).select(
-        { email: 1,
-          username: 1, 
-          avatar: 1, 
-          role: 1, 
-          _id: 1
-         });
+      { email: 1,
+        username: 1, 
+        avatar: 1, 
+        role: 1, 
+        _id: 1
+      });
     if(!user){
       const err = new Error('Cannot find user in database');
       err.status = 404;

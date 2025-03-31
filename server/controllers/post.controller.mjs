@@ -215,7 +215,6 @@ async function getPublishedBuilds(req, res, next) {
     let publishedBuilds = [];
 
     if(username){
-      console.log(username);  
       const user = await User.findOne({ username: username});
       if(!user){
         const err = new Error('Cannot find user in database');
@@ -491,6 +490,13 @@ async function postSearch(req, res, next){
   }
 };
 
+/**
+ *Gets post by id 
+ * @param {object} req  - The request object.
+ * @param {object} res - The respond object.
+ * @param {*} next - Next
+ * @returns {Response}- Response object with status code and message.
+ */
 async function getPost(req, res, next){
   try{ 
 
@@ -510,7 +516,7 @@ async function getPost(req, res, next){
     const postWithUsername = {
       ...post.toObject(),
       username: username.username
-    } ;
+    };
 
     return res.status(200).json({message: 'Post retrieved', post: postWithUsername});
   } catch(err){

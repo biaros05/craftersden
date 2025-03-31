@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from "react";
-import { errorMessage } from "../utils/notification_utils";
+import React from "react";
 import '../styles/moderate.css';
-import { ScrollArea, Title, Text, Tabs} from "@mantine/core";
-import ReportCard from "./ReportCard";
+import { Text, Tabs} from "@mantine/core";
 import { useAuth } from "../hooks/useAuth";
 import Feedbacks from "./Feedbacks";
 import Reports from "./Reports";
 
 /**
- *
+ * The moderator's page. Checks if user is a moderator before proceeding. 
+ * Shows 2 tabs, reports and feedbacks.
+ * @returns {React.ReactNode} - The moderator component.
  */
 export default function Moderate(){
   const {role} = useAuth() ?? {};

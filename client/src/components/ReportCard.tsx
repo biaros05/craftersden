@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Avatar, Card, Group, Text, Badge, Button } from "@mantine/core";
 import { errorMessage, successMessage } from "../utils/notification_utils";
 import { IconTrash } from '@tabler/icons-react';
-import { error } from "console";
 import { ObjectId } from "mongoose";
 
 type User = {
@@ -30,11 +29,13 @@ type Post = {
 }
 
 /**
- *
- * @param root0
- * @param root0.report
- * @param root0.index
- * @param root0.setReports
+ *This component represents the indivdual reports with the relevant information 
+ *displayed for the moderators.
+ * @param {object} props - React component props
+ * @param {object} props.report - The report to be shown
+ * @param {number} props.index - The report's index
+ * @param {React.Dispatch<React.SetStateAction<never[]>>} props.setReports - Sets the reports for the parent component
+ * @returns {React.ReactNode} - The card for individual report
  */
 export default function ReportCard({ report, index, setReports }) {
   const [user, setUser] = useState<User | null>(null);
@@ -45,11 +46,12 @@ export default function ReportCard({ report, index, setReports }) {
     const controller = new AbortController();
 
     /**
-     *
+     *Sets the report's data with the user or post depending on conditions.
+     * @returns {Function} - Error message pop up with json error message
      */
     async function setCardData() {
-      if (report.user_id) {
-        const response = await fetch(`/api/user/${report.user_id}`, { method: 'GET' });
+      if (report.userId) {
+        const response = await fetch(`/api/user/${report.userId}`, { method: 'GET' });
         const json = await response.json();
 
         if (!response.ok) {
@@ -61,7 +63,7 @@ export default function ReportCard({ report, index, setReports }) {
       }
       //could be one or the other (user id or post id only)
       else {
-        const response = await fetch(`/api/post/${report.post_id}`, { method: 'GET' });
+        const response = await fetch(`/api/post/${report.postId}`, { method: 'GET' });
         const json = await response.json();
 
         if (!response.ok) {
@@ -90,7 +92,8 @@ export default function ReportCard({ report, index, setReports }) {
   }, []);
 
   /**
-   *
+   *Deletes the user's report and updates parent's reports for rendering purposes.
+   * @returns {Function} - The error message pop up with json error message
    */
   async function deleteReport(){
 
@@ -126,7 +129,7 @@ export default function ReportCard({ report, index, setReports }) {
       p="md"
       withBorder
     >
-      {report.user_id && user && (
+      {report.userId && user && (
         <div>
           <Group align="flex-start" spacing="md">
             <Avatar
@@ -174,7 +177,7 @@ export default function ReportCard({ report, index, setReports }) {
         </div>
       )}
 
-      {report.post_id && post && (
+      {report.postId && post && (
         <Card className="mt-4 bg-gray-50">
           <Card.Section p="md">
             <Text c='red' fw={700}>Post Report</Text>

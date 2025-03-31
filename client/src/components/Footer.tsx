@@ -4,7 +4,6 @@ import '../styles/footer.css'
 import { Anchor, Modal, Stack, Select, TextInput } from "@mantine/core";
 import { useDisclosure } from '@mantine/hooks';
 import { useAuth } from "../hooks/useAuth";
-import { request } from "http";
 import { errorMessage, successMessage } from "../utils/notification_utils";
 import MinecraftButton from "./Custom/MinecraftButton";
 
@@ -20,6 +19,11 @@ export default function Footer(): React.ReactNode {
     type: ''
   });
 
+  /**
+   *This function handle's the user feedback submission and sends it to the db with
+   *the form data
+   * @returns {Function} - The error message pop up with message
+   */
   async function handleSubmit(){
     const data = {
       author: id,

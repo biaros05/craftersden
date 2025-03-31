@@ -1,23 +1,23 @@
-import { Schema, model } from "mongoose";
+import { Schema, model } from 'mongoose';
 
 const ReportSchema = new Schema({
-  user_id: {
+  userId: {
     type: Schema.Types.ObjectId,
-    ref: "User",
+    ref: 'User',
   },
-  post_id: {
+  postId: {
     type: Schema.Types.ObjectId,
-    ref: "Post",
+    ref: 'Post',
   },
   reporter: {
     type: Schema.Types.ObjectId,
-    ref: "User",
+    ref: 'User',
   },
   reason: String,
   createdAt: String
 });
 
-const Report = model("Report", ReportSchema, 'reports');
+const Report = model('Report', ReportSchema, 'reports');
 
 export default Report;
 
