@@ -162,7 +162,7 @@ export default function DeepslatePlane(
    * Places a block at click coordinates
    * @param {React.MouseEvent<HTMLCanvasElement>} e - Mouse event object
    */
-  function placeBlock(e: React.MouseEvent<HTMLCanvasElement>) {
+  async function placeBlock(e: React.MouseEvent<HTMLCanvasElement>) {
     if (viewMatrix.current && projectionMatrix.current && cameraPosition.current) {
       const {point, normal} = rayCast(e, viewMatrix.current, projectionMatrix.current, cameraPosition.current) ?? {};
       if (point && normal) {
@@ -173,8 +173,7 @@ export default function DeepslatePlane(
           structure.current.addBlock(newBlockPos, `${'minecraft'}:${currentBlock.name}`, {...blockstate.current});
           blocks.current.push(...structureBlockToPlaneBlock([structure.current.getBlock(newBlockPos)!]));
 
-          structureRenderer.current!.setStructure(structure.current);
-          interactiveCanvas.current?.setOnRender(getOnRender(structureRenderer.current!))
+          structureRenderer.current?.updateStructureBuffers();
           interactiveCanvas.current!.redraw();
         }
       }
@@ -187,16 +186,15 @@ export default function DeepslatePlane(
    * Destroys blocks at mouse coordinates
    * @param {React.MouseEvent<HTMLCanvasElement>} e - Mouse event object
    */
-  function destroyBlock(e: React.MouseEvent<HTMLCanvasElement>) {
+  async function destroyBlock(e: React.MouseEvent<HTMLCanvasElement>) {
     if (viewMatrix.current && projectionMatrix.current && cameraPosition.current) {
       const {point, normal} = rayCast(e, viewMatrix.current, projectionMatrix.current, cameraPosition.current) ?? {};
 
       if (point && normal) {
-        structure.current = structure.current.removeBlockAndClone(point);
+        structure.current.removeBlock(point);
         blocks.current = blocks.current.filter(b => !BlockPos.equals(b.position, point));
 
-        structureRenderer.current!.setStructure(structure.current);
-        interactiveCanvas.current!.setOnRender(getOnRender(structureRenderer.current!));
+        structureRenderer.current?.updateStructureBuffers();
         interactiveCanvas.current?.redraw();
       }
     } else {
