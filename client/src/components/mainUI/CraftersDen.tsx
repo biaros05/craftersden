@@ -126,7 +126,6 @@ export default function CraftersDen(): React.ReactNode {
     structure.current = struct;
     structureRenderer.current?.setStructure(struct);
     blocks.current = structureBlockToPlaneBlock(structure.current.getBlocks());
-    setBuild({...build})
   }
 
   /**

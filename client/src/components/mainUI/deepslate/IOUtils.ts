@@ -10,6 +10,7 @@ import CloneableStructure from "./CloneableStructure";
 export function importStructure(file: Uint8Array): CloneableStructure {
     const nbt = NbtFile.read(file);
 
+<<<<<<< HEAD
     const litematic: {
         regions: {
             size: [number, number, number], 
@@ -25,6 +26,13 @@ export function importStructure(file: Uint8Array): CloneableStructure {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const regions = (nbt.root.getCompound('Regions') as any).properties;
 
+=======
+    const litematic = {
+        regions: []
+    };
+    const regions = nbt.root.getCompound('Regions').properties;
+    console.log(regions)
+>>>>>>> 2556fb1970bde5ceb042beffd6b90c346d6ad333
     regions.forEach((value) => {
         const region = value.properties;
         console.log('l', region.get('BlockStates'))
