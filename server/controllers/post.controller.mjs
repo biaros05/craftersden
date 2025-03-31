@@ -38,7 +38,7 @@ function uploadValidation(req, res, next) {
 async function saveBuild(req, res, next) {
   const encoded = req.files['blocks'][0];
   const buffer = Buffer.from(encoded.buffer, encoded.byteOffset, encoded.byteLength);
-  const blocks = decode(buffer);
+  const blocks = JSON.parse(decode(buffer));
   const email = req.body.email;
   try {
     if (req.body.buildId !== 'null' && req.body.buildId !== undefined) {
@@ -200,7 +200,7 @@ async function unpublishBuild(req, res, next) {
  */
 async function getPublishedBuilds(req, res, next) {
   try {
-    const { page = 1, limit = 50 } = req.query;
+    const { page = 1, limit = 50, username, description } = req.query;
     
     if (isNaN(page) || isNaN(limit)) {
       return res.status(400).json({ message: 'page and limit parameters must be numbers'});
@@ -212,14 +212,50 @@ async function getPublishedBuilds(req, res, next) {
       return res.status(404).json({ message: 'Page not found' });
     }
 
-    const publishedBuilds = await Post.find({ isPublished: true }).
-      sort({_id: 1}).
-      limit(limit).
-      skip((page - 1) * limit);
-    
+    let publishedBuilds = [];
+
+    if(username){
+      console.log(username);  
+      const user = await User.findOne({ username: username});
+      if(!user){
+        const err = new Error('Cannot find user in database');
+        err.status = 404;
+        next(err);
+      }
+      publishedBuilds = await Post.find(
+        { isPublished: true,
+          user: user._id}
+      ).
+        sort({_id: 1}).
+        limit(limit).
+        skip((page - 1) * limit);
+      
+      if(publishedBuilds.length === 0){
+        return res.status(200).json({
+          message: 'No builds from this user!',
+          total: totalPages,
+        });
+      }
+
+    } else if(description){
+      publishedBuilds = await Post.find({
+        description: { $regex: description, $options: 'i'},
+        isPublished: true
+      }).
+        sort({_id: 1}).
+        limit(limit).
+        skip((page - 1) * limit);   
+        
+    } else{
+      publishedBuilds = await Post.find({ isPublished: true }).
+        sort({_id: 1}).
+        limit(limit).
+        skip((page - 1) * limit);
+    }
+
     if (publishedBuilds.length === 0) {
       return res.status(100).json({ message: 'There are no published builds at this moment.' });
-    }
+    };
 
     const publishBuildsWithUsername = await Promise.all(
       publishedBuilds.map(async (build) => {
@@ -244,7 +280,7 @@ async function getPublishedBuilds(req, res, next) {
     err.status = 500;
     next(err);
   }
-}
+};
 
 /**
  * Obtains the file content and stores it in azure blob.
@@ -441,8 +477,8 @@ async function postSearch(req, res, next){
     }).select({description: 1, _id: 0});
 
     const users = await User.find({
-      username: { $regex: query, $options: 'i'}})
-      .select({username: 1, avatar: 1, _id: 1});
+      username: { $regex: query, $options: 'i'}}).
+      select({username: 1, avatar: 1, _id: 1});
 
     return res.status(200).json({
       message: 'Search results fetched', 
@@ -454,63 +490,6 @@ async function postSearch(req, res, next){
     next(err);
   }
 }
-
-/**
- * This function takes a username and returns posts with the user's id.
- * @param {object} req  - The request object.
- * @param {object} res - The respond object.
- * @param {*} next - Next
- * @returns {Response} - The response of the function.
- */
-async function getUserPosts(req, res, next){
-  try{
-    // const user = await User.find({ username: req.params.username}).select({ "_id": 1});
-
-    // if(!user){
-    //   const error = new Error('Cannot find user in the database');
-    //   error.status = 404;
-    //   next(error);
-    // }
-
-    const userid = req.params.id;
-
-    if(!userid){
-      const err = new Error('Invalid user id for posts fetch');
-      err.status = 403;
-      next(err);
-    }
-
-    const posts = await Post.find({ user: userid });
-    
-    return res.status(200).json({ message: `User's builds retrieved`, posts: posts });
-
-  } catch( error){
-    error.status = 500;
-    next(error);
-  }
-};
-
-/**
- * Fetches all the posts by description if contains query instance case insensitive
- * @param {object} req  - The request object.
- * @param {object} res - The respond object.
- * @param {*} next - Next
- * @returns {Response} - The response of the function.
- */
-async function getPostsByDescription(req, res, next){
-  try{
-    const posts = Post.find({
-      description: { $regex: req.params.description, $options: 'i'}
-    });
-
-    return res.status(200).json({message: 'Searched posts success', posts: posts});
-
-  } catch(err){
-    err.status = 500;
-    next(err);
-  }
-}
-
 
 export {
   saveBuild,
@@ -525,7 +504,5 @@ export {
   toggleLikeBuild,
   toggleSaveBuild,
   getLikesSaves,
-  getUserPosts,
-  getPostsByDescription,
   postSearch
 };
