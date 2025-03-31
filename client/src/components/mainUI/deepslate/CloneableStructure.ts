@@ -36,6 +36,10 @@ export default class CloneableStructure extends Structure {
         };
     }
 
+    public static fromStructure(structure: Structure) {
+        return new CloneableStructure(structure.getSize(), [...(structure as any).palette], [...(structure as any).blocks]);
+    }
+
     public static fromJson(json: object) {
         const palette = json.palette.map(b => new BlockState(`${b.name.namespace}:${b.name.path}`, b.properties)) as any;
 

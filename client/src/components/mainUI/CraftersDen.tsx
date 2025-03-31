@@ -101,6 +101,14 @@ export default function CraftersDen(): React.ReactNode {
   };
 
   /**
+   * Updates the loaded structure
+   * @param {CloneableStructure} struct structure to load
+   */
+  function updateStructure(struct: CloneableStructure) {
+    setBuild({buildJSON: struct.toJson()});
+  }
+
+  /**
    * Saves the current build in the db
    * @param {string} progressPicture URL
    */
@@ -160,6 +168,7 @@ export default function CraftersDen(): React.ReactNode {
           <ButtonPanel 
           canvas={canvas}
           structure={structure.current}
+          updateStructure={updateStructure}
           setIsViewMode={setIsViewMode} 
           savePost={savePost} 
           isViewMode={isViewMode}
@@ -179,8 +188,7 @@ export default function CraftersDen(): React.ReactNode {
  */
 function loadStructure(build) {
   const serializedBlocks = JSON.parse(localStorage.getItem("build") ?? "{}");
-  
-  if ( serializedBlocks.structure !== "{}" && serializedBlocks.structure) {
+  if (serializedBlocks.structure !== "{}" && serializedBlocks.structure) {
     const newStructure = CloneableStructure.fromJson(serializedBlocks.structure);
     localStorage.clear();
     return newStructure;
