@@ -16,7 +16,7 @@ export default function Feedbacks(){
       if(!response.ok){
         errorMessage(json.message);
       }
-
+      console.log(json.feedbacks);
       setFeedbacks(json.feedbacks);
 
     }

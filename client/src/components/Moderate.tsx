@@ -5,39 +5,13 @@ import { ScrollArea, Title, Text, Tabs} from "@mantine/core";
 import ReportCard from "./ReportCard";
 import { useAuth } from "../hooks/useAuth";
 import Feedbacks from "./Feedbacks";
+import Reports from "./Reports";
 
 /**
  *
  */
 export default function Moderate(){
-  const [reports, setReports] = useState([]);
   const {role} = useAuth() ?? {};
-
-  useEffect(() => {
-    const controller = new AbortController();
-
-    /**
-     *
-     */
-    async function fetchReports(){
-      const response = await fetch('/api/report/reports', {method: 'GET'});
-      const json = await response.json();
-      if(!response.ok){
-        errorMessage(json.message);
-        throw new Error(json.message);
-      }
-
-      setReports(json.reports);
-    };
-
-    fetchReports();
-
-    return () => {
-      controller.abort();
-    }
-
-  }, []);
-
   if (role !== 'moderator') {
     return (
       <section className="not-authorized">
@@ -47,7 +21,6 @@ export default function Moderate(){
       </section>
     );
   }
-
   return(
     <Tabs defaultValue='reports'>
       <Tabs.List>
@@ -60,18 +33,7 @@ export default function Moderate(){
       </Tabs.List>
 
       <Tabs.Panel value='reports'>
-        <section className='moderator-page'>
-        <ScrollArea h={750}>
-          <Title className="moderate-title">Reports Created by Users</Title>
-          {reports.length > 0 ? (
-            reports.map((report, index) => (
-              <ReportCard report={report} index={index} setReports={setReports}/>
-            ))
-          ):
-          <Text>No reports at this moment</Text>
-          }
-        </ScrollArea>
-        </section>
+        <Reports/>
       </Tabs.Panel>
 
       <Tabs.Panel value='feedbacks'>

@@ -135,8 +135,8 @@ export default function ReportCard({ report, index, setReports }) {
               className="h-12 w-12"
             />
             <div>
-              <Text weight={500}>
-                User: {user.username}
+              <Text fw={700} c='red'>
+                Reported User: {user.username}
               </Text>
               <div>
                 <Badge variant="outline" size="sm">
@@ -177,11 +177,11 @@ export default function ReportCard({ report, index, setReports }) {
       {report.post_id && post && (
         <Card className="mt-4 bg-gray-50">
           <Card.Section p="md">
-            <Text weight={500}>Post Report</Text>
+            <Text c='red' fw={700}>Post Report</Text>
             <div className="mt-2 space-y-2">
               <Text size="sm">Reporter: {reporter?.username}</Text>
               <Text size="sm">Reason: {report.reason}</Text>
-              <Text size="sm">{post.description}</Text>
+              <Text size="sm">Post Description: {post.description}</Text>
               <Text size="sm">Creator: {post.username}</Text>
               <Text size="sm" c="dimmed">
                 Created At: {report.createdAt}

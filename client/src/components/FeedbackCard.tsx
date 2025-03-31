@@ -14,19 +14,22 @@ type User = {
 
 export default function FeedbackCard({ feedback, index, setFeedbacks }) {
   const [user, setUser] = useState<User | null>(null);
+  console.log(`individual feedback:`, feedback)
 
   useEffect(() => {
     const controller = new AbortController();
+
     async function setCardData() {
-      const response = await fetch(`/api/user${feedback.author}`, { method: 'GET' });
+      const response = await fetch(`/api/user/${feedback.author}`, { method: 'GET' });
       const json = await response.json();
       if (!response.ok) {
         return errorMessage(json.message);
       }
-
+      console.log(`user:`, user);
       setUser(json.user);
     }
 
+    setCardData();
     return () => {
       controller.abort();
     }
@@ -60,7 +63,7 @@ export default function FeedbackCard({ feedback, index, setFeedbacks }) {
 
   return (
     <Card
-      key={`report-${index}`}
+      key={`feedback-${index}`}
       shadow="md"
       p="md"
       withBorder
@@ -90,10 +93,16 @@ export default function FeedbackCard({ feedback, index, setFeedbacks }) {
 
           <Card>
             <Card.Section p="md">
-              <Text>Type: {feedback.type}</Text>
+              <Badge variant='filled' color={
+                feedback.type === 'Bug' ? 'orange' :
+                  feedback.type === 'Feature' ? 'green' :
+                    'gray'
+              }>
+                {feedback.type}
+              </Badge>
               <Text>Message: {feedback.message}</Text>
               <Text size="sm" c="dimmed">
-                  Created At: {feedback.createdAt}
+                Created At: {feedback.createdAt}
               </Text>
             </Card.Section>
             <Card.Section p="md">
@@ -103,7 +112,7 @@ export default function FeedbackCard({ feedback, index, setFeedbacks }) {
                 size="sm"
                 color="red"
               >
-                <IconTrash/>
+                <IconTrash />
               </Button>
             </Card.Section>
           </Card>
