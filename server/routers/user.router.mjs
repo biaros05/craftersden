@@ -43,8 +43,6 @@ const userUpdateValidation = [
  *   put:
  *     summary: Update user profile with avatar upload
  *     tags: [Users]
- *     security:
- *       - sessionAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -78,8 +76,6 @@ userRouter.put('/', isAuthenticated,
  *   get:
  *     summary: Get user's saved builds
  *     tags: [Users]
- *     security:
- *       - sessionAuth: []
  *     parameters:
  *       - in: path
  *         name: email

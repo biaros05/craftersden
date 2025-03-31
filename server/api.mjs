@@ -33,27 +33,8 @@ const swaggerOptions = {
     info: {
       title: 'Crafter\'s Got the Moves Like Swagger',
       version: '1.0.0',
-    },
-    components: {
-      securitySchemes: {
-        GoogleOAuth: {
-          type: 'oauth2',
-          flows: {
-            implicit: {
-              authorizationUrl: "https://accounts.google.com/o/oauth2/v2/auth",
-              tokenUrl: "https://www.googleapis.com/oauth2/v4/token",
-              scopes: {
-                profile: 'Access your profile info',
-                email: 'Access your email address',
-              },
-            },
-          },
-        },
-      },
-    },
-    security: [{ GoogleOAuth: ['email', 'profile'] }], // Apply globally
-  },
-  apis: ['./routes/*.js'], // Adjust based on your file structure
+    }
+  } // Adjust based on your file structure
 };
 
 const options = {
@@ -62,7 +43,7 @@ const options = {
   apis: ['./routers/*.mjs'],
 };
 
-const swaggerSpec = swaggerJSDoc(swaggerOptions);
+const swaggerSpec = swaggerJSDoc(options);
 
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 

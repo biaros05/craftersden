@@ -1,7 +1,7 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import './index.css';
-const ErrorPage = React.lazy(() => import('./error-page.jsx'));
+const ErrorPage = React.lazy(() => import('./ErrorPage.jsx'));
 const Login = React.lazy(() => import('./components/Login.tsx'));
 const Logout = React.lazy(() => import('./components/Logout.tsx'));
 const ProtectedRoute = React.lazy(() => import('./components/ProtectedRoute.tsx'));
