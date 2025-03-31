@@ -1,0 +1,9 @@
+.moderator-page, .not-authorized{
+  height: fit-content;
+  display: flex;
+  flex-direction: column;
+  gap: 10px 0;
+  padding: 10px;
+  flex: 100%;
+}
+

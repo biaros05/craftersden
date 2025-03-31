@@ -1,6 +1,5 @@
 /* eslint-disable jsdoc/no-undefined-types */
 import React, { useEffect, useLayoutEffect, useRef, useState, useContext } from 'react';
-import fetchResources from './ResourcesFetcher';
 import { Mesh, getCameraPosition, checkBlocksForIntersect, computePoint, computeTriangleNormal, computeTrianglesOfCube, screenToWorldRay } from './RaycastUtils';
 import { BlockPos, PlacedBlock, Resources } from 'deepslate';
 import { mat4, ReadonlyVec3, vec3 } from 'gl-matrix';
@@ -10,6 +9,8 @@ import CloneableStructure from './CloneableStructure';
 import '../../../styles/DeepslatePlane.css';
 import BlockStatePanel from './BlockStatePanel';
 import { CurrentBlockContext } from '../../../context/currentBlockContext';
+import InventoryHotbar from '../InventoryHotbar';
+import fetchResources from './ResourcesFetcher';
 
 export interface PlaneBlock extends Mesh {
 	name: string;
@@ -30,21 +31,52 @@ for (let x = 0; x < 20; x++) {
  * @param {boolean} props.isViewMode - View mode state of plane
  * @returns {React.ReactNode} - Deepslate plane
  */
-export default function DeepslatePlane({canvas, structure, isViewMode}: { canvas: React.RefObject<HTMLCanvasElement | null>; structure: React.RefObject<CloneableStructure>; isViewMode: boolean; }): React.ReactNode {
+export default function DeepslatePlane(
+  {
+    canvas, 
+    structure, 
+    isViewMode,
+  }: 
+  { 
+    canvas: React.RefObject<HTMLCanvasElement | null>; 
+    structure: React.RefObject<CloneableStructure>; 
+    isViewMode: boolean;
+  }
+): React.ReactNode {
   const projectionMatrix = useRef<mat4>(null);
   const viewMatrix = useRef<mat4>(null);
   const cameraPosition = useRef<vec3>(null);
   const interactiveCanvas = useRef<InteractiveCanvas>(null);
   const structureRenderer = useRef<InteractiveStructureRenderer>(null);
   const blocks = useRef<PlaneBlock[]>(structureBlockToPlaneBlock(structure.current.getBlocks()));
-  const blockstate = useRef<{[key: string]: string}>({});
   const [resources, setResources] = useState<Resources>();
+  const blockstate = useRef<{[key: string]: string}>({});
   const canvasRect = useRef<DOMRect>(null);
   const [isPlaneHover, setIsPlaneHover] = useState<boolean>(false);
 
-    const {
-      currentBlock
-    } = useContext(CurrentBlockContext);
+  useEffect(() => {
+    fetchResources(setResources);
+  }, []);
+    
+  // Initializes structure renderer and Interactive canvas
+  useEffect(() => {
+    const structureGl = canvas?.current?.getContext('webgl', {preserveDrawingBuffer: true});
+    if (structureGl && resources) {
+      structureRenderer.current = new InteractiveStructureRenderer(structureGl, structure.current, resources);
+      projectionMatrix.current = structureRenderer.current!.getPerspectiveMatrix();
+  
+      const size = structure.current.getSize();
+      const intCanvas = new InteractiveCanvas(canvas.current!, getOnRender(structureRenderer.current!), [size[0] / 2, size[1] / 2, size[2] / 2]);
+      intCanvas.subscribe();
+      interactiveCanvas.current = intCanvas;
+  
+      return intCanvas?.cleanup;
+    }
+  }, [resources]);
+
+  const {
+    currentBlock
+  } = useContext(CurrentBlockContext);
 
   // Layout effect to make sure dom is ready to paint
   useLayoutEffect(() => {
@@ -64,45 +96,25 @@ export default function DeepslatePlane({canvas, structure, isViewMode}: { canvas
     return () => window.removeEventListener('resize', resize);
   }, [])
 
-  useEffect(() => {
-    fetchResources(setResources);
-  }, []);
-
-/**
- * Creates on render function causing the given renderer to rerender
- * @param {InteractiveStructureRenderer} newRenderer Renderer used for the onRender
- * @returns {(view: mat4) => void} onRender function to draw structure
- */
-  function getOnRender(newRenderer: InteractiveStructureRenderer) {
-    // function that renders the structure
-    const onRender = (view: mat4) => {
-      const gl = newRenderer.getGl();
-      gl.clearColor(0,0,0,0);
-      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-      newRenderer.drawStructure(view);
-      newRenderer.drawGrid(view);
-      viewMatrix.current = view;
-      cameraPosition.current = getCameraPosition(view);
+  
+ /**
+  * Creates on render function causing the given renderer to rerender
+  * @param {InteractiveStructureRenderer} newRenderer Renderer used for the onRender
+  * @returns {(view: mat4) => void} onRender function to draw structure
+  */
+ function getOnRender(newRenderer: InteractiveStructureRenderer) {
+   // function that renders the structure
+   const onRender = (view: mat4) => {
+     const gl = newRenderer.getGl();
+     gl.clearColor(0,0,0,0);
+     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+     newRenderer.drawStructure(view);
+     newRenderer.drawGrid(view);
+     viewMatrix.current = view;
+     cameraPosition.current = getCameraPosition(view);
     };
     return onRender
   }
-
-  // Initializes structure renderer and Interactive canvas
-  useEffect(() => {
-    const structureGl = canvas?.current?.getContext('webgl', {preserveDrawingBuffer: true});
-    if (structureGl && resources) {
-      const newRenderer = new InteractiveStructureRenderer(structureGl, structure.current, resources);
-      structureRenderer.current = newRenderer;
-      projectionMatrix.current = newRenderer.getPerspectiveMatrix();
-
-      const size = structure.current.getSize();
-      const intCanvas = new InteractiveCanvas(canvas.current!, getOnRender(newRenderer), [size[0] / 2, size[1] / 2, size[2] / 2]);
-      intCanvas.subscribe();
-      interactiveCanvas.current = intCanvas;
-
-      return intCanvas?.cleanup;
-    }
-  }, [resources]);
 
   /**
    * Cast a ray to mouse position on canvas and return point and normal.
@@ -209,6 +221,7 @@ export default function DeepslatePlane({canvas, structure, isViewMode}: { canvas
     onMouseLeave={() => setIsPlaneHover(false)}>
     <canvas id='deepslate-plane' width={800} height={800} ref={canvas} onMouseDown={!isViewMode ? handleClick : undefined} onContextMenu={(e) => e.preventDefault()}></canvas>
     {!isViewMode && <BlockStatePanel blockName={currentBlock.name} blockNamespace={'minecraft'} currentState={blockstate} resources={resources} isPlaneHover={isPlaneHover}/>}
+    <InventoryHotbar/>
   </div>;
 }
 
