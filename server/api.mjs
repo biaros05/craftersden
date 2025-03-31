@@ -10,6 +10,8 @@ import blockRouter from './routers/block.router.mjs';
 import userRouter from './routers/user.router.mjs';
 import postRouter from './routers/post.router.mjs'
 import notificationsRouter from './routers/notifications.router.mjs';
+import reportsRouter from './routers/reports.router.mjs';
+import feedbackRouter from './routers/feedback.router.mjs';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import mongoose from 'mongoose';
@@ -33,27 +35,8 @@ const swaggerOptions = {
     info: {
       title: 'Crafter\'s Got the Moves Like Swagger',
       version: '1.0.0',
-    },
-    components: {
-      securitySchemes: {
-        GoogleOAuth: {
-          type: 'oauth2',
-          flows: {
-            implicit: {
-              authorizationUrl: "https://accounts.google.com/o/oauth2/v2/auth",
-              tokenUrl: "https://www.googleapis.com/oauth2/v4/token",
-              scopes: {
-                profile: 'Access your profile info',
-                email: 'Access your email address',
-              },
-            },
-          },
-        },
-      },
-    },
-    security: [{ GoogleOAuth: ['email', 'profile'] }], // Apply globally
-  },
-  apis: ['./routes/*.js'], // Adjust based on your file structure
+    }
+  } // Adjust based on your file structure
 };
 
 const options = {
@@ -62,7 +45,7 @@ const options = {
   apis: ['./routers/*.mjs'],
 };
 
-const swaggerSpec = swaggerJSDoc(swaggerOptions);
+const swaggerSpec = swaggerJSDoc(options);
 
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
@@ -126,6 +109,10 @@ app.use('/api/user', userRouter);
 app.use('/api/post', postRouter);
 
 app.use('/api/notifications', notificationsRouter);
+
+app.use('/api/report', reportsRouter);
+
+app.use('/api/feedback/',feedbackRouter);
 
 app.get('/api/health', (req, res) => {
   res.set('Cache-Control', 'max-age=300');

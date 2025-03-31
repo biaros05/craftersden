@@ -79,6 +79,7 @@ export default function Forum(): React.ReactNode {
                 saved={build.savedBy.includes(id)}
                 viewPostOnClick={() => handlePostClick(build)}
                 tags={build.tags}
+                userId={build.user}
               />
             );
           })
