@@ -3,7 +3,6 @@ import { renderMatches, useRouteError } from 'react-router-dom';
 import React from 'react';
 import './styles/error.css';
 import MyVideo from "./assets/OOPS_GOOD_1.gif";
-import ReactPlayer from 'react-player/lazy';
 
 /**
  * Renders a component informing a use of the error that occured.
