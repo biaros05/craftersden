@@ -10,4 +10,3 @@
 
 ## What did not go so well
 - Complications with other courses did not allow for full attention on other non core issues which adds a nice touch to the project. 
-- 
