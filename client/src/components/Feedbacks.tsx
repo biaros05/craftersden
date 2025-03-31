@@ -31,7 +31,7 @@ export default function Feedbacks(){
   return(
     <section className="moderator-page">
       <ScrollArea h={750}>
-        <Title className='moderator-title'>Feedbacks from User</Title>
+        <Title className='moderator-title'>Feedbacks from Users</Title>
         {feedbacks.length > 0 ? (
           feedbacks.map((feedback, index) => (
             <FeedbackCard feedback={feedback} index={index} setFeedbacks={setFeedbacks}/>
