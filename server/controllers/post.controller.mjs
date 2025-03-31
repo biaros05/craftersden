@@ -1,4 +1,4 @@
-import Post from '../models/Post.js';
+import Post from '../models/Post.mjs';
 import User from '../models/User.mjs';
 import dotenv from 'dotenv';
 import { validationResult } from 'express-validator';
@@ -215,7 +215,6 @@ async function getPublishedBuilds(req, res, next) {
     let publishedBuilds = [];
 
     if(username){
-      console.log(username);  
       const user = await User.findOne({ username: username});
       if(!user){
         const err = new Error('Cannot find user in database');
@@ -489,6 +488,41 @@ async function postSearch(req, res, next){
     err.status = 500;
     next(err);
   }
+};
+
+/**
+ *Gets post by id 
+ * @param {object} req  - The request object.
+ * @param {object} res - The respond object.
+ * @param {*} next - Next
+ * @returns {Response}- Response object with status code and message.
+ */
+async function getPost(req, res, next){
+  try{ 
+
+    if(!req.params.id){
+      return res.status(403).json({message: 'Build Id required'});
+    }
+
+    const post = await Post.findOne({_id: req.params.id});
+    if(!post){
+      const err = new Error('Cannot find post in database');
+      err.status = 404;
+      return next(err);
+    };
+
+    const username = await User.findOne({_id: post.user}).select({username: 1, _id: 0});
+
+    const postWithUsername = {
+      ...post.toObject(),
+      username: username.username
+    };
+
+    return res.status(200).json({message: 'Post retrieved', post: postWithUsername});
+  } catch(err){
+    err.status = 500;
+    next(err);
+  }
 }
 
 export {
@@ -504,5 +538,6 @@ export {
   toggleLikeBuild,
   toggleSaveBuild,
   getLikesSaves,
-  postSearch
+  postSearch,
+  getPost
 };
