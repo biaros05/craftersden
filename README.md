@@ -247,3 +247,39 @@ npm run test
 ## Monitoring
 
 After exploring 3 monitoring services we came to the conclusion that [betteruptime](https://betterstack.com/uptime) would meet our needs the best. The other services either had a very limited free tier or a less than desirable UI. Better uptime offered a clean UI although its monitoring functionality is very simple. Our healthcheck route is at [/api/health](https://crafters-den-c7evgadfeufzfabs.canadacentral-01.azurewebsites.net/api/health)
+
+## Champion Features
+### Champion moderation - Amy Nguyen:
+My champion feature was adding monitoring to the app. This feature is similar to being an admin and is unlocked by having a field in your mongo users
+account called role with value "moderator", so "role: moderator". Once permitted, you will see an orange moderator button at the top right of the app.
+Clicking this would bring you to the moderator page with 2 tabs available, reports and feedbacks. Reports can be either a report of a user, or a post. 
+The feedbacks could either be of type bug, feature, or other. 
+
+Users can submit reports through the flag icon in the forum of each post and submit a feedback in the footer with reads "submit a feedback" which pops up a form. 
+
+Moderators have an option of investing further with the help of the details in each report/feedback card, or simply deleting the report/feedback.
+
+### Champion Deepslate - Axel Brochu: 
+My champion feature was investigating an implementing the Deepslate library based plane. I wrote the code for the plane itself mostly located in the deepslate directory. The feature mostly includes a much cleaner plane with much better texture mapping. It was also brought further by the addition of imports from Minecraft itself using a mod.
+
+### Front-end testing - Marin
+
+The test code is located in `client/src/test`, this directory also includes `test-utils`  with mock handlers and a new render method.
+
+I focused on testing what I considered the most important components of the app and that I felt like would change less often. 
+Final code coverage is around ~21% with all of our features, but was ~60% when the tests were first made.
+
+#### Running Tests
+
+From /client:
+- `npm run dev` will run the front-end tests
+- `npm run coverage` will generate the coverage report
+
+From CI:
+The `client-test` job runs the coverage report and uploads it. The test summary does not work, but the code coverage metrics do.
+The job skips `app.test.tsx` as tests involving navigation with react-router do not work in the pipeline.
+
+## Credits
+
+Deepslate (Demos and library) - https://github.com/misode/deepslate
+Raycasting logic - https://www.youtube.com/watch?v=ebzlMOw79Yw - https://antongerdelan.net/opengl/raycasting.html
