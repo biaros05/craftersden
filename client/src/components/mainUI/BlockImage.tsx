@@ -33,14 +33,14 @@ export default function BlockImage({block, allowSelectBlock = true}: { block: Bl
       draggable={true}
       onDragStart={handleDrag}
       style={{ position: 'relative'}}>
-    <ActionIcon
+    {allowSelectBlock && <ActionIcon
       size="sm"
       style={{ position: 'absolute', top: "10px", right: "10px", zIndex: 2 }}
       aria-label="Add to inventory"
       onClick={() => addBlockToInventory(block)}
     >
       <IconPlus/>
-    </ActionIcon>
+    </ActionIcon>}
       <Image
         src={block.inventoryTexture}
         alt={block.name}
