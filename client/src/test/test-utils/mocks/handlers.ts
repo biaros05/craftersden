@@ -4,11 +4,7 @@ export const handlers = [
   http.get('/api/query', () => {
     return HttpResponse.json({user: '1'});
   }),
-  http.get('/api/user/:email/builds', ({ params }) => {
-    const { email } = params;
-    if (!email) {
-      return new HttpResponse('Not Found', { status: 404 });
-    }
+  http.get('/api/user/:email/builds', () => {
     return HttpResponse.json(
       {
         builds: [
