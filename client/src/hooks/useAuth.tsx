@@ -12,6 +12,7 @@ export type AuthContextType = {
     username: string | null,
     email: string | null,
     avatar: string | null,
+    role: string,
     loading: boolean, 
     login: (googleCredentials: CredentialResponse) => void,
     logout: () => void
@@ -24,6 +25,7 @@ export const AuthProvider = ({ children }: ContextProviderProps) => {
   const [username, setUsername] = useState<string | null>(null);
   const [email, setEmail] = useState<string | null>(null);
   const [avatar, setAvatar] = useState<string | null>(null);
+  const [role, setRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -41,6 +43,7 @@ export const AuthProvider = ({ children }: ContextProviderProps) => {
               setUsername(data.user.username);
               setEmail(data.user.email);
               setAvatar(data.user.avatar);
+              setRole(data.user.role);
             }
           }
         }
@@ -52,7 +55,7 @@ export const AuthProvider = ({ children }: ContextProviderProps) => {
   }, []);
 
   const login = async (googleData: CredentialResponse) => {
-    let data: {user: {_id: string, username: string, email: string, avatar: string}};
+    let data: {user: {_id: string, username: string, email: string, avatar: string, role: string}};
     try {
       const res = await fetch('/api/auth', {
         method: 'POST',
@@ -76,6 +79,7 @@ export const AuthProvider = ({ children }: ContextProviderProps) => {
     setUsername(data.user.username);
     setEmail(data.user.email);
     setAvatar(data.user.avatar);
+    setRole(data.user.role);
   };
 
   const logout = async () => {
@@ -85,6 +89,7 @@ export const AuthProvider = ({ children }: ContextProviderProps) => {
       setUsername(null);
       setEmail(null);
       setAvatar(null);
+      setRole(null);
       successMessage("Successfully logged out");
     } catch (e) {
       errorPopup('Error logging out!');
@@ -93,7 +98,7 @@ export const AuthProvider = ({ children }: ContextProviderProps) => {
     }
   };
 
-  const value = { id, username, email, avatar, loading, login, logout };
+  const value = { id, username, email, avatar, loading, login, logout, role };
 
   return (
   // Using the provider so that ANY component in our application can 

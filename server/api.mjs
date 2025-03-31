@@ -10,6 +10,8 @@ import blockRouter from './routers/block.router.mjs';
 import userRouter from './routers/user.router.mjs';
 import postRouter from './routers/post.router.mjs'
 import notificationsRouter from './routers/notifications.router.mjs';
+import reportsRouter from './routers/reports.router.mjs';
+import feedbackRouter from './routers/feedback.router.mjs';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import mongoose from 'mongoose';
@@ -107,6 +109,10 @@ app.use('/api/user', userRouter);
 app.use('/api/post', postRouter);
 
 app.use('/api/notifications', notificationsRouter);
+
+app.use('/api/report', reportsRouter);
+
+app.use('/api/feedback/',feedbackRouter);
 
 app.get('/api/health', (req, res) => {
   res.set('Cache-Control', 'max-age=300');

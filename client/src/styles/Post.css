@@ -28,7 +28,7 @@
   border: 3px #75bd82 solid;;
 }
 
-.publish-form{
+.publish-form, .report-form{
   display: flex;
   flex-direction: column;
 }
