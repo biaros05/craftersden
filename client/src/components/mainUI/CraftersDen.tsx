@@ -42,12 +42,13 @@ export default function CraftersDen(): React.ReactNode {
   const build = useBuild()?.build;
   const canvas = useRef<HTMLCanvasElement>(null);
   const structure = useRef<CloneableStructure>(loadStructure(build));
+  const [refreshKey, setRefreshKey] = useState(1);
 
   // A null build signifies a new build
   const [isBuildOwner,] = useState<boolean>(build?.user === id || build === null);
 
   let curBuildId = null;
-  
+
   // check if editing an existing build
   if(build && isBuildOwner) {
     curBuildId = build._id;
@@ -101,6 +102,15 @@ export default function CraftersDen(): React.ReactNode {
   };
 
   /**
+   * Updates the loaded structure
+   * @param {CloneableStructure} struct structure to load
+   */
+  function updateStructure(struct: CloneableStructure) {
+    structure.current = struct;
+    setRefreshKey(i => i + 1);
+  }
+
+  /**
    * Saves the current build in the db
    * @param {string} progressPicture URL
    */
@@ -151,8 +161,9 @@ export default function CraftersDen(): React.ReactNode {
         <div id="main-ui">
           <section className="build-tools">
               <DeepslatePlane 
+              key={refreshKey}
               canvas={canvas} 
-              structure={structure} 
+              structure={structure}
               isViewMode={isViewMode}
               />
             {!isViewMode && <BlockSelection />}
@@ -160,6 +171,7 @@ export default function CraftersDen(): React.ReactNode {
           <ButtonPanel 
           canvas={canvas}
           structure={structure.current}
+          updateStructure={updateStructure}
           setIsViewMode={setIsViewMode} 
           savePost={savePost} 
           isViewMode={isViewMode}
@@ -179,8 +191,7 @@ export default function CraftersDen(): React.ReactNode {
  */
 function loadStructure(build) {
   const serializedBlocks = JSON.parse(localStorage.getItem("build") ?? "{}");
-  
-  if ( serializedBlocks.structure !== "{}" && serializedBlocks.structure) {
+  if (serializedBlocks.structure !== "{}" && serializedBlocks.structure) {
     const newStructure = CloneableStructure.fromJson(serializedBlocks.structure);
     localStorage.clear();
     return newStructure;

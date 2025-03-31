@@ -1,0 +1,13 @@
+.import-form {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.import-form input[type=file] {
+    margin: 0.4em 0;
+}
+
+.import-form .submit-import {
+    align-self: center;
+}
