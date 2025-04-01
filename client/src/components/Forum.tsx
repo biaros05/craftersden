@@ -1,19 +1,27 @@
-import React, { useEffect } from 'react';
+import React, { useRef } from 'react';
 import Post from './Post';
 import '../styles/forum.css';
-import { TextInput } from '@mantine/core';
-import { IconSearch } from '@tabler/icons-react';
-import { errorMessage } from '../utils/notification_utils';
+import useNavigate from "./Navigation/useNavigate.tsx"
+import { useBuildUpdate } from '../hooks/BuildContext.tsx';
+import { Pagination, Text } from '@mantine/core';
 import { useState } from 'react';
-
+import { useAuth } from '../hooks/useAuth.tsx';
+import useSwr from 'swr';
+import { ForumSearch } from './ForumSearch.tsx';
 
 type Post = {
+  _id: string,
+  user: string,
   progressPicture: string,
-  username: string,  
+  username: string,
+  avatar: string,  
   description: string,
   buildJSON: object,
   isPublished: boolean,
   thumnails: [],
+  likedBy: (string | undefined)[];
+  savedBy: (string | undefined)[]
+  tags: []
 }
 
 /**
@@ -22,59 +30,69 @@ type Post = {
  * @returns {React.ReactNode} Forum page.
  */
 export default function Forum(): React.ReactNode {
+  const forumDiv = useRef<HTMLDivElement>(null);
+  const [page, setPage] = useState(1);
+  const navigate = useNavigate();
+  const { setBuild } = useBuildUpdate();
+  const { id } = useAuth() ?? {};
+  const [username, setUsername] = useState('');
+  const [description, setDescription] = useState('');
 
-  const [publishedBuilds, setPublishedBuilds] = useState<Post[]>([]);
-  useEffect(() => {
-    const controller = new AbortController();
+  const handlePostClick = (build: Post) => {
+    setBuild(build)
+    navigate('/den');
+  }
 
-    (async function getPublishedBuilds() {
-      try {
-        const response = await fetch('/api/post/', { method: 'GET' });
-        const json = await response.json();
+  const queryParams = new URLSearchParams();
+  queryParams.append('page', page.toString());
+  queryParams.append('limit', '20');
+  if (username) queryParams.append('username', username);
+  if (description) queryParams.append('description', description);
 
-        if (!response.ok) {
-          const err = new Error('Error while fetching published builds');
-          throw err;
-        }
-        console.log(json);
-        setPublishedBuilds(json.builds);
-      } catch (err) {
-        console.error(err);
-        errorMessage(err.message);
-      }
-    })();
+  const fetcher = (url) => fetch(url).then(resp => resp.json());
+  const { data } = useSwr(`/api/post?${queryParams.toString()}`, fetcher, { suspense: true });
+  
+  const publishedBuilds = data?.builds || [];
 
-    return () => {
-      controller.abort();
-    }
-  }, [])
+  const scrollToTop = () => forumDiv.current?.scrollTo({ top: 0, behavior: 'smooth' });
+
+  const handlePageChange = (index: number) => {
+    setPage(index);
+    scrollToTop();
+  };
 
   return (
     <section className="forum-page">
-      <TextInput
-        placeholder="Search"
-        leftSection={<IconSearch size={18} />}
-        w={200}
-      />
-      <div className="posts">
-        {publishedBuilds.length !== 0 ? (
-          publishedBuilds.map((build, i) => {
+      <ForumSearch username={username} description={description} setUsername={setUsername} setDescription={setDescription} />
+      {publishedBuilds.length !== 0 ? (
+      <div className="posts" ref={forumDiv}>
+          {publishedBuilds.map((build, i) => {
             return (
               <Post
                 key={`publishing-${i}`}
                 imageURL={build.progressPicture}
                 description={build.description}
-                username={build.username}
-                liked={false}
-                saved={false}
+                avatar={build.avatar}
+                builderUsername={build.username}
+                buildId={build._id}
+                liked={build.likedBy.includes(id)}
+                saved={build.savedBy.includes(id)}
+                viewPostOnClick={() => handlePostClick(build)}
+                tags={build.tags}
+                userId={build.user}
               />
             );
           })
-        ) : (
-          <p>Fetching builds...</p>
-        )
         }
-      </div>
+        </div>
+      ) : (
+        <Text id="no-posts-message">No posts to display!</Text>
+      )}
+      {publishedBuilds.length !== 0 && 
+        <div className='pagination-container'>
+          <Pagination total={data.total} value={page} onChange={handlePageChange} />
+        </div>
+      }
     </section>
   );
 }

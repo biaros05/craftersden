@@ -5,6 +5,9 @@ import Link from './Navigation/Link';
 import { useAuth } from "../hooks/useAuth";
 import '../styles/header.css';
 import { useBuildUpdate } from "../hooks/BuildContext";
+import ZombieChaseLoad from "./Loader/ZombieChaseLoad";
+import MinecraftButton from "./Custom/MinecraftButton";
+import Inbox from "./Inbox";
 
 /**
  * Header component that allows users to visit
@@ -13,14 +16,14 @@ import { useBuildUpdate } from "../hooks/BuildContext";
  * @returns {React.ReactNode} Header component
  */
 export default function Header() {
-  const {avatar, loading} = useAuth() ?? {};
+  const {avatar, loading, role} = useAuth() ?? {};
   const location = useLocation();
   const isDen = location.pathname === '/den';
 
     const { setBuild } = useBuildUpdate();
 
     if (loading) {
-        return <h2>Loading...</h2>;
+        return <ZombieChaseLoad/>;
     }
 
     const handleDenClick = () => {
@@ -28,21 +31,31 @@ export default function Header() {
     }
 
     return <header id="site-header">
-        <Link to='/profile'>
-            <Avatar src={avatar} />
+    <Link to="/profile">
+        <Avatar src={avatar} />
+    </Link>
+
+    <h2>
+        <Link to={isDen ? `/den` : `/forum`} state={{ canGoBack: true }}>
+            {isDen ? `Crafter's Den` : `Crafter's Forum`}
         </Link>
-        <h2>
-            <Link to={isDen ? `/den` : `/forum`} state={{canGoBack: true}}>
-                {isDen ? `Crafter's Den` : `Crafter's Forum`}
-            </Link>
-        </h2>
-        <Link 
-            to={!isDen ? `/den` : `/forum`}
-            state={{canGoBack: true}}
-            onClick={handleDenClick}>
-            <Button variant="filled">
-                {!isDen ? `Den` : `Forum`}
-            </Button>
-        </Link>
+    </h2>
+    <div className="header-right">
+    {avatar && <Inbox/>}
+    <Link 
+        to={!isDen ? `/den` : `/forum`}
+        state={{ canGoBack: true }}
+        onClick={handleDenClick}
+    >
+        <MinecraftButton>
+            {!isDen ? `Den` : `Forum`}
+        </MinecraftButton>
+    </Link>
+    {avatar && role === 'moderator' &&
+        <Link to='/moderate'>
+            <Button variant="light" color="orange">Moderate</Button>
+        </Link>}
+    </div>
     </header>
+
 }

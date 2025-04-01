@@ -29,11 +29,25 @@
   display: flex;
   justify-content: center; 
   align-items: center; 
-  height: 100vh; 
+  height: 80vh; 
   width: 100%;
+}
+
+.block-image:hover {
+  cursor: pointer; 
+  transform: scale(1.05); 
+  transition: transform 0.2s; 
 }
 
 .block-name {
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+
+@media (max-width: 600px) {
+  h1 {
+    font-size: x-large;
+    text-align: center;
+  }
 }

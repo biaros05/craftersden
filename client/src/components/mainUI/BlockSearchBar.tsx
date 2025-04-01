@@ -1,7 +1,6 @@
-import React, {CSSProperties, useState, useContext } from 'react';
+import React, {CSSProperties, useState } from 'react';
 import { Autocomplete } from '@mantine/core';
 import { IconSearch } from '@tabler/icons-react';
-import { CurrentBlockContext } from '../../context/currentBlockContext';
 
 const SEARCH_ICON = <IconSearch/>;
 
@@ -10,20 +9,25 @@ type BlockListItem = {
   name: string,
 }
 
+type BlockSearchBarProps = {
+  blockList: BlockListItem[]
+  searchValue: string,
+  setSearchValue: (value: string) => void,
+  style?: CSSProperties | undefined
+}
 /**
  * Search bar for blocks/entities. Shows history when no search value is present.
  * @param {object} props - React props
  * @param {BlockListItem[]} props.blockList list of blocks/entities to search
+ * @param {string} props.searchValue current value in input
+ * @param {Function} props.setSearchValue callback for changing searchValue
  * @param {CSSProperties?} props.style optional style prop applied to search bar
  * @returns {React.ReactNode} Block search bar
  */
-export default function BlockSearchBar({blockList, style}: { blockList: BlockListItem[]; style?: CSSProperties | undefined; }): React.ReactNode {
+export default function BlockSearchBar({blockList, searchValue, setSearchValue, style}: BlockSearchBarProps): React.ReactNode {
 
   // data in Autocomplete cannot have duplicate values, so use a set, better solution possible??
   const [blockHistory, setBlockHistory] = useState(new Set<string>());
-  const [searchValue, setSearchValue] = useState('');
-
-  const { storeBlock } = useContext(CurrentBlockContext);
 
   const filteredData = searchValue.length > 0 
     ? blockList.map(block => block.name)
@@ -35,7 +39,6 @@ export default function BlockSearchBar({blockList, style}: { blockList: BlockLis
    */
   function handleOptionSubmit(value: string) {
     setBlockHistory(new Set([...blockHistory, value]));
-    storeBlock(blockList.find(block => block.name === value));
   }
   return (
     <Autocomplete

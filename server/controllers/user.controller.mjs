@@ -1,7 +1,7 @@
 import User from '../models/User.mjs';
 import BlobServiceProvider from '../utils/BlobService.mjs';
 import { validationResult } from 'express-validator';
-import Post from '../models/Post.js';
+import Post from '../models/Post.mjs';
 
 const blobService = new BlobServiceProvider();
 
@@ -83,7 +83,7 @@ async function storeImageWithName(req, res, next) {
  * @param {*} req -
  * @param {*} res -
  * @param {*} next -
- * @returns {JSON} - JSON with status code
+ * @returns {JSON} - JSON with status code, message, and builds
  */
 async function getUsersSavedBuilds(req, res, next) {
   try {
@@ -105,4 +105,85 @@ async function getUsersSavedBuilds(req, res, next) {
   }
 }
 
-export {uploadImage, storeImageWithName, uploadValidation, getUsersSavedBuilds};
+/**
+ * Ths function gets all the posts the user has saved from the forum
+ * and returns it.
+ * @param {object} req - The request object
+ * @param {object} res - The response object
+ * @param {*} next -
+ * @returns {JSON} - JSON with status code, message, and savedBuilds
+ */
+async function getUserSavedPosts(req, res, next){
+  try{
+    const user = await User.findOne({email: req.params.email});
+    if(!user){
+      const error = new Error('User does not exist');
+      error.status = 404;
+      next(error);
+    }
+    const savedBuilds = await Post.find({savedBy: user._id});
+
+    const savedBuildsWithUsername = await Promise.all(
+      savedBuilds.map( async (build) => {
+        const username = await User.findOne({_id : build.user}).select({ username: 1, _id: 0});
+        return{
+          ...build.toObject(),
+          username: username ? username.username : 'Unknown'
+        };
+      })
+    );
+
+
+    return res.status(200).json({
+      message: 'Saved builds retrieved!', 
+      savedBuilds: savedBuildsWithUsername});
+  } catch (e){
+    e.status = 500;
+    next(e);
+  }
+};
+
+/**
+ *Gets user by id 
+ * @param {object} req  - The request object.
+ * @param {object} res - The respond object.
+ * @param {*} next - Next
+ * @returns {Response}- Response object with status code and message.
+ */
+async function getUser(req, res, next){
+  try{
+    
+    if(!req.params.id){
+      return res.status(403).json({message: 'user id required'});
+    }
+
+    const user = await User.findOne(
+      {_id : req.params.id}).select(
+      { email: 1,
+        username: 1, 
+        avatar: 1, 
+        role: 1, 
+        _id: 1
+      });
+    if(!user){
+      const err = new Error('Cannot find user in database');
+      err.status = 404;
+      next(err);
+    }
+
+    return res.status(200).json({message : 'User retrieved', user});
+  } catch(err){
+    err.status = 500;
+    next(err);
+  }
+}
+
+
+export {
+  uploadImage, 
+  storeImageWithName, 
+  uploadValidation, 
+  getUsersSavedBuilds,
+  getUserSavedPosts,
+  getUser
+};

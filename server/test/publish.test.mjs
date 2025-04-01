@@ -1,6 +1,6 @@
 import request from 'supertest';
 import * as chai from 'chai';
-import { describe, it, before, after } from 'mocha';
+import { describe, it, before, after, afterEach } from 'mocha';
 const expect = chai.expect;
 import  app  from '../api.mjs';
 import Sinon from 'sinon';
@@ -67,6 +67,7 @@ describe('Post publish endpoints', () => {
     const response = await request(app).
       post('/api/post/publish').
       field('buildId', '9898').
+      field('tags', JSON.stringify(['blah'])).
       set('Cookie', cookie);
 
     const query = await request(app).

@@ -147,6 +147,7 @@ export default function BuildPlane({canvasRef, blocks, setBlocks, isViewMode, st
   }
 
   return <Canvas 
+      className="plane"
       gl={{ preserveDrawingBuffer: true }}  
       camera={{position: [15,15,15]}} 
       id='build-plane' 

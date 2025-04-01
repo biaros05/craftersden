@@ -38,3 +38,19 @@
     display: flex;
     justify-content: space-between;
 }
+
+@media (max-width: 600px) {
+    #welcome-left p {
+        font-size: small;
+        text-align: center;
+        padding: 20px 0;
+    }
+
+    #welcome-left {
+        align-items: center;
+    }
+
+    #welcome-page {
+        flex-direction: column;
+    }
+}
