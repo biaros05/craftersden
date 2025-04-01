@@ -76,10 +76,8 @@ export default function Builds({ builds, updateBuildStatus, setBuilds }: propTyp
         body: JSON.stringify({ buildId })
       };
       
-      console.log(`request body: ${requestBody.body}`);
       const response = await fetch('/api/post/unpublish', requestBody);
       const json = await response.json();
-      console.log(response); 
   
       if (!response.ok) {
         throw new Error(`${json.message}`);
@@ -95,11 +93,9 @@ export default function Builds({ builds, updateBuildStatus, setBuilds }: propTyp
   
 
   return (
-    <section className="posts">
+    <section className="builds">
       {
-        builds.map((build, i) => {
-          console.log(build.progressPicture)
-          console.log(`build ${i} id: ${build._id}`);
+        builds.map((build) => {
           return (
             <div key={build._id} className="saved-builds" style={{ width: '250px' }}>
               <Image
@@ -116,7 +112,7 @@ export default function Builds({ builds, updateBuildStatus, setBuilds }: propTyp
                 className='delete-save-button'
                 color="rgb(178, 14, 14)"
                 onClick={async () => {
-                  console.log(build);
+                  setBuild(build);
                   const buildId = build._id;
                   await deleteBuild(buildId);
                   setBuilds(builds.filter(build => build._id !== buildId));
@@ -137,7 +133,6 @@ export default function Builds({ builds, updateBuildStatus, setBuilds }: propTyp
                 variant='outline'
                 color='orange'
                 onClick={() => {
-                  console.log(`unpublishing build: ${build._id}`)
                   unpublishBuild(build._id);
                 }}
               >

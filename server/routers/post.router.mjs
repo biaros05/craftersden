@@ -8,7 +8,12 @@ import {
   deleteImageFromAzure,
   publishBuild,
   getPublishedBuilds,
-  unpublishBuild
+  unpublishBuild,
+  toggleLikeBuild,
+  toggleSaveBuild,
+  getLikesSaves,
+  postSearch,
+  getPost
 } from '../controllers/post.controller.mjs';
 import multer from 'multer';
 import { body } from 'express-validator';
@@ -45,8 +50,6 @@ const postRouter = express.Router();
  *   post:
  *     summary: Save a new build with an image and block data
  *     tags: [Posts]
- *     security:
- *       - sessionAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -97,7 +100,16 @@ postRouter.post('/publish', isAuthenticated, upload.fields([
 publishBuild,
 );
 
+postRouter.post('/toggle-like', isAuthenticated, toggleLikeBuild);
+
+postRouter.post('/toggle-save', isAuthenticated, toggleSaveBuild);
+
+postRouter.get('/:buildId/likes-saves', isAuthenticated, getLikesSaves);
 
 postRouter.get('/', getPublishedBuilds);
+
+postRouter.get('/search', isAuthenticated, postSearch);
+
+postRouter.get('/:id', isAuthenticated, getPost);
 
 export default postRouter;

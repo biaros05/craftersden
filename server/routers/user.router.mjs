@@ -4,7 +4,9 @@ import
   uploadImage,
   storeImageWithName,
   uploadValidation,
-  getUsersSavedBuilds
+  getUsersSavedBuilds,
+  getUserSavedPosts,
+  getUser
 } from '../controllers/user.controller.mjs';
 import { body } from 'express-validator';
 import multer from 'multer';
@@ -42,8 +44,6 @@ const userUpdateValidation = [
  *   put:
  *     summary: Update user profile with avatar upload
  *     tags: [Users]
- *     security:
- *       - sessionAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -77,8 +77,6 @@ userRouter.put('/', isAuthenticated,
  *   get:
  *     summary: Get user's saved builds
  *     tags: [Users]
- *     security:
- *       - sessionAuth: []
  *     parameters:
  *       - in: path
  *         name: email
@@ -94,5 +92,9 @@ userRouter.put('/', isAuthenticated,
  */
 userRouter.get('/:email/builds', isAuthenticated,
   upload.none(), getUsersSavedBuilds);
+
+userRouter.get('/:email/saved-posts', isAuthenticated, upload.none(), getUserSavedPosts);
+
+userRouter.get('/:id', isAuthenticated, upload.none(), getUser);
 
 export default userRouter;

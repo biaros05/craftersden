@@ -1,79 +1,83 @@
-import React from 'react';
-import {Button} from '@mantine/core';
-import useNavigate from '../Navigation/useNavigate.tsx';
+import React, { useState } from 'react';
 import '../../styles/ButtonPanel.css';
-import { toast } from 'react-toastify';
-import CustomNotification from './CustomNotification.tsx'
-import { Slide } from 'react-toastify';
-import {jsonifyBlocks} from '../../utils/building_plane_utils.ts';
-import { BlockType } from '../../utils/building_plane_utils.ts';
+import useNavigate from '../Navigation/useNavigate.tsx';
+import {buildLoginNotification, buildCopyNotification} from '../Notifications/buildNotifications';
+import MinecraftButton from '../Custom/MinecraftButton.tsx';
+import CloneableStructure from './deepslate/CloneableStructure.ts';
+import { Modal } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
+import BuildImport from './BuildImport.tsx';
 
 type ButtonPanelProps = { 
   setIsViewMode: (arg0: boolean) => void,
-  canvas: React.RefObject<null>,
+  canvas: React.RefObject<HTMLCanvasElement | null>,
   savePost: (arg0: string) => void,
   isViewMode: boolean,
-  email: string,
-  blocks: BlockType[]
+  isUserLoggedIn: boolean,
+  isBuildOwner: boolean,
+  structure: CloneableStructure,
+  updateStructure: (arg0: CloneableStructure) => void
 }
 
 /**
  * Displays Save and Toggle view mode buttons
  * @param {object} props React props
- * @param {React.RefObject} props.canvas React ref to canvas element
+ * @param {React.RefObject} props.canvas React ref Cto canvas element
  * @param {Function} props.setIsViewMode Callback to set isViewModel state 
  * @param {Function} props.savePost thumbnail url
  * @param {boolean} props.isViewMode isViewMode state.
- * @param {string} props.email email of current user.
- * @param {[]} props.blocks build blocks.
+ * @param {string} props.isUserLoggedIn email of current user.
+ * @param {boolean} props.isBuildOwner is current user the owner of the build.
+ * @param {CloneableStructure} props.structure build blocks.
+ * @param {(CloneableStructure) => void} props.updateStructure callback to update user structure
  * @returns {React.ReactNode} Button panel section with buttons
  */
-function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode, email, blocks}: ButtonPanelProps): React.ReactNode {
+function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode, isUserLoggedIn, isBuildOwner, structure, updateStructure}: ButtonPanelProps): React.ReactNode {
+  const [importOpened, {open: openImport, close: closeImport}] = useDisclosure(false);
+  const [exportOpened, {open: openExport, close: closeExport}] = useDisclosure(false);
+  const [downloadLink, setDownloadLink] = useState('');
   const navigate = useNavigate();
-
+  
   return (
     <section className="button-panel">
-      <Button 
-        variant="outline" 
-        color="green" radius="md" 
+      <Modal opened={importOpened} onClose={closeImport} title='Import Build'>
+        <BuildImport updateStructure={updateStructure} close={closeImport} />
+      </Modal>
+      <Modal opened={exportOpened} onClose={closeExport} title='Export Build'>
+        <a href={downloadLink} download>Click here to download!</a>
+      </Modal>
+      <MinecraftButton 
         className="save-button"
         onClick={() => {
-          if (!email) {
-            const serializedBlocks = jsonifyBlocks(blocks);
-            console.log(serializedBlocks);
-            localStorage.setItem("build", JSON.stringify({"blocks": serializedBlocks}));
-
-            toast.info(CustomNotification, {
-              data: {
-                redirect: navigate,
-                content: 'Please login to save your build',
-              },
-              ariaLabel: 'Something went wrong',
-              position: "bottom-right",
-              autoClose: 10000,
-              hideProgressBar: false,
-              closeOnClick: false,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: "colored",
-              transition: Slide,
-            });
-          } else {
+          if (!isUserLoggedIn) {
+            const serializedBlocks = structure.toJson();
+            localStorage.setItem("build", JSON.stringify({"structure": serializedBlocks}));
+            buildLoginNotification(() => navigate('/login'));
+          } else if (!isBuildOwner) {
+            buildCopyNotification(() => savePost(canvas.current!.toDataURL('image/png')));
+          }
+          else {
             savePost(canvas.current!.toDataURL('image/png'));
           }
         }}
       >
         Save
-      </Button>
-      <Button 
+      </MinecraftButton>
+      <MinecraftButton className='export-build' onClick={openImport}>
+        Import
+      </MinecraftButton>
+      <MinecraftButton className='import-build' onClick={() => {
+        setDownloadLink(URL.createObjectURL(new File([structure.toNbt('test_user').write()], 'test.litematic')))
+        openExport();
+      }}>
+        Export
+      </MinecraftButton>
+      <MinecraftButton 
         onClick={() => setIsViewMode(!isViewMode)}
-        variant="outline" 
-        color="green" radius="md" 
         className="save-button"
       >
         Toggle Mode
-      </Button>
+      </MinecraftButton>
     </section>
   );
 }

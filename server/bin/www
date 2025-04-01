@@ -13,7 +13,7 @@ let server;
 (async () => {
   try {
     await mongoose.connect(dbUrl, {
-      dbName: 'craftersden'
+      dbName: 'deepslatetest'
     });
     console.log('Database connection established');
     server = app.listen(port, () => {

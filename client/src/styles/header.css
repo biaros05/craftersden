@@ -1,11 +1,33 @@
 header#site-header {
     padding: 1em;
-
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    align-items: center;
+    position: relative;
+}
+
+header > h2 {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 0;
+    white-space: nowrap;
 }
 
 header > h2 > a {
     color: black;
+    font-size: xx-large;
+}
+
+@media (max-width: 600px) {
+    header > h2 > a {
+        font-size: x-large;
+    }
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
 }

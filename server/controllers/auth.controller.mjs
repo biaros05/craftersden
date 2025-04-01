@@ -24,6 +24,7 @@ async function authenticateUser(req, res, next) {
       user = await User.findOneAndUpdate(
         {email: email}, 
         {username: name, email: email, avatar: picture}, 
+        {role: 'user'},
         {upsert: true, returnDocument: 'after'}
       );
     }
