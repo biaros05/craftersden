@@ -173,7 +173,7 @@ export default function DeepslatePlane(
           structure.current.addBlock(newBlockPos, `${'minecraft'}:${currentBlock.name}`, {...blockstate.current});
           blocks.current.push(...structureBlockToPlaneBlock([structure.current.getBlock(newBlockPos)!]));
 
-          structureRenderer.current?.updateStructureBuffers();
+          structureRenderer.current?.updateStructureBuffers([[Math.floor(newBlockPos[0] / 16), Math.floor(newBlockPos[1] / 16), Math.floor(newBlockPos[2] / 16)]]);
           interactiveCanvas.current!.redraw();
         }
       }
@@ -194,7 +194,7 @@ export default function DeepslatePlane(
         structure.current.removeBlock(point);
         blocks.current = blocks.current.filter(b => !BlockPos.equals(b.position, point));
 
-        structureRenderer.current?.updateStructureBuffers();
+        structureRenderer.current?.updateStructureBuffers([[Math.floor(point[0] / 16), Math.floor(point[1] / 16), Math.floor(point[2] / 16)]]);
         interactiveCanvas.current?.redraw();
       }
     } else {

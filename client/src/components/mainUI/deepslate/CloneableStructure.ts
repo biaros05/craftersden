@@ -22,7 +22,7 @@ export default class CloneableStructure extends Structure {
         this.blocksMap = this.blocksMap.splice(pos[0] * size[1] * size[2] + pos[1] * size[2] + pos[2], 1)
     }
 
-    public addBlock(pos: BlockPos, name: Identifier | string, properties?: { [key: string]: string; }, nbt?: NbtCompound): this {
+    public addBlock(pos: BlockPos, name: Identifier | string, properties?: { [key: string]: string; }, nbt?: NbtCompound) {
         if (this.getBlock(pos)) {
             console.error(`Block already at ${pos}`)
         }
