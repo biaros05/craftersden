@@ -207,17 +207,19 @@ export default function DeepslatePlane(
 	 * @param {React.MouseEvent<HTMLCanvasElement>} e - Mouse event object
 	 */
 	function handleClick(e: React.MouseEvent<HTMLCanvasElement>) {
-		if (e.button === 2) {
-			placeBlock(e);
-		} else if (e.button === 0) {
-			destroyBlock(e);
-		}
+    if (e.button === 2) {
+      placeBlock(e);
+    } else if (e.button === 0) {
+      if (!interactiveCanvas.current?.dragging) {
+        destroyBlock(e);
+      }
+    }
 	}
 
   return <div className="plane-container" 
     onMouseEnter={() => setIsPlaneHover(true)}
     onMouseLeave={() => setIsPlaneHover(false)}>
-    <canvas id='deepslate-plane' width={800} height={800} ref={canvas} onMouseDown={!isViewMode ? handleClick : undefined} onContextMenu={(e) => e.preventDefault()}></canvas>
+    <canvas id='deepslate-plane' width={800} height={800} ref={canvas} onMouseUp={!isViewMode ? handleClick : undefined} onContextMenu={(e) => e.preventDefault()}></canvas>
     {!isViewMode && <BlockStatePanel blockName={currentBlock.name} blockNamespace={'minecraft'} currentState={blockstate} resources={resources} isPlaneHover={isPlaneHover}/>}
     <InventoryHotbar/>
   </div>;
