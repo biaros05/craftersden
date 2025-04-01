@@ -72,7 +72,7 @@ export default class InteractiveCanvas {
                 this.xRotation += (evt.clientY - this.dragPos[1]) / 100
             }
 
-            if (Math.abs(evt.clientX - this.dragPos[0]) > 10 || Math.abs(evt.clientY - this.dragPos[1]) > 10) {
+            if (Math.abs(evt.clientX - this.dragPos[0]) > 1 || Math.abs(evt.clientY - this.dragPos[1]) > 1) {
                 this.dragging = true;
             }
             
