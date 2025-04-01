@@ -16,17 +16,17 @@ export default class CloneableStructure extends Structure {
         return new CloneableStructure(size, [...this.getPalette()], [...this.getPlacedBlocks()]);
     }
 
-    public removeBlockAndClone(pos: BlockPos) {
-        const blocks = this.getPlacedBlocks().filter(b => !BlockPos.equals(b.pos, pos));
-
-        return new CloneableStructure(this.getSize(), this.getPalette(), blocks);
+    public removeBlock(pos: BlockPos) {
+        const size = this.getSize();
+        this.blocks = this.getPlacedBlocks().filter(b => !BlockPos.equals(b.pos, pos));
+        this.blocksMap = this.blocksMap.splice(pos[0] * size[1] * size[2] + pos[1] * size[2] + pos[2], 1)
     }
 
-    public addBlock(pos: BlockPos, name: Identifier | string, properties?: { [key: string]: string; }, nbt?: NbtCompound): this {
+    public addBlock(pos: BlockPos, name: Identifier | string, properties?: { [key: string]: string; }, nbt?: NbtCompound) {
         if (this.getBlock(pos)) {
             console.error(`Block already at ${pos}`)
         }
-        return super.addBlock(pos, name, properties, nbt);
+        super.addBlock(pos, name, properties, nbt);
     }
 
     public toJson() {
