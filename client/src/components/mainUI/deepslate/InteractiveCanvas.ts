@@ -75,9 +75,7 @@ export default class InteractiveCanvas {
             if (Math.abs(evt.clientX - this.dragPos[0]) > 10 || Math.abs(evt.clientY - this.dragPos[1]) > 10) {
                 this.dragging = true;
             }
-            if (this.dragging) {
-                console.log('TESTING')
-            }
+            
             this.dragPos = [evt.clientX, evt.clientY]
             this.redraw()
         }
