@@ -75,9 +75,9 @@ export default class CloneableStructure extends Structure {
         mainRegion.set('Position', positionNbt);
 
         const size = new Map<string, NbtTag>();
-        position.set('x', new NbtInt(structureSize[0]));
-        position.set('y', new NbtInt(structureSize[1]));
-        position.set('z', new NbtInt(structureSize[2]));
+        size.set('x', new NbtInt(structureSize[0]));
+        size.set('y', new NbtInt(structureSize[1]));
+        size.set('z', new NbtInt(structureSize[2]));
         const sizeNbt = new NbtCompound(size);
         mainRegion.set('Size', sizeNbt);
 
@@ -118,7 +118,6 @@ export default class CloneableStructure extends Structure {
 
         const nbt = new NbtFile(name, rootNbt, 'gzip', false, undefined);
         return nbt;
-      
     }
 
 
