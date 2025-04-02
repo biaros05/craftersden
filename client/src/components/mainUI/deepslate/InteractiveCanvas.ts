@@ -12,6 +12,7 @@ export default class InteractiveCanvas {
     private mouseupHandlerBind: () => void;
     private wheelHandlerBind: (arg0: WheelEvent) => void;
     private subscribed = false;
+    public dragging = false;
 
     constructor(
         private canvas: HTMLCanvasElement,
@@ -57,6 +58,7 @@ export default class InteractiveCanvas {
     private mousedownHandler(evt) {
         if (evt.button === 0) {
             this.dragPos = [evt.clientX, evt.clientY]
+            this.dragging = false;
         }
     }
 
@@ -69,13 +71,19 @@ export default class InteractiveCanvas {
                 this.yRotation += (evt.clientX - this.dragPos[0]) / 100
                 this.xRotation += (evt.clientY - this.dragPos[1]) / 100
             }
+
+            if (Math.abs(evt.clientX - this.dragPos[0]) > 1 || Math.abs(evt.clientY - this.dragPos[1]) > 1) {
+                this.dragging = true;
+            }
+            
             this.dragPos = [evt.clientX, evt.clientY]
             this.redraw()
         }
     }
 
     private mouseupHandler() {
-        this.dragPos = null
+        // this.dragging = false;
+        this.dragPos = null;
     }
 
     private wheelHandler(evt) {
