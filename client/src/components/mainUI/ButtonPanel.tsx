@@ -44,7 +44,7 @@ function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode, isUserLoggedI
         <BuildImport updateStructure={updateStructure} close={closeImport} />
       </Modal>
       <Modal opened={exportOpened} onClose={closeExport} title='Export Build'>
-        <a href={downloadLink} download>Click here to download!</a>
+        <a href={downloadLink} download={'test.litematic'} >Click here to download!</a>
       </Modal>
       <MinecraftButton 
         className="save-button"

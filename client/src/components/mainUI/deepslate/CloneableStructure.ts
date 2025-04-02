@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { BlockPos, BlockState, Identifier, JsonValue, NbtCompound, NbtFile, Structure } from "deepslate";
+import { BlockPos, BlockState, Identifier, JsonValue, NbtCompound, NbtFile, NbtInt, NbtList, NbtLong, NbtLongArray, NbtLongPair, NbtString, NbtTag, Structure } from "deepslate";
 import { calculateBitWidth } from "./IOUtils";
 
 export default class CloneableStructure extends Structure {
@@ -48,42 +48,75 @@ export default class CloneableStructure extends Structure {
     }
 
     public toNbt(author: string, name: string='craftersden.litematic') {
-        const size = this.getSize();
+        const structureSize = this.getSize();
         const palette = this.getPalette();
         const placedBlocks = this.getPlacedBlocks();
-      
-        const nbtJson = {
-          Metadata: {
-            Author: author,
-            RegionCount: 1,
-            totalBlocks: placedBlocks.length,
-            totalVolume: size[0] * size[1] * size[2]
-          },
-          Regions: {
-            Unnamed: {
-                Position: {
-                    x: 0,
-                    y: 0,
-                    z: 0
-                },
-                Size: {
-                    x: size[0],
-                    y: size[1],
-                    z: size[2]
-                },
-                BlockStatePalette: [
-                    {Name: 'minecraft:air'},
-                    palette
-                ],
-                BlockStates: [
-                    this.encodePlacedBlocks()
-                ]
+
+        const Metadata = new Map<string, NbtTag>();
+        Metadata.set('Author', new NbtString(author));
+        Metadata.set('RegionCount', new NbtInt(1));
+        Metadata.set('totalBlocks', new NbtInt(placedBlocks.length));
+        Metadata.set('totalVolume', new NbtInt(structureSize[0] * structureSize[1] * structureSize[2]));
+
+        const MetadataNbt = new NbtCompound(Metadata)
+        
+        const regionName = 'Unnamed';
+        const Regions = new Map<string, NbtTag>();
+
+        const mainRegionsNbt = new NbtCompound(Regions);
+
+        const mainRegion = new Map<string, NbtTag>();
+
+        const position = new Map<string, NbtTag>();
+        position.set('x', new NbtInt(0));
+        position.set('y', new NbtInt(0));
+        position.set('z', new NbtInt(0));
+        const positionNbt = new NbtCompound(position);
+        mainRegion.set('Position', positionNbt);
+
+        const size = new Map<string, NbtTag>();
+        position.set('x', new NbtInt(structureSize[0]));
+        position.set('y', new NbtInt(structureSize[1]));
+        position.set('z', new NbtInt(structureSize[2]));
+        const sizeNbt = new NbtCompound(size);
+        mainRegion.set('Size', sizeNbt);
+
+        const paletteNbt: NbtCompound[] = [
+            BlockState.AIR,
+            ...palette
+        ].map(val => {
+            const blockMap = new Map<string, NbtTag>();
+            blockMap.set('Name', new NbtString(val.getName().toString()));
+            const blockProperties = val.getProperties();
+            const blockPropertiesKeys = Object.keys(blockProperties);
+            if (blockPropertiesKeys.length > 0) {
+                const propertiesMap = new Map<string, NbtTag>();
+
+                blockPropertiesKeys.forEach(key => propertiesMap.set(key, new NbtString(blockProperties[key])));
+                blockMap.set('Properties', new NbtCompound(propertiesMap));
             }
-          }
-        }
-      
-        const nbt = NbtFile.fromJson(nbtJson as JsonValue);
-        nbt.name = name;
+
+            return new NbtCompound(blockMap);
+        });
+
+        const BlockStatePaletteNbt = new NbtList(paletteNbt);
+        mainRegion.set('BlockStatePalette', BlockStatePaletteNbt);
+
+        const BlockStateNbt = new NbtLongArray(this.encodePlacedBlocks());
+        mainRegion.set('BlockStates', BlockStateNbt)
+
+
+        const mainRegionNbt = new NbtCompound(mainRegion);
+
+        Regions.set(regionName, mainRegionNbt)
+        
+        const root = new Map<string, NbtTag>();
+        root.set('Metadata', MetadataNbt)
+        root.set('Regions', mainRegionsNbt);
+
+        const rootNbt = new NbtCompound(root);
+
+        const nbt = new NbtFile(name, rootNbt, 'gzip', false, undefined);
         return nbt;
       
     }
