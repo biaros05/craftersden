@@ -242,9 +242,47 @@ postRouter.post('/toggle-save', isAuthenticated, toggleSaveBuild);
  */
 postRouter.get('/:buildId/likes-saves', isAuthenticated, getLikesSaves);
 
-
+/**
+ * @swagger
+ * /api/posts:
+ *   get:
+ *     summary: Get all published builds
+ *     description: Retrieves a list of all published build posts.
+ *     tags:
+ *       - Posts
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved published builds.
+ *       500:
+ *         description: Internal server error.
+ */
 postRouter.get('/', getPublishedBuilds);
 
+/**
+ * @swagger
+ * /posts/search:
+ *   get:
+ *     summary: Search for build posts
+ *     description: Searches for build posts based on query parameters.
+ *     tags:
+ *       - Posts
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: query
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The search term to filter posts.
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved search results.
+ *       400:
+ *         description: Invalid query parameter.
+ *       500:
+ *         description: Internal server error.
+ */
 postRouter.get('/search', isAuthenticated, postSearch);
 
 export default postRouter;
