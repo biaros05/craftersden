@@ -69,10 +69,14 @@ export default function DeepslatePlane(
       projectionMatrix.current = structureRenderer.current!.getPerspectiveMatrix();
   
       const size = structure.current.getSize();
-      const onRender = doCapture ? getOnRender(structureRenderer.current!, vec3.fromValues(-3, 14, 13)) : getOnRender(structureRenderer.current!);
+      const onRender = doCapture ? getOnRender(structureRenderer.current!, vec3.fromValues(-2, 5, 12)) : getOnRender(structureRenderer.current!);
       const intCanvas = new InteractiveCanvas(canvas.current!, onRender, [size[0] / 2, size[1] / 2, size[2] / 2]);
       intCanvas.subscribe();
       interactiveCanvas.current = intCanvas;
+
+      if (doCapture) {
+        interactiveCanvas.current!.redrawFreshCanvas(); // reset the canvas to its original values for thumbnail
+      }
       
       return intCanvas?.cleanup;
     }
@@ -104,6 +108,7 @@ export default function DeepslatePlane(
   /**
    * Creates on render function causing the given renderer to rerender
    * @param {InteractiveStructureRenderer} newRenderer Renderer used for the onRender
+   * @param {InteractiveStructureRenderer} fixedPosition Renderer used for the onRender
    * @returns {(view: mat4) => void} onRender function to draw structure
    */
   function getOnRender(newRenderer: InteractiveStructureRenderer, fixedPosition: vec3 | undefined  = undefined) {

@@ -39,6 +39,39 @@ export default class InteractiveCanvas {
         this.onRender = newOnRender;
     }
 
+    // resets the canvas for a picture (only temporarily)
+    private resetCanvas() {
+        this.xPosition = -0.02;
+        this.yPosition = -1.55;
+
+        if (this.onRender) {
+
+            this.yRotation = 0.8;
+            this.xRotation = 0.34;
+            this.viewDist = 13;
+
+            const view = mat4.create()
+            mat4.translate(view, view, [0, 0, -this.viewDist])
+            mat4.translate(view, view, [0, -this.yPosition, 0])
+            mat4.translate(view, view, [this.xPosition, 0, 0])
+            mat4.rotate(view, view, this.xRotation, [1, 0, 0])
+            mat4.rotate(view, view, this.yRotation, [0, 1, 0])
+            if (this.center) {
+                mat4.translate(view, view, [-this.center[0], -this.center[1], -this.center[2]])
+            }
+
+            console.log("HERE")
+            this.onRender(view)
+        }
+    }
+
+    public redrawFreshCanvas() {
+        requestAnimationFrame(() => this.resetCanvas());
+    }
+
+
+    
+
     public subscribe() {
         this.canvas.addEventListener('mousedown', this.mousedownHandlerBind)
         this.canvas.addEventListener('mousemove', this.mousemoveHandlerBind)
@@ -112,6 +145,11 @@ export default class InteractiveCanvas {
             if (this.center) {
                 mat4.translate(view, view, [-this.center[0], -this.center[1], -this.center[2]])
             }
+
+            console.log(view);
+            console.log("CANVAS",this.xRotation, this.yRotation)
+            console.log("POSITION",this.xPosition, this.yPosition)
+            console.log("VIEWDIST",this.viewDist)
             this.onRender(view)
         }
     }
