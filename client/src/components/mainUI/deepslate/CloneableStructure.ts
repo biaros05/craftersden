@@ -48,83 +48,86 @@ export default class CloneableStructure extends Structure {
     }
 
     public toNbt(author: string, name: string='craftersden.litematic') {
-        const structureSize = this.getSize();
-        const palette = this.getPalette();
-        const placedBlocks = this.getPlacedBlocks();
+      const structureSize = this.getSize();
+      const palette = this.getPalette();
+      const placedBlocks = this.getPlacedBlocks();
 
-        const Metadata = new Map<string, NbtTag>();
-        Metadata.set('Author', new NbtString(author));
-        Metadata.set('RegionCount', new NbtInt(1));
-        Metadata.set('totalBlocks', new NbtInt(placedBlocks.length));
-        Metadata.set('totalVolume', new NbtInt(structureSize[0] * structureSize[1] * structureSize[2]));
+      const Metadata = new Map<string, NbtTag>();
+      Metadata.set('Author', new NbtString(author));
+      Metadata.set('RegionCount', new NbtInt(1));
+      Metadata.set('totalBlocks', new NbtInt(placedBlocks.length));
+      Metadata.set('totalVolume', new NbtInt(structureSize[0] * structureSize[1] * structureSize[2]));
 
-        const MetadataNbt = new NbtCompound(Metadata)
-        
-        const regionName = 'Unnamed';
-        const Regions = new Map<string, NbtTag>();
+      const MetadataNbt = new NbtCompound(Metadata)
+      
+      const regionName = 'Unnamed';
+      const Regions = new Map<string, NbtTag>();
 
-        const mainRegionsNbt = new NbtCompound(Regions);
+      const mainRegionsNbt = new NbtCompound(Regions);
 
-        const mainRegion = new Map<string, NbtTag>();
+      const mainRegion = new Map<string, NbtTag>();
 
-        const position = new Map<string, NbtTag>();
-        position.set('x', new NbtInt(0));
-        position.set('y', new NbtInt(0));
-        position.set('z', new NbtInt(0));
-        const positionNbt = new NbtCompound(position);
-        mainRegion.set('Position', positionNbt);
+      const position = new Map<string, NbtTag>();
+      position.set('x', new NbtInt(0));
+      position.set('y', new NbtInt(0));
+      position.set('z', new NbtInt(0));
+      const positionNbt = new NbtCompound(position);
+      mainRegion.set('Position', positionNbt);
 
-        const size = new Map<string, NbtTag>();
-        size.set('x', new NbtInt(structureSize[0]));
-        size.set('y', new NbtInt(structureSize[1]));
-        size.set('z', new NbtInt(structureSize[2]));
-        const sizeNbt = new NbtCompound(size);
-        mainRegion.set('Size', sizeNbt);
+      const size = new Map<string, NbtTag>();
+      size.set('x', new NbtInt(structureSize[0]));
+      size.set('y', new NbtInt(structureSize[1]));
+      size.set('z', new NbtInt(structureSize[2]));
+      const sizeNbt = new NbtCompound(size);
+      mainRegion.set('Size', sizeNbt);
 
-        let airIndex = -1;
-        for (let i = 0; i < palette.length; i++) {
-            if (palette[i].equals(BlockState.AIR)) {
-                airIndex = i;
-                break;
-            }
-        }
-        if (airIndex === -1) {
-            palette.splice(0, 0, BlockState.AIR);
-        }
+      let airIndex = -1;
+      for (let i = 0; i < palette.length; i++) {
+          if (palette[i].equals(BlockState.AIR)) {
+              airIndex = i;
+              break;
+          }
+      }
+      if (airIndex === -1) {
+        palette.splice(0, 0, BlockState.AIR);
+      }
 
-        const paletteNbt: NbtCompound[] = palette.map(val => {
-            const blockMap = new Map<string, NbtTag>();
-            blockMap.set('Name', new NbtString(val.getName().toString()));
-            const blockProperties = val.getProperties();
-            const blockPropertiesKeys = Object.keys(blockProperties);
-            if (blockPropertiesKeys.length > 0) {
-                const propertiesMap = new Map<string, NbtTag>();
+      const paletteNbt: NbtCompound[] = palette.map(val => {
+          const blockMap = new Map<string, NbtTag>();
+          blockMap.set('Name', new NbtString(val.getName().toString()));
+          const blockProperties = val.getProperties();
+          const blockPropertiesKeys = Object.keys(blockProperties);
+          if (blockPropertiesKeys.length > 0) {
+              const propertiesMap = new Map<string, NbtTag>();
 
-                blockPropertiesKeys.forEach(key => propertiesMap.set(key, new NbtString(blockProperties[key])));
-                blockMap.set('Properties', new NbtCompound(propertiesMap));
-            }
+              blockPropertiesKeys.forEach(key => propertiesMap.set(key, new NbtString(blockProperties[key])));
+              blockMap.set('Properties', new NbtCompound(propertiesMap));
+          }
 
-            return new NbtCompound(blockMap);
-        });
+          return new NbtCompound(blockMap);
+      });
 
-        const BlockStatePaletteNbt = new NbtList(paletteNbt);
-        mainRegion.set('BlockStatePalette', BlockStatePaletteNbt);
-        const BlockStateNbt = new NbtLongArray(this.encodeToNBTRegionData(airIndex));
-        mainRegion.set('BlockStates', BlockStateNbt)
+      const BlockStatePaletteNbt = new NbtList(paletteNbt);
+      mainRegion.set('BlockStatePalette', BlockStatePaletteNbt);
+      const BlockStateNbt = new NbtLongArray(this.encodeToNBTRegionData(airIndex));
+      mainRegion.set('BlockStates', BlockStateNbt)
 
 
-        const mainRegionNbt = new NbtCompound(mainRegion);
+      const mainRegionNbt = new NbtCompound(mainRegion);
 
-        Regions.set(regionName, mainRegionNbt)
-        
-        const root = new Map<string, NbtTag>();
-        root.set('Metadata', MetadataNbt)
-        root.set('Regions', mainRegionsNbt);
+      Regions.set(regionName, mainRegionNbt)
+      
+      const root = new Map<string, NbtTag>();
+      root.set('Metadata', MetadataNbt)
+      root.set('Regions', mainRegionsNbt);
+      root.set('MinecraftDataVersion', new NbtInt(4189));
+      root.set('SubVersion', new NbtInt(1));
+      root.set('Version', new NbtInt(7));
 
-        const rootNbt = new NbtCompound(root);
+      const rootNbt = new NbtCompound(root);
 
-        const nbt = new NbtFile(name, rootNbt, 'gzip', false, undefined);
-        return nbt;
+      const nbt = new NbtFile(name, rootNbt, 'gzip', false, undefined);
+      return nbt;
     }
 
     // Code generated by deepseek by asking to reverse decoding process in IOUtils.ts
@@ -161,14 +164,16 @@ export default class CloneableStructure extends Structure {
               const half_ind = start_arr_index >>> 1; // divide by 2
               const rawIndex = blockDataLookup.get(`${x},${y},${z}`);
               let blockValue;
+
               if (airIndex === -1) {
-                if (rawIndex) {
+                if (rawIndex !== undefined) {
+                  
                   blockValue = rawIndex + 1;
                 } else {
                   blockValue = 0;
                 }
               } else {
-                if (rawIndex) {
+                if (rawIndex !== undefined) {
                   blockValue = rawIndex;
                 } else {
                   blockValue = airIndex;
@@ -208,7 +213,6 @@ export default class CloneableStructure extends Structure {
             }
           }
         }
-        console.log(regionData)
         return regionData;
       }
 }

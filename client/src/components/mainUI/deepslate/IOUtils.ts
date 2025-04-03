@@ -28,7 +28,6 @@ export function importStructure(file: Uint8Array): CloneableStructure {
 
   regions.forEach((value) => {
     const region = value.properties;
-    console.log('l', region.get('BlockStates'))
     
     const size = region.get('Size');
 
