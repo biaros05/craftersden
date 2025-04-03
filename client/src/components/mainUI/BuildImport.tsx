@@ -3,7 +3,7 @@ import React, { useRef } from "react";
 import '../../styles/BuildImport.css';
 import MinecraftButton from "../Custom/MinecraftButton";
 import CloneableStructure from "./deepslate/CloneableStructure";
-import { importStructure } from "./deepslate/IOUtils";
+import { importLitematic, importStructureBlock } from "./deepslate/IOUtils";
 
 /**
  * Provides a form for users to import a build they made in minecraft
@@ -24,14 +24,19 @@ export default function BuildImport({updateStructure, close}: {updateStructure: 
         if (importFile.current?.files) {
             const file = importFile.current.files[0];
 
-            updateStructure(importStructure(await file.bytes()));
+            console.log(file.name)
+            if (file.name.endsWith('.nbt')) {
+                updateStructure(importStructureBlock(await file.bytes()))
+            } else if (file.name.endsWith('.litematic')) {
+                updateStructure(importLitematic(await file.bytes()));
+            }
             close();
         }
     }
 
     return <form className="import-form">
-        <label htmlFor="structure-file">File to import (.litematic, .dat):</label>
-        <input type="file" name="structure-file" id="structure-file" ref={importFile} accept=".dat,.litematic" />
+        <label htmlFor="structure-file">File to import (.litematic, .nbt):</label>
+        <input type="file" name="structure-file" id="structure-file" ref={importFile} accept=".litematic,.nbt" />
         <MinecraftButton className='submit-import' onClick={onSubmit}>Submit</MinecraftButton>
     </form>
 }
