@@ -175,7 +175,7 @@ export function importStructureBlock(file: Uint8Array) {
   }).filter(b => !palette[b.state].is(BlockState.AIR));
   const size = nbt.root.getList('size', 3).map(v => v.getAsNumber()) as [number, number, number];
   const structure = new CloneableStructure(size, palette, blocks)
-  console.log(structure.getBlocks());
+
   return structure;
 }
 
