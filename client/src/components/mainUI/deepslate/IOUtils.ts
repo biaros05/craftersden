@@ -84,7 +84,7 @@ function getBlocks(regionData: {items: object}, nbits: number, structureSize: {x
   blocks.forEach((layer: [[number]], x: number) => {
     layer.forEach((row: [number], y: number) => {
       row.forEach((blockIndex: number, z: number) => {
-        if (blockIndex !== 0 && blockIndex < 18) {
+        if (blockIndex !== 0) {
           result.push({
             pos: [x, y, z],
             state: blockIndex
