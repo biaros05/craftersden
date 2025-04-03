@@ -81,12 +81,11 @@ function getBlocks(regionData: {items: object}, nbits: number, structureSize: {x
   const blocks = processNBTRegionData(regionData.items, nbits, width, height, depth);
 
   const result: {pos: [number, number, number], state: number}[] = [];
-
   // After extracting, map the palette index to actual block state in the palette
   blocks.forEach((layer: [[number]], x: number) => {
     layer.forEach((row: [number], y: number) => {
       row.forEach((blockIndex: number, z: number) => {
-        if (blockIndex !== 0) {
+        if (blockIndex !== 0 && blockIndex < 18) {
           result.push({
             pos: [x, y, z],
             state: blockIndex
@@ -117,7 +116,8 @@ function processNBTRegionData(regionData: { value: []; }[], nbits: number, width
     for (let y=0; y < Math.abs(height); y++) {
       blocks[x][y] = [];
       for (let z=0; z < Math.abs(depth); z++) {
-        
+      
+
         const index = y * y_shift + z * z_shift + x;
         
         const start_offset = index * nbits;
@@ -141,11 +141,11 @@ function processNBTRegionData(regionData: { value: []; }[], nbits: number, width
         }
         
         if (start_arr_index == end_arr_index) {
-            blocks[x][y][z] = (blockStart >>> start_bit_offset) & mask;
+          blocks[x][y][z] = (blockStart >>> start_bit_offset) & mask;
         } else {
-            const end_offset = 32 - start_bit_offset;
-            const val = ((blockStart >>> start_bit_offset) & mask) | ((blockEnd << end_offset) & mask);
-            blocks[x][y][z] = val;
+          const end_offset = 32 - start_bit_offset;
+          const combined = (blockStart >>> start_bit_offset) | (blockEnd << end_offset);
+          blocks[x][y][z] = combined & mask;
         }
       }
     }

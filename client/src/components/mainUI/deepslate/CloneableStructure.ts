@@ -81,10 +81,18 @@ export default class CloneableStructure extends Structure {
         const sizeNbt = new NbtCompound(size);
         mainRegion.set('Size', sizeNbt);
 
-        const paletteNbt: NbtCompound[] = [
-            BlockState.AIR,
-            ...palette
-        ].map(val => {
+        let airIndex = -1;
+        for (let i = 0; i < palette.length; i++) {
+            if (palette[i].equals(BlockState.AIR)) {
+                airIndex = i;
+                break;
+            }
+        }
+        if (airIndex === -1) {
+            palette.splice(0, 0, BlockState.AIR);
+        }
+
+        const paletteNbt: NbtCompound[] = palette.map(val => {
             const blockMap = new Map<string, NbtTag>();
             blockMap.set('Name', new NbtString(val.getName().toString()));
             const blockProperties = val.getProperties();
@@ -102,7 +110,7 @@ export default class CloneableStructure extends Structure {
         const BlockStatePaletteNbt = new NbtList(paletteNbt);
         mainRegion.set('BlockStatePalette', BlockStatePaletteNbt);
 
-        const BlockStateNbt = new NbtLongArray(this.encodePlacedBlocks());
+        const BlockStateNbt = new NbtLongArray(this.encodePlacedBlocks(airIndex, palette));
         mainRegion.set('BlockStates', BlockStateNbt)
 
 
@@ -121,11 +129,14 @@ export default class CloneableStructure extends Structure {
     }
 
 
-    private encodePlacedBlocks(): [number, number][] {
+    // Chatgpt was used to encode blocks to 64-bit ints
+    private encodePlacedBlocks(airIndex: number, palette: BlockState[]): [number, number][] {
+        console.log(palette)
         const size = this.getSize();
-        const palette = [BlockState.AIR, ...this.getPalette()];
+        // const palette = [BlockState.AIR, ...this.getPalette()];
         const placedBlocks = this.getPlacedBlocks();
-        const nbits = calculateBitWidth(palette.length)
+        const nbits = calculateBitWidth(palette.length);
+        console.log('nbits', nbits);
 
         // Calculate how many bits each block needs based on the palette size
         const mask = (1 << nbits) - 1;
@@ -135,34 +146,48 @@ export default class CloneableStructure extends Structure {
 
         // Initialize the region data array (will store the packed 64-bit integers)
         const regionData: [number, number][] = [];
-
         const blockDataLookup = new Map();
         placedBlocks.forEach(block => {
             const posKey = `${block.pos[0]},${block.pos[1]},${block.pos[2]}`;
             blockDataLookup.set(posKey, block.state);
         });
+        console.log(blockDataLookup)
 
+        console.log(airIndex)
         // Iterate over all possible positions in the structure
         for (let x = 0; x < width; x++) {
             for (let y = 0; y < height; y++) {
                 for (let z = 0; z < depth; z++) {
                     // Check if this position has block data; default to air if not
                     const posKey = `${x},${y},${z}`;
-                    const blockStateIndex = blockDataLookup.get(posKey) || 0;
+                    const rawIndex = blockDataLookup.get(posKey);  // This is the stored palette index
+                    const blockStateIndex = rawIndex !== undefined 
+                        ? (airIndex === -1 ? rawIndex + 1 : rawIndex)  // Shift if AIR was prepended
+                        : airIndex !== -1 ? airIndex : 0;
 
                     // Ensure the state is within valid bounds
-                    if (blockStateIndex === undefined || blockStateIndex >= palette.length) {
-                        console.error(`State ${blockStateIndex} is out of bounds in the palette!`);
-                        continue;
+                    if (blockStateIndex === -1) {
+                        console.error(`Block state not found in palette!`, rawIndex, blockStateIndex, posKey);
                     }
 
+                    if (rawIndex === blockStateIndex) {
+                        console.error(`${x},${y},${z} - ${rawIndex}`)
+                    }
+                    
+                    if (blockStateIndex < 0 || blockStateIndex >= palette.length) {
+                        console.error(`ERROR: Block state index ${blockStateIndex} is out of bounds!`, { posKey, rawIndex, airIndex });
+                    }
+                    
                     // Calculate the linear index for this block in the packed data array
                     const index = y * y_shift + z * z_shift + x;
+                    console.log(`ENCODING: pos=(${x},${y},${z}), index=${index}, blockStateIndex=${blockStateIndex}, paletteSize=${palette.length}`);
 
                     // Determine the start and end bit indices for this block
                     const start_offset = index * nbits;
                     const start_arr_index = start_offset >>> 5;  // Divide by 32
                     const start_bit_offset = start_offset & 0x1F; // % 32
+
+                    const end_arr_index = ((index + 1) * nbits - 1) >>> 5; // Calculate the end index
 
                     // We need to determine the half-block of the 64-bit value
                     const half_ind = start_arr_index >>> 1;
@@ -181,7 +206,7 @@ export default class CloneableStructure extends Structure {
                     const blockState = blockStateIndex & mask;
 
                     // Apply bit shifts to the corresponding positions in the blockStart and blockEnd
-                    if (start_arr_index === start_arr_index) {
+                    if (start_arr_index === end_arr_index) {
                         blockStart |= blockState << start_bit_offset;
                     } else {
                         const end_offset = 32 - start_bit_offset;
@@ -189,12 +214,22 @@ export default class CloneableStructure extends Structure {
                         blockEnd |= blockState << start_bit_offset;
                     }
                     
-                    // Store the packed data back to regionData
-                    regionData[half_ind] = [blockEnd, blockStart];  // Update the region data
+                    if (!regionData[half_ind]) {
+                        regionData[half_ind] = [0, 0];
+                    }
+                    
+                    if ((start_arr_index & 0x1) === 0) {
+                        regionData[half_ind][1] |= blockStart;
+                        regionData[half_ind][0] |= blockEnd;
+                    } else {
+                        regionData[half_ind][0] |= blockStart;
+                        if (!regionData[half_ind + 1]) regionData[half_ind + 1] = [0, 0];
+                        regionData[half_ind + 1][1] |= blockEnd;
+                    }                    
                 }
             }
         }
-
+        console.log(regionData)
         return regionData;
     }
 }
