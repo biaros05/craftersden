@@ -1,4 +1,4 @@
-import { BlockState, NbtCompound, NbtFile, NbtInt } from "deepslate";
+import { BlockState, NbtCompound, NbtFile } from "deepslate";
 import CloneableStructure from "./CloneableStructure";
 
 /* --- The following section was adapted from https://github.com/EndingCredits/litematic-viewer/blob/main/src/litematic-utils.js with some help from chatgpt --- */
