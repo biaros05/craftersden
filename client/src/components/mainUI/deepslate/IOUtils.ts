@@ -1,4 +1,4 @@
-import { BlockState, NbtFile } from "deepslate";
+import { BlockState, NbtCompound, NbtFile, NbtInt } from "deepslate";
 import CloneableStructure from "./CloneableStructure";
 
 /* --- The following section was adapted from https://github.com/EndingCredits/litematic-viewer/blob/main/src/litematic-utils.js with some help from chatgpt --- */
@@ -8,7 +8,7 @@ import CloneableStructure from "./CloneableStructure";
  * @param {Uint8Array} file to parse
  * @returns {CloneableStructure} the structure from the file
  */
-export function importStructure(file: Uint8Array): CloneableStructure {
+export function importLitematic(file: Uint8Array): CloneableStructure {
   const nbt = NbtFile.read(file);
 
   const litematic: {
@@ -153,3 +153,39 @@ function processNBTRegionData(regionData: { value: []; }[], nbits: number, width
 }
 
 /* --- END OF SECTION --- */
+
+/**
+ * Imports a from a structure block made nbt file to
+ * deepslate structure
+ * @param {Uint8Array} file bytes from nbt file
+ * @returns {CloneableStructure} structure from the file
+ */
+export function importStructureBlock(file: Uint8Array) {
+  const nbt = NbtFile.read(file);
+  // Get list of compounds
+  const palette = nbt.root.getList('palette', 10).map(p => {
+    return new BlockState(p.getString('Name'), propertiesFromCompound(p.getCompound('Properties')));
+  });
+  const blocks = nbt.root.getList('blocks', 10).map(b => {
+    return {
+      // Get int list
+      pos: b.getList('pos', 3).map(p => p.getAsNumber()) as [number, number, number],
+      state: b.getNumber('state')
+    };
+  }).filter(b => !palette[b.state].is(BlockState.AIR));
+  const size = nbt.root.getList('size', 3).map(v => v.getAsNumber()) as [number, number, number];
+  const structure = new CloneableStructure(size, palette, blocks)
+  console.log(structure.getBlocks());
+  return structure;
+}
+
+/**
+ * Extracts properties from properties compound
+ * @param {NbtCompound} properties properties compound
+ * @returns {{[key: string]: string}} properties of the block
+ */
+function propertiesFromCompound(properties: NbtCompound): {[key: string]: string} {
+  const blockProperties = {};
+  properties.forEach((key, value) => blockProperties[key] = value.value);
+  return blockProperties;
+}
