@@ -7,6 +7,7 @@ import CloneableStructure from './deepslate/CloneableStructure.ts';
 import { Modal } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import BuildImport from './BuildImport.tsx';
+import BuildExport from './BuildExport.tsx';
 
 type ButtonPanelProps = { 
   setIsViewMode: (arg0: boolean) => void,
@@ -67,7 +68,7 @@ function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode, isUserLoggedI
         <BuildImport updateStructure={updateStructure} close={closeImport} />
       </Modal>
       <Modal opened={exportOpened} onClose={closeExport} title='Export Build'>
-        <a href={downloadLink} download>Click here to download!</a>
+        <BuildExport structure={structure} close={closeExport} />
       </Modal>
       <MinecraftButton 
         className="save-button"
@@ -90,7 +91,6 @@ function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode, isUserLoggedI
         Import
       </MinecraftButton>
       <MinecraftButton className='import-build' onClick={() => {
-        setDownloadLink(URL.createObjectURL(new File([structure.toNbt('test_user').write()], 'test.litematic')))
         openExport();
       }}>
         Export
