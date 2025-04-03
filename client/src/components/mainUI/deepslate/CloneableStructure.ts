@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { BlockPos, BlockState, Identifier, JsonValue, NbtCompound, NbtFile, NbtInt, NbtList, NbtLong, NbtLongArray, NbtLongPair, NbtString, NbtTag, Structure } from "deepslate";
+import { BlockPos, BlockState, Identifier, NbtCompound, NbtFile, NbtInt, NbtList, NbtLongArray, NbtString, NbtTag, Structure } from "deepslate";
 import { calculateBitWidth } from "./IOUtils";
 
 export default class CloneableStructure extends Structure {
@@ -109,7 +109,6 @@ export default class CloneableStructure extends Structure {
 
         const BlockStatePaletteNbt = new NbtList(paletteNbt);
         mainRegion.set('BlockStatePalette', BlockStatePaletteNbt);
-        // const BlockStateNbt = new NbtLongArray(this.encodePlacedBlocks(airIndex, palette));
         const BlockStateNbt = new NbtLongArray(this.encodeToNBTRegionData(airIndex));
         mainRegion.set('BlockStates', BlockStateNbt)
 
