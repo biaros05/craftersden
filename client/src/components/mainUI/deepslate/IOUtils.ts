@@ -48,9 +48,10 @@ export function importLitematic(file: Uint8Array): CloneableStructure {
 /**
  * Parses block palette from nbt file into BlockStates
  * @param {object} palette blockPalette as given by BlockStatePalette
+ * @param {[]} palette.items palette content
  * @returns {BlockState[]} blockstates from nbt
  */
-function getPalette(palette: object): BlockState[] {
+function getPalette(palette: {items: []}): BlockState[] {
     const blockPalette = palette.items.map(i => BlockState.fromNbt(i));
     return blockPalette;
 }
@@ -74,15 +75,15 @@ export function calculateBitWidth(size: number): number {
  * @param {number} structureSize.z - Structure size parameter
  * @returns {{pos: [number, number, number], state: number}[]} block positions and their states
  */
-function getBlocks(regionData: {items: object}, nbits: number, structureSize: {x: number, y: number, z: number}): { pos: [number, number, number]; state: number; }[] {
+function getBlocks(regionData: {items: []}, nbits: number, structureSize: {x: number, y: number, z: number}): { pos: [number, number, number]; state: number; }[] {
   const { x: width, y: height, z: depth } = structureSize;
   
   const blocks = processNBTRegionData(regionData.items, nbits, width, height, depth);
 
   const result: {pos: [number, number, number], state: number}[] = [];
   // After extracting, map the palette index to actual block state in the palette
-  blocks.forEach((layer: [[number]], x: number) => {
-    layer.forEach((row: [number], y: number) => {
+  blocks.forEach((layer: number[][], x: number) => {
+    layer.forEach((row: number[], y: number) => {
       row.forEach((blockIndex: number, z: number) => {
         if (blockIndex !== 0) {
           result.push({
@@ -104,12 +105,12 @@ function getBlocks(regionData: {items: object}, nbits: number, structureSize: {x
  * @param {number} depth size of the structure
  * @returns {[[[number]]]} position of each block and its palette index
  */
-function processNBTRegionData(regionData: { value: []; }[], nbits: number, width: number, height: number, depth: number): [[[number]]] {
+function processNBTRegionData(regionData: { value: number[] }[], nbits: number, width: number, height: number, depth: number): number[][][] {
   const mask = (1 << nbits) - 1;
   
   const y_shift = Math.abs(width * depth);
   const z_shift = Math.abs(width);
-  const blocks = [];
+  const blocks: number[][][] = [];
   for (let x=0; x < Math.abs(width); x++) {
     blocks[x] = [];
     for (let y=0; y < Math.abs(height); y++) {
@@ -186,6 +187,6 @@ export function importStructureBlock(file: Uint8Array) {
  */
 function propertiesFromCompound(properties: NbtCompound): {[key: string]: string} {
   const blockProperties = {};
-  properties.forEach((key, value) => blockProperties[key] = value.value);
+  properties.forEach((key, value) => blockProperties[key] = value.getAsString());
   return blockProperties;
 }

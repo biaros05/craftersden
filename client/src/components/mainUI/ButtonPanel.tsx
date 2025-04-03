@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import '../../styles/ButtonPanel.css';
 import useNavigate from '../Navigation/useNavigate.tsx';
 import {buildLoginNotification, buildCopyNotification} from '../Notifications/buildNotifications';
