@@ -25,7 +25,7 @@ const router = createBrowserRouter(routesConfig);
  */
 export default function App(): React.ReactNode {
   return (
-    // <StrictMode>
+    <StrictMode>
       <AuthProvider >
         <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
           <MantineProvider theme={theme}>
@@ -39,6 +39,6 @@ export default function App(): React.ReactNode {
           </MantineProvider>
         </GoogleOAuthProvider>
       </AuthProvider>
-    // {/* </StrictMode> */}
+    </StrictMode>
   );
 }

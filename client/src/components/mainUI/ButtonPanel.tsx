@@ -40,7 +40,6 @@ type ButtonPanelProps = {
 function ButtonPanel({canvas, setIsViewMode, savePost, isViewMode, isUserLoggedIn, isBuildOwner, structure, updateStructure, setDoCapture, doCapture}: ButtonPanelProps): React.ReactNode {
   const [importOpened, {open: openImport, close: closeImport}] = useDisclosure(false);
   const [exportOpened, {open: openExport, close: closeExport}] = useDisclosure(false);
-  const [downloadLink, setDownloadLink] = useState('');
   const [capturedImage, setCapturedImage] = useState('');
   const navigate = useNavigate();
 
