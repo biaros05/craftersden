@@ -100,7 +100,7 @@ export default function Builds({ builds, updateBuildStatus, setBuilds }: propTyp
             <div key={build._id} className="saved-builds" style={{ width: '250px' }}>
               <Image
                 radius="md"
-                height={125}
+                height={150}
                 src={build.progressPicture}
                 onClick={() => {
                   setBuild(build);
