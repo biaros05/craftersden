@@ -1,7 +1,7 @@
 import User from '../models/User.mjs';
 import BlobServiceProvider from '../utils/BlobService.mjs';
 import { validationResult } from 'express-validator';
-import Post from '../models/Post.js';
+import Post from '../models/Post.mjs';
 
 const blobService = new BlobServiceProvider();
 
@@ -143,11 +143,47 @@ async function getUserSavedPosts(req, res, next){
   }
 };
 
+/**
+ *Gets user by id 
+ * @param {object} req  - The request object.
+ * @param {object} res - The respond object.
+ * @param {*} next - Next
+ * @returns {Response}- Response object with status code and message.
+ */
+async function getUser(req, res, next){
+  try{
+    
+    if(!req.params.id){
+      return res.status(403).json({message: 'user id required'});
+    }
+
+    const user = await User.findOne(
+      {_id : req.params.id}).select(
+      { email: 1,
+        username: 1, 
+        avatar: 1, 
+        role: 1, 
+        _id: 1
+      });
+    if(!user){
+      const err = new Error('Cannot find user in database');
+      err.status = 404;
+      next(err);
+    }
+
+    return res.status(200).json({message : 'User retrieved', user});
+  } catch(err){
+    err.status = 500;
+    next(err);
+  }
+}
+
 
 export {
   uploadImage, 
   storeImageWithName, 
   uploadValidation, 
   getUsersSavedBuilds,
-  getUserSavedPosts
+  getUserSavedPosts,
+  getUser
 };

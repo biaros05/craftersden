@@ -33,6 +33,12 @@
   width: 100%;
 }
 
+.block-image:hover {
+  cursor: pointer; 
+  transform: scale(1.05); 
+  transition: transform 0.2s; 
+}
+
 .block-name {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -44,4 +50,11 @@
     font-size: x-large;
     text-align: center;
   }
+}
+
+.calculate-materials-wrapper {
+  margin: 1em;
+  
+  display: flex;
+  justify-content: space-between;
 }

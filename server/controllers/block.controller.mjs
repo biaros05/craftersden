@@ -34,6 +34,7 @@ async function getBlocks(req, res, next) {
     }
 
     pipeline.push(
+      { $sort: { name: 1} },
       { $skip: (page - 1) * limit },
       { $limit: parseInt(limit) },
     );
@@ -46,7 +47,6 @@ async function getBlocks(req, res, next) {
           inventoryTexture: 1,
         }
       },
-      { $sort: { name: 1} },
     );
 
     const blocks = await Block.aggregate(pipeline);
@@ -127,7 +127,10 @@ async function getTotalPages(limit, search) {
 async function getBlock(req, res, next) {
   try {
     const { id } = req.params;
-    const block = await Block.findById(id);
+    const { name } = req.query;
+
+    // If name is passed then use id as name filter
+    const block = name ? await Block.findOne({name: id}) : await Block.findById(id);
     if (!block) {
       return res.status(404).json({ message: 'Block not found' });
     }
@@ -137,4 +140,27 @@ async function getBlock(req, res, next) {
   }
 }
 
-export { getBlocks, getBlock, getPageCount };
+/**
+ * Gets a block image by its name.
+ * @param {object} req - Request
+ * @param {string} req.params.name - Block name
+ * @param {object} res - Response
+ * @param {Function} next - Next
+ * @returns {void}
+ */
+async function getBlockImage(req, res, next) {
+  try {
+    const { name } = req.params;
+
+    // If name is passed then use id as name filter
+    const block = await Block.findOne({name: name}, {inventoryTexture: 1, name: 1});
+    if (!block) {
+      return res.status(404).json({ message: 'Block not found' });
+    }
+    return res.status(200).json(block);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export { getBlocks, getBlock, getBlockImage, getPageCount };

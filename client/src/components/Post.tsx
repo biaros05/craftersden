@@ -5,6 +5,7 @@ import { Image, Text, Box, ActionIcon, Pill, ScrollArea, Avatar, Group } from '@
 import '../styles/Post.css';
 import { errorMessage, successMessage } from '../utils/notification_utils';
 import { useAuth } from '../hooks/useAuth';
+import ReportButton from './ReportButton';
 
 type propTypes = {
   description: string,
@@ -16,6 +17,7 @@ type propTypes = {
   viewPostOnClick?: () => void
   tags: []
   avatar: Blob
+  userId: string
 }
 
 /**
@@ -32,10 +34,11 @@ type propTypes = {
  * @param {Function} props.viewPostOnClick - Function to call when the post is clicked
  * @param {string} props.buildId the id of the build
  * @param {Array} props.tags tags of the build post
+ * @param {string} props.userId id of creator
  * @returns {React.ReactNode} The Post
  */
 export default function Post(
-  { description, liked, saved, imageURL, builderUsername, avatar, viewPostOnClick, buildId, tags = []}: propTypes): React.ReactNode {
+  { description, liked, saved, imageURL, builderUsername, avatar, viewPostOnClick, buildId, tags = [], userId}: propTypes): React.ReactNode {
 
   const [isLiked, setIsLiked] = useState(liked);
   const [isSaved, setIsSaved] = useState(saved);
@@ -171,9 +174,12 @@ export default function Post(
 
   return (
     <div className="post">
-      <Group align="center" gap="sm">
-        <Avatar src={avatar} radius="xl" size="md" />
-        <Text weight={500} size="sm">{builderUsername}</Text>
+      <Group justify="space-between">
+        <div style={{display: 'flex', alignItems: 'center', gap: '5px'}}>
+          <Avatar src={avatar} radius="xl" size="md" />
+          <Text className="post-usernames" weight={500} size="sm">{builderUsername}</Text>
+        </div>
+        <ReportButton userId={userId} buildId={buildId} username={builderUsername}/>
       </Group>
       <Carousel
         height={125}
