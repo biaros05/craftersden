@@ -29,6 +29,7 @@ for (let x = 0; x < 20; x++) {
  * @param {React.RefObject<HTMLCanvasElement>} props.canvas - canvas of the plane 
  * @param {React.RefObject<CloneableStructure>} props.structure - current structure
  * @param {boolean} props.isViewMode - View mode state of plane
+ * @param {boolean} props.doCapture - Whether we are capturing a picture or not
  * @returns {React.ReactNode} - Deepslate plane
  */
 export default function DeepslatePlane(
@@ -36,11 +37,13 @@ export default function DeepslatePlane(
     canvas, 
     structure, 
     isViewMode,
+    doCapture
   }: 
   { 
     canvas: React.RefObject<HTMLCanvasElement | null>; 
     structure: React.RefObject<CloneableStructure>; 
-    isViewMode: boolean;
+    isViewMode: boolean,
+    doCapture: boolean
   }
 ): React.ReactNode {
   const projectionMatrix = useRef<mat4>(null);
@@ -66,13 +69,18 @@ export default function DeepslatePlane(
       projectionMatrix.current = structureRenderer.current!.getPerspectiveMatrix();
   
       const size = structure.current.getSize();
-      const intCanvas = new InteractiveCanvas(canvas.current!, getOnRender(structureRenderer.current!), [size[0] / 2, size[1] / 2, size[2] / 2]);
+      const onRender = doCapture ? getOnRender(structureRenderer.current!, vec3.fromValues(-2, 5, 12)) : getOnRender(structureRenderer.current!);
+      const intCanvas = new InteractiveCanvas(canvas.current!, onRender, [size[0] / 2, size[1] / 2, size[2] / 2]);
       intCanvas.subscribe();
       interactiveCanvas.current = intCanvas;
-  
+
+      if (doCapture) {
+        interactiveCanvas.current!.redrawFreshCanvas(); // reset the canvas to its original values for thumbnail
+      }
+      
       return intCanvas?.cleanup;
     }
-  }, [resources]);
+  }, [resources, doCapture]);
 
   const {
     currentBlock
@@ -97,21 +105,22 @@ export default function DeepslatePlane(
   }, [])
 
   
- /**
-  * Creates on render function causing the given renderer to rerender
-  * @param {InteractiveStructureRenderer} newRenderer Renderer used for the onRender
-  * @returns {(view: mat4) => void} onRender function to draw structure
-  */
- function getOnRender(newRenderer: InteractiveStructureRenderer) {
+  /**
+   * Creates on render function causing the given renderer to rerender
+   * @param {InteractiveStructureRenderer} newRenderer Renderer used for the onRender
+   * @param {InteractiveStructureRenderer} fixedPosition Renderer used for the onRender
+   * @returns {(view: mat4) => void} onRender function to draw structure
+   */
+  function getOnRender(newRenderer: InteractiveStructureRenderer, fixedPosition: vec3 | undefined  = undefined) {
    // function that renders the structure
-   const onRender = (view: mat4) => {
-     const gl = newRenderer.getGl();
-     gl.clearColor(0,0,0,0);
-     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-     newRenderer.drawStructure(view);
-     newRenderer.drawGrid(view);
-     viewMatrix.current = view;
-     cameraPosition.current = getCameraPosition(view);
+    const onRender = (view: mat4) => {
+      const gl = newRenderer.getGl();
+      gl.clearColor(0,0,0,0);
+      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+      newRenderer.drawStructure(view);
+      newRenderer.drawGrid(view);
+      viewMatrix.current = view;
+      cameraPosition.current = fixedPosition ? fixedPosition : getCameraPosition(view);
     };
     return onRender
   }

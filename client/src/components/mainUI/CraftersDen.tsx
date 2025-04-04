@@ -35,6 +35,7 @@ export default function CraftersDen(): React.ReactNode {
 
   const {id, email} = useAuth() ?? {};
   const [isViewMode, setIsViewMode] = useState(false);
+  const [doCapture, setDoCapture] = useState(false);
   const [currentBlock, setCurrentBlock] = useState({name: 'stone'});
   const [inventoryBlocks, setInventoryBlocks] = useState<Array<object | null>>(Array(9).fill(null));
 
@@ -142,6 +143,7 @@ export default function CraftersDen(): React.ReactNode {
 
       setBuild({...{'_id': json.id, buildJSON: structure.current.toJson(), user: id}})
       successMessage(json.message);
+      setDoCapture(false);
     } catch (e) {
       errorMessage(e.message);
     }
@@ -165,10 +167,12 @@ export default function CraftersDen(): React.ReactNode {
               canvas={canvas} 
               structure={structure}
               isViewMode={isViewMode}
+              doCapture={doCapture}
               />
             {!isViewMode && <BlockSelection structure={structure} />}
           </section>
           <ButtonPanel 
+          doCapture={doCapture}
           canvas={canvas}
           structure={structure.current}
           updateStructure={updateStructure}
@@ -176,7 +180,8 @@ export default function CraftersDen(): React.ReactNode {
           savePost={savePost} 
           isViewMode={isViewMode}
           isUserLoggedIn={id !== null}
-          isBuildOwner={isBuildOwner} />
+          isBuildOwner={isBuildOwner}
+          setDoCapture={setDoCapture} />
         </div>
       </InventoryBlockContext.Provider>
     </CurrentBlockContext.Provider>
