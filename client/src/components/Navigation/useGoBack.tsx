@@ -2,6 +2,8 @@ import { useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import useNavigate from './useNavigate';
 
+/* Router adapted from https://medium.com/@a16n.dev/wrangling-the-back-button-in-react-router-ec464e2c5dca */
+
 const useGoBack = (fallback: string) => {
   const navigate = useNavigate();
 

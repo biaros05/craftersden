@@ -12,6 +12,7 @@ export default class InteractiveCanvas {
     private mouseupHandlerBind: () => void;
     private wheelHandlerBind: (arg0: WheelEvent) => void;
     private subscribed = false;
+    public dragging = false;
 
     constructor(
         private canvas: HTMLCanvasElement,
@@ -38,6 +39,39 @@ export default class InteractiveCanvas {
         this.onRender = newOnRender;
     }
 
+    // resets the canvas for a picture (only temporarily)
+    private resetCanvas() {
+        this.xPosition = -0.02;
+        this.yPosition = -1.55;
+
+        if (this.onRender) {
+
+            this.yRotation = 0.8;
+            this.xRotation = 0.34;
+            this.viewDist = 13;
+
+            const view = mat4.create()
+            mat4.translate(view, view, [0, 0, -this.viewDist])
+            mat4.translate(view, view, [0, -this.yPosition, 0])
+            mat4.translate(view, view, [this.xPosition, 0, 0])
+            mat4.rotate(view, view, this.xRotation, [1, 0, 0])
+            mat4.rotate(view, view, this.yRotation, [0, 1, 0])
+            if (this.center) {
+                mat4.translate(view, view, [-this.center[0], -this.center[1], -this.center[2]])
+            }
+
+            console.log("HERE")
+            this.onRender(view)
+        }
+    }
+
+    public redrawFreshCanvas() {
+        requestAnimationFrame(() => this.resetCanvas());
+    }
+
+
+    
+
     public subscribe() {
         this.canvas.addEventListener('mousedown', this.mousedownHandlerBind)
         this.canvas.addEventListener('mousemove', this.mousemoveHandlerBind)
@@ -57,6 +91,7 @@ export default class InteractiveCanvas {
     private mousedownHandler(evt) {
         if (evt.button === 0) {
             this.dragPos = [evt.clientX, evt.clientY]
+            this.dragging = false;
         }
     }
 
@@ -69,13 +104,19 @@ export default class InteractiveCanvas {
                 this.yRotation += (evt.clientX - this.dragPos[0]) / 100
                 this.xRotation += (evt.clientY - this.dragPos[1]) / 100
             }
+
+            if (Math.abs(evt.clientX - this.dragPos[0]) > 1 || Math.abs(evt.clientY - this.dragPos[1]) > 1) {
+                this.dragging = true;
+            }
+            
             this.dragPos = [evt.clientX, evt.clientY]
             this.redraw()
         }
     }
 
     private mouseupHandler() {
-        this.dragPos = null
+        // this.dragging = false;
+        this.dragPos = null;
     }
 
     private wheelHandler(evt) {
@@ -104,6 +145,11 @@ export default class InteractiveCanvas {
             if (this.center) {
                 mat4.translate(view, view, [-this.center[0], -this.center[1], -this.center[2]])
             }
+
+            console.log(view);
+            console.log("CANVAS",this.xRotation, this.yRotation)
+            console.log("POSITION",this.xPosition, this.yPosition)
+            console.log("VIEWDIST",this.viewDist)
             this.onRender(view)
         }
     }

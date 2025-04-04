@@ -93,6 +93,59 @@ userRouter.put('/', isAuthenticated,
 userRouter.get('/:email/builds', isAuthenticated,
   upload.none(), getUsersSavedBuilds);
 
+/**
+ * @swagger
+ * /api/user/{email}/saved-posts:
+ *   get:
+ *     summary: Retrieve saved posts for a specific user
+ *     description: Retrieves all posts saved by the user with the specified email.
+ *     tags:
+ *       - Users
+ *     parameters:
+ *       - name: email
+ *         in: path
+ *         required: true
+ *         description: Email of the user to retrieve saved posts for.
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved saved posts.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Saved builds retrieved!
+ *                 savedBuilds:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                         example: 605c72f65a8f5a7b7c3c86a9
+ *                       title:
+ *                         type: string
+ *                         example: "Amazing Wildlife Capture"
+ *                       description:
+ *                         type: string
+ *                         example: "A rare sighting of a wild fox."
+ *                       imageUrl:
+ *                         type: string
+ *                         example: "https://example.com/image.jpg"
+ *                       username:
+ *                         type: string
+ *                         example: "john_doe"
+ *       401:
+ *         description: Unauthorized - User is not authenticated.
+ *       404:
+ *         description: User does not exist.
+ *       500:
+ *         description: Internal server error.
+ */
 userRouter.get('/:email/saved-posts', isAuthenticated, upload.none(), getUserSavedPosts);
 
 userRouter.get('/:id', isAuthenticated, upload.none(), getUser);

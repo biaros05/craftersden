@@ -70,7 +70,6 @@ export const AuthProvider = ({ children }: ContextProviderProps) => {
         throw new Error('Failed to connect- HTTP status ' + res.status);
       }
       data = await res.json();
-      console.log(data);
     } catch (e) {
       console.error(e);
       return;
