@@ -10,9 +10,10 @@ import { BlockType } from '../../../server/models/BlockType';
  * Displays an image with an action icon.
  * @param {object} props - React props
  * @param {BlockType} props.block Block to render
+ * @param {boolean} props.allowSelectBlock Whether to show the add button
  * @returns {React.ReactNode} Image of block with action button
  */
-export default function BlockImage({block}: { block: BlockType; }): React.ReactNode {
+export default function BlockImage({block, allowSelectBlock = true}: { block: BlockType; allowSelectBlock: boolean }): React.ReactNode {
 
   const handleDrag = (e: React.DragEvent<HTMLDivElement>) => {
     e.dataTransfer.setData('draggedBlock', JSON.stringify(block))
@@ -32,14 +33,14 @@ export default function BlockImage({block}: { block: BlockType; }): React.ReactN
       draggable={true}
       onDragStart={handleDrag}
       style={{ position: 'relative'}}>
-    <ActionIcon
+    {allowSelectBlock && <ActionIcon
       size="sm"
       style={{ position: 'absolute', top: "10px", right: "10px", zIndex: 2 }}
       aria-label="Add to inventory"
       onClick={() => addBlockToInventory(block)}
     >
       <IconPlus/>
-    </ActionIcon>
+    </ActionIcon>}
       <Image
         src={block.inventoryTexture}
         alt={block.name}

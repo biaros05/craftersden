@@ -172,6 +172,8 @@ export function getCameraPosition(viewMatrix: mat4): vec3 {
     const invView = mat4.create();
     mat4.invert(invView, viewMatrix);
 
+    console.log("POS", invView[12], invView[13], invView[14])
+
     const cameraPos = vec3.fromValues(invView[12], invView[13], invView[14]);
     return cameraPos;
 }

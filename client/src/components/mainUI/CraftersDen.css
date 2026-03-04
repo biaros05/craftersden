@@ -51,3 +51,10 @@
     text-align: center;
   }
 }
+
+.calculate-materials-wrapper {
+  margin: 1em;
+  
+  display: flex;
+  justify-content: space-between;
+}

@@ -1,168 +1,282 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { BlockPos, BlockState, Identifier, JsonValue, NbtCompound, NbtFile, Structure } from "deepslate";
+import { BlockPos, BlockState, Identifier, NbtCompound, NbtFile, NbtInt, NbtList, NbtLongArray, NbtString, NbtTag, Structure } from "deepslate";
 import { calculateBitWidth } from "./IOUtils";
 
 export default class CloneableStructure extends Structure {
 
-    protected getPalette(): BlockState[] {
-        return (this as any).palette;
-    }
+  protected getPalette(): BlockState[] {
+      return (this as any).palette;
+  }
 
-    protected getPlacedBlocks(): { pos: BlockPos, state: number, nbt?: NbtCompound }[] {
-        return (this as any).blocks;
-    }
+  protected getPlacedBlocks(): { pos: BlockPos, state: number, nbt?: NbtCompound }[] {
+      return (this as any).blocks;
+  }
 
-    public clone(size: [number, number, number] = this.getSize()) {
-        return new CloneableStructure(size, [...this.getPalette()], [...this.getPlacedBlocks()]);
-    }
+  public clone(size: [number, number, number] = this.getSize()) {
+      return new CloneableStructure(size, [...this.getPalette()], [...this.getPlacedBlocks()]);
+  }
 
-    public removeBlock(pos: BlockPos) {
-        const size = this.getSize();
-        this.blocks = this.getPlacedBlocks().filter(b => !BlockPos.equals(b.pos, pos));
-        this.blocksMap = this.blocksMap.splice(pos[0] * size[1] * size[2] + pos[1] * size[2] + pos[2], 1)
-    }
+  public removeBlock(pos: BlockPos) {
+      const size = this.getSize();
+      // (this as any) breaks types to be able to set private fields provided by the lib
+      (this as any).blocks = this.getPlacedBlocks().filter(b => !BlockPos.equals(b.pos, pos));
+      (this as any).blocksMap = (this as any).blocksMap.splice(pos[0] * size[1] * size[2] + pos[1] * size[2] + pos[2], 1)
+  }
 
-    public addBlock(pos: BlockPos, name: Identifier | string, properties?: { [key: string]: string; }, nbt?: NbtCompound) {
-        if (this.getBlock(pos)) {
-            console.error(`Block already at ${pos}`)
+  public addBlock(pos: BlockPos, name: Identifier | string, properties?: { [key: string]: string; }, nbt?: NbtCompound) {
+    if (this.getBlock(pos)) {
+      console.error(`Block already at ${pos}`)
+    }
+    return super.addBlock(pos, name, properties, nbt);
+  }
+
+  public toJson() {
+      return {
+          size: [...this.getSize()],
+          palette: [...this.getPalette()],
+          placedBlocks: [...this.getPlacedBlocks()],
+      };
+  }
+
+  public static fromStructure(structure: Structure) {
+      return new CloneableStructure(structure.getSize(), [...(structure as any).palette], [...(structure as any).blocks]);
+  }
+
+  public static fromJson(json: {palette: {name, properties}[], size: BlockPos, placedBlocks}) {
+      const palette = json.palette.map(b => new BlockState(`${b.name.namespace}:${b.name.path}`, b.properties)) as any;
+
+      return new CloneableStructure(json.size, palette, json.placedBlocks);
+  }
+
+  public toLitematic(author: string, name: string='craftersden.litematic') {
+    const structureSize = this.getSize();
+    const palette = [...this.getPalette()];
+    const placedBlocks = this.getPlacedBlocks();
+
+    const Metadata = new Map<string, NbtTag>();
+    Metadata.set('Author', new NbtString(author));
+    Metadata.set('RegionCount', new NbtInt(1));
+    Metadata.set('totalBlocks', new NbtInt(placedBlocks.length));
+    Metadata.set('totalVolume', new NbtInt(structureSize[0] * structureSize[1] * structureSize[2]));
+
+    const MetadataNbt = new NbtCompound(Metadata)
+    
+    const regionName = 'Unnamed';
+    const Regions = new Map<string, NbtTag>();
+
+    const mainRegionsNbt = new NbtCompound(Regions);
+
+    const mainRegion = new Map<string, NbtTag>();
+
+    const position = new Map<string, NbtTag>();
+    position.set('x', new NbtInt(0));
+    position.set('y', new NbtInt(0));
+    position.set('z', new NbtInt(0));
+    const positionNbt = new NbtCompound(position);
+    mainRegion.set('Position', positionNbt);
+
+    const size = new Map<string, NbtTag>();
+    size.set('x', new NbtInt(structureSize[0]));
+    size.set('y', new NbtInt(structureSize[1]));
+    size.set('z', new NbtInt(structureSize[2]));
+    const sizeNbt = new NbtCompound(size);
+    mainRegion.set('Size', sizeNbt);
+
+    let airIndex = -1;
+    for (let i = 0; i < palette.length; i++) {
+        if (palette[i].equals(BlockState.AIR)) {
+            airIndex = i;
+            break;
         }
-        super.addBlock(pos, name, properties, nbt);
+    }
+    if (airIndex === -1) {
+      palette.splice(0, 0, BlockState.AIR);
     }
 
-    public toJson() {
-        return {
-            size: [...this.getSize()],
-            palette: [...this.getPalette()],
-            placedBlocks: [...this.getPlacedBlocks()],
-        };
+    mainRegion.set('BlockStatePalette', this.encodePaletteForLitematic(palette));
+    mainRegion.set('BlockStates', this.encodeBlocksForLitematic(airIndex))
+
+
+    const mainRegionNbt = new NbtCompound(mainRegion);
+
+    Regions.set(regionName, mainRegionNbt)
+    
+    const root = new Map<string, NbtTag>();
+    root.set('Metadata', MetadataNbt)
+    root.set('Regions', mainRegionsNbt);
+    root.set('DataVersion', new NbtInt(4189));
+    root.set('SubVersion', new NbtInt(1));
+    root.set('Version', new NbtInt(7));
+
+    const rootNbt = new NbtCompound(root);
+
+    const nbt = new NbtFile(name, rootNbt, 'gzip', false, undefined);
+    return nbt;
+  }
+
+  private encodePaletteForLitematic(palette: BlockState[]) {
+    const paletteNbt: NbtCompound[] = palette.map(val => {
+      const blockMap = new Map<string, NbtTag>();
+      blockMap.set('Name', new NbtString(val.getName().toString()));
+      const blockProperties = val.getProperties();
+      const blockPropertiesKeys = Object.keys(blockProperties);
+      if (blockPropertiesKeys.length > 0) {
+        const propertiesMap = new Map<string, NbtTag>();
+
+        blockPropertiesKeys.forEach(key => propertiesMap.set(key, new NbtString(blockProperties[key])));
+        blockMap.set('Properties', new NbtCompound(propertiesMap));
+      }
+
+      return new NbtCompound(blockMap);
+    });
+
+    return new NbtList(paletteNbt);
+  }
+
+  // Code generated by deepseek by asking to reverse decoding process in IOUtils.ts
+  private encodeBlocksForLitematic(airIndex: number): NbtLongArray {
+    const nbits = calculateBitWidth(this.getPalette().length); 
+    const placedBlocks = this.getPlacedBlocks();
+    const [width, height, depth] = this.getSize();
+    const mask = (1 << nbits) - 1;
+    const y_shift = Math.abs(width * depth);
+    const z_shift = Math.abs(width);
+    const totalBits = Math.abs(width) * Math.abs(height) * Math.abs(depth) * nbits;
+    const totalPairs = Math.ceil(totalBits / 64);
+    const regionData: [number, number][] = [];
+  
+    const blockDataLookup = new Map();
+    placedBlocks.forEach(block => {
+        const posKey = `${block.pos[0]},${block.pos[1]},${block.pos[2]}`;
+        blockDataLookup.set(posKey, block.state);
+    });
+
+    for (let i = 0; i < totalPairs; i++) {
+      regionData.push([0, 0]);
     }
+  
+    for (let x = 0; x < Math.abs(width); x++) {
+      for (let y = 0; y < Math.abs(height); y++) {
+        for (let z = 0; z < Math.abs(depth); z++) {
+          const index = y * y_shift + z * z_shift + x;
+          const start_offset = index * nbits;
+          const start_arr_index = start_offset >>> 5; // divide by 32
+          const end_arr_index = ((index + 1) * nbits - 1) >>> 5;
+          const start_bit_offset = start_offset & 0x1F; // mod 32
+  
+          const half_ind = start_arr_index >>> 1; // divide by 2
+          const rawIndex = blockDataLookup.get(`${x},${y},${z}`);
+          let blockValue;
 
-    public static fromStructure(structure: Structure) {
-        return new CloneableStructure(structure.getSize(), [...(structure as any).palette], [...(structure as any).blocks]);
-    }
+          if (airIndex === -1) {
+            if (rawIndex !== undefined) {
+              
+              blockValue = rawIndex + 1;
+            } else {
+              blockValue = 0;
+            }
+          } else {
+            if (rawIndex !== undefined) {
+              blockValue = rawIndex;
+            } else {
+              blockValue = airIndex;
+            }
+          }
+          blockValue = blockValue & mask;
 
-    public static fromJson(json: object) {
-        const palette = json.palette.map(b => new BlockState(`${b.name.namespace}:${b.name.path}`, b.properties)) as any;
-
-        return new CloneableStructure(json.size, palette, json.placedBlocks);
-    }
-
-    public toNbt(author: string, name: string='craftersden.litematic') {
-        const size = this.getSize();
-        const palette = this.getPalette();
-        const placedBlocks = this.getPlacedBlocks();
-      
-        const nbtJson = {
-          Metadata: {
-            Author: author,
-            RegionCount: 1,
-            totalBlocks: placedBlocks.length,
-            totalVolume: size[0] * size[1] * size[2]
-          },
-          Regions: {
-            Unnamed: {
-                Position: {
-                    x: 0,
-                    y: 0,
-                    z: 0
-                },
-                Size: {
-                    x: size[0],
-                    y: size[1],
-                    z: size[2]
-                },
-                BlockStatePalette: [
-                    {Name: 'minecraft:air'},
-                    palette
-                ],
-                BlockStates: [
-                    this.encodePlacedBlocks()
-                ]
+          if (start_arr_index === end_arr_index) {
+            // Value fits within one 32-bit integer
+            if ((start_arr_index & 0x1) === 0) {
+              // First 32-bit integer in the pair
+              regionData[half_ind][1] |= (blockValue << start_bit_offset);
+            } else {
+              // Second 32-bit integer in the pair
+              regionData[half_ind][0] |= (blockValue << start_bit_offset);
+            }
+          } else {
+            // Value spans two 32-bit integers
+            const end_offset = 32 - start_bit_offset;
+            const lowerPart = blockValue & ((1 << end_offset) - 1);
+            const upperPart = blockValue >>> end_offset;
+  
+            if ((start_arr_index & 0x1) === 0) {
+              // First part in the first 32-bit integer of the pair
+              regionData[half_ind][1] |= (lowerPart << start_bit_offset);
+              // Second part in the second 32-bit integer of the pair
+              regionData[half_ind][0] |= upperPart;
+            } else {
+              // First part in the second 32-bit integer of the pair
+              regionData[half_ind][0] |= (lowerPart << start_bit_offset);
+              // Second part in the first 32-bit integer of the next pair
+              if (half_ind + 1 < regionData.length) {
+                regionData[half_ind + 1][1] |= upperPart;
+              }
             }
           }
         }
-      
-        const nbt = NbtFile.fromJson(nbtJson as JsonValue);
-        nbt.name = name;
-        return nbt;
-      
+      }
     }
+    return new NbtLongArray(regionData);
+  }
 
+  public toStructureBlock(name: string) {
+    const structureSize = this.getSize();
+    const palette = this.getPalette();
+    const placedBlocks = this.getPlacedBlocks();
 
-    private encodePlacedBlocks(): [number, number][] {
-        const size = this.getSize();
-        const palette = [BlockState.AIR, ...this.getPalette()];
-        const placedBlocks = this.getPlacedBlocks();
-        const nbits = calculateBitWidth(palette.length)
+    const root = new Map<string, NbtTag>();
+    // Could possibly add metadata?
 
-        // Calculate how many bits each block needs based on the palette size
-        const mask = (1 << nbits) - 1;
-        const [width, height, depth] = size;
-        const y_shift = width * depth;
-        const z_shift = width;
+    const sizeNbt = new NbtList(structureSize.map(s => new NbtInt(s)));
+    root.set('size', sizeNbt);
 
-        // Initialize the region data array (will store the packed 64-bit integers)
-        const regionData: [number, number][] = [];
+    root.set('palette', this.encodePaletteForStructureBlock(palette));
 
-        const blockDataLookup = new Map();
-        placedBlocks.forEach(block => {
-            const posKey = `${block.pos[0]},${block.pos[1]},${block.pos[2]}`;
-            blockDataLookup.set(posKey, block.state);
-        });
+    
+    root.set('blocks', this.encodeBlocksForStructureBlock(placedBlocks))
 
-        // Iterate over all possible positions in the structure
-        for (let x = 0; x < width; x++) {
-            for (let y = 0; y < height; y++) {
-                for (let z = 0; z < depth; z++) {
-                    // Check if this position has block data; default to air if not
-                    const posKey = `${x},${y},${z}`;
-                    const blockStateIndex = blockDataLookup.get(posKey) || 0;
+    root.set('DataVersion', new NbtInt(4189));
 
-                    // Ensure the state is within valid bounds
-                    if (blockStateIndex === undefined || blockStateIndex >= palette.length) {
-                        console.error(`State ${blockStateIndex} is out of bounds in the palette!`);
-                        continue;
-                    }
+    const rootNbt = new NbtCompound(root);
 
-                    // Calculate the linear index for this block in the packed data array
-                    const index = y * y_shift + z * z_shift + x;
+    const nbt = new NbtFile(name, rootNbt, 'gzip', false, undefined);
+    return nbt;
+  }
 
-                    // Determine the start and end bit indices for this block
-                    const start_offset = index * nbits;
-                    const start_arr_index = start_offset >>> 5;  // Divide by 32
-                    const start_bit_offset = start_offset & 0x1F; // % 32
+  private encodePaletteForStructureBlock(palette: BlockState[]) {
+    const paletteNbt: NbtCompound[] = palette.map(val => {
+      const blockMap = new Map<string, NbtTag>();
+      blockMap.set('Name', new NbtString(val.getName().toString()));
+      const blockProperties = val.getProperties();
+      const blockPropertiesKeys = Object.keys(blockProperties);
+      if (blockPropertiesKeys.length > 0) {
+          const propertiesMap = new Map<string, NbtTag>();
 
-                    // We need to determine the half-block of the 64-bit value
-                    const half_ind = start_arr_index >>> 1;
-                    let blockStart, blockEnd;
-                    
-                    // If we're in the first half of a 64-bit block
-                    if ((start_arr_index & 0x1) === 0) {
-                        blockStart = regionData[half_ind]?.[1] || 0;
-                        blockEnd = regionData[half_ind]?.[0] || 0;
-                    } else {
-                        blockStart = regionData[half_ind]?.[0] || 0;
-                        blockEnd = regionData[half_ind + 1]?.[1] || 0;
-                    }
+          blockPropertiesKeys.forEach(key => propertiesMap.set(key, new NbtString(blockProperties[key])));
+          blockMap.set('Properties', new NbtCompound(propertiesMap));
+      }
 
-                    // Shift and mask to insert the block state index
-                    const blockState = blockStateIndex & mask;
+      return new NbtCompound(blockMap);
+  });
 
-                    // Apply bit shifts to the corresponding positions in the blockStart and blockEnd
-                    if (start_arr_index === start_arr_index) {
-                        blockStart |= blockState << start_bit_offset;
-                    } else {
-                        const end_offset = 32 - start_bit_offset;
-                        blockStart |= (blockState >>> end_offset) & mask;
-                        blockEnd |= blockState << start_bit_offset;
-                    }
-                    
-                    // Store the packed data back to regionData
-                    regionData[half_ind] = [blockEnd, blockStart];  // Update the region data
-                }
-            }
-        }
+  return new NbtList(paletteNbt)
+  }
 
-        return regionData;
-    }
+  private encodeBlocksForStructureBlock(placedBlocks) {
+    const blocksNbt: NbtCompound[] = placedBlocks.map(b => {
+      const blockMap = new Map<string, NbtTag>();
+      blockMap.set('state', new NbtInt(b.state));
+      blockMap.set('pos', new NbtList(b.pos.map(p => new NbtInt(p))))
+      if (b.nbt) {
+        const nbtMap = new Map<string, NbtTag>();
+        
+        b.nbt.forEach((key, value) => nbtMap.set(key, value.value))
+        blockMap.set('nbt', new NbtCompound(nbtMap))
+      }
+
+      return new NbtCompound(blockMap);
+    })
+
+    return new NbtList(blocksNbt)
+  }
 }
